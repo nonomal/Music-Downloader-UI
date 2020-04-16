@@ -8,7 +8,7 @@ using System.Net;
 
 namespace MusicDownloader.Library
 {
-    public class Tool
+    static public class Tool
     {
         public class Config
         {
@@ -81,6 +81,17 @@ namespace MusicDownloader.Library
             catch
             {
                 return null;
+            }
+        }
+
+        public class WebClientPro : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
+                request.Timeout = 1000 * 20;//单位为毫秒
+                request.ReadWriteTimeout = 1000 * 20;//
+                return request;
             }
         }
     }

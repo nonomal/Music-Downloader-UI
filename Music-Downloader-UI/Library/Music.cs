@@ -1,15 +1,11 @@
 ﻿using MusicDownloader.Json;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using TagLib;
+using static MusicDownloader.Library.Tool;
 
 namespace MusicDownloader.Library
 {
@@ -36,7 +32,7 @@ namespace MusicDownloader.Library
         public void Update()
         {
 
-            WebClient wc = new WebClient();
+            WebClientPro wc = new WebClientPro();
             StreamReader sr = null;
             try
             {
@@ -152,7 +148,7 @@ namespace MusicDownloader.Library
         {
             try
             {
-                WebClient wc = new WebClient();
+                WebClientPro wc = new WebClientPro();
                 wc.Headers.Add(HttpRequestHeader.Cookie, cookie);
                 Stream s = wc.OpenRead(url);
                 StreamReader sr = new StreamReader(s);
@@ -177,7 +173,7 @@ namespace MusicDownloader.Library
             {
                 return null;
             }
-            WebClient wc = new WebClient();
+            WebClientPro wc = new WebClientPro();
             string offset = ((Page - 1) * 100).ToString();
             string url = NeteaseApiUrl + "search?keywords=" + Key + "&limit=" + limit.ToString() + "&offset=" + offset;
             string json = GetHTML(url);
@@ -232,7 +228,7 @@ namespace MusicDownloader.Library
             List<MusicInfo> res = new List<MusicInfo>();
             string url = QQApiUrl + "search?key=" + Key + "&pageSize=60";
             string resjson = "";
-            using (WebClient wc = new WebClient())
+            using (WebClientPro wc = new WebClientPro())
             {
                 StreamReader sr = new StreamReader(wc.OpenRead(url));
                 resjson = sr.ReadToEnd();
@@ -335,7 +331,7 @@ namespace MusicDownloader.Library
                 for (int i = 0; i < dl.Count; i++)
                 {
                     string url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + dl[i].strMediaMid;
-                    using (WebClient wc = new WebClient())
+                    using (WebClientPro wc = new WebClientPro())
                     {
                         StreamReader sr = new StreamReader(wc.OpenRead(url));
                         QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(sr.ReadToEnd());
@@ -380,6 +376,7 @@ namespace MusicDownloader.Library
         {
             while (downloadlist.Count != 0)
             {
+                string Lrc = "";
                 downloadlist[0].State = "正在下载音乐";
                 if (downloadlist[0].Url == null)
                 {
@@ -430,7 +427,7 @@ namespace MusicDownloader.Library
                     }
                     else
                     {
-                        using (WebClient wc = new WebClient())
+                        using (WebClientPro wc = new WebClientPro())
                         {
                             try
                             {
@@ -450,7 +447,7 @@ namespace MusicDownloader.Library
                 {
                     downloadlist[0].State = "正在下载歌词";
                     UpdateDownloadPage();
-                    using (WebClient wc = new WebClient())
+                    using (WebClientPro wc = new WebClientPro())
                     {
                         try
                         {
@@ -460,6 +457,7 @@ namespace MusicDownloader.Library
                                 StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
                                 NeteaseLrc.Root lrc = JsonConvert.DeserializeObject<NeteaseLrc.Root>(sr.ReadToEnd());
                                 StreamWriter sw = new StreamWriter(savename);
+                                Lrc = lrc.lrc.lyric;
                                 sw.Write(lrc.lrc.lyric);
                                 sw.Flush();
                                 sw.Close();
@@ -470,6 +468,7 @@ namespace MusicDownloader.Library
                                 StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
                                 QQLrc.Root lrc = JsonConvert.DeserializeObject<QQLrc.Root>(sr.ReadToEnd());
                                 StreamWriter sw = new StreamWriter(savename);
+                                Lrc = lrc.data.lrc;
                                 sw.Write(lrc.data.lrc);
                                 sw.Flush();
                                 sw.Close();
@@ -486,7 +485,7 @@ namespace MusicDownloader.Library
                 {
                     downloadlist[0].State = "正在下载图片";
                     UpdateDownloadPage();
-                    using (WebClient wc = new WebClient())
+                    using (WebClientPro wc = new WebClientPro())
                     {
                         try
                         {
@@ -501,40 +500,50 @@ namespace MusicDownloader.Library
                 }
                 try
                 {
-                    if (filename.IndexOf(".mp3") != -1)
+                    if (downloadlist[0].IfDownloadMusic)
                     {
-                        var tfile = TagLib.File.Create(savepath + "\\" + filename);
-                        tfile.Tag.Title = downloadlist[0].Title;
-                        tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
-                        tfile.Tag.Album = downloadlist[0].Album;
-                        if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
+                        if (filename.IndexOf(".mp3") != -1)
                         {
-                            TagLib.Picture pic = new TagLib.Picture();
-                            pic.Type = TagLib.PictureType.FrontCover;
-                            pic.Description = "Cover";
-                            pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-                            pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                            tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
+                            var tfile = TagLib.File.Create(savepath + "\\" + filename);
+                            tfile.Tag.Title = downloadlist[0].Title;
+                            tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
+                            tfile.Tag.Album = downloadlist[0].Album;
+                            if (downloadlist[0].IfDownloadLrc)
+                            {
+                                tfile.Tag.Lyrics = Lrc;
+                            }
+                            if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
+                            {
+                                TagLib.Picture pic = new TagLib.Picture();
+                                pic.Type = TagLib.PictureType.FrontCover;
+                                pic.Description = "Cover";
+                                pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
+                                pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                                tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
+                            }
+                            tfile.Save();
                         }
-                        tfile.Save();
-                    }
-                    else
-                    {
-                        var tfile = TagLib.Flac.File.Create(savepath + "\\" + filename);
-                        tfile.Tag.Title = downloadlist[0].Title;
-                        tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
-                        tfile.Tag.Album = downloadlist[0].Album;
-
-                        if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
+                        else
                         {
-                            TagLib.Picture pic = new TagLib.Picture();
-                            pic.Type = TagLib.PictureType.FrontCover;
-                            pic.Description = "Cover";
-                            pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-                            pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                            tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
+                            var tfile = TagLib.Flac.File.Create(savepath + "\\" + filename);
+                            tfile.Tag.Title = downloadlist[0].Title;
+                            tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
+                            tfile.Tag.Album = downloadlist[0].Album;
+                            if (downloadlist[0].IfDownloadLrc)
+                            {
+                                tfile.Tag.Lyrics = Lrc;
+                            }
+                            if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
+                            {
+                                TagLib.Picture pic = new TagLib.Picture();
+                                pic.Type = TagLib.PictureType.FrontCover;
+                                pic.Description = "Cover";
+                                pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
+                                pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                                tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
+                            }
+                            tfile.Save();
                         }
-                        tfile.Save();
                     }
                 }
                 catch { }
@@ -607,7 +616,7 @@ namespace MusicDownloader.Library
             else if (api == 2)
             {
                 string url = QQApiUrl + "songlist?id=" + Id;
-                using (WebClient wc = new WebClient())
+                using (WebClientPro wc = new WebClientPro())
                 {
                     StreamReader sr = new StreamReader(wc.OpenRead(url));
                     string httpres = sr.ReadToEnd();
@@ -742,7 +751,7 @@ namespace MusicDownloader.Library
             if (api == 2)
             {
                 string url = QQApiUrl + "album/songs?albummid=" + id;
-                using (WebClient wc = new WebClient())
+                using (WebClientPro wc = new WebClientPro())
                 {
                     StreamReader sr = new StreamReader(wc.OpenRead(url));
                     string httpres = sr.ReadToEnd();

@@ -1,24 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using MusicDownloader.Json;
+using MusicDownloader.Library;
 using MusicDownloader.Pages;
 using Panuon.UI.Silver;
-using MusicDownloader.Library;
-using MusicDownloader.Json;
 using Panuon.UI.Silver.Core;
-using System.Threading;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace MusicDownloader
 {
@@ -82,6 +72,7 @@ namespace MusicDownloader
 
         public MainWindow()
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             setting = new Setting()
             {
                 SavePath = Tool.Config.Read("SavePath") ?? Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
@@ -98,6 +89,26 @@ namespace MusicDownloader
             SettingPage = new SettingPage(setting);
             InitializeComponent();
             frame.Content = HomePage;
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (File.Exists("Error.log"))
+            {
+                StreamReader sr = new StreamReader("Error.log");
+                StreamWriter sw = new StreamWriter("Error.log");
+                sw.WriteLine(sr.ReadToEnd() + "\r\n" + e.ExceptionObject.ToString());
+                sw.Flush();
+                sw.Close();
+            }
+            else
+            {
+                StreamWriter sw = new StreamWriter("Error.log");
+                sw.WriteLine(e.ExceptionObject.ToString());
+                sw.Flush();
+                sw.Close();
+            }
+            MessageBox.Show("遇到未知错误，具体信息查看 " + Environment.CurrentDirectory + "\\Error.log");
         }
 
         private void WindowX_ContentRendered(object sender, EventArgs e)
