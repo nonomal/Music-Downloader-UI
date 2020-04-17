@@ -11,7 +11,7 @@ namespace MusicDownloader.Library
 {
     public class Music
     {
-        List<int> version = new List<int> { 1, 0, 4 };
+        List<int> version = new List<int> { 1, 0, 5 };
         const string NeteaseApiUrl = "";//自行搭建接口
         const string QQApiUrl = "";//自行搭建接口
         public Setting setting;
@@ -415,7 +415,7 @@ namespace MusicDownloader.Library
                         savepath = setting.SavePath + "\\" + NameCheck(downloadlist[0].Singer) + "\\" + NameCheck(downloadlist[0].Album);
                         break;
                 }
-                if (Directory.Exists(savepath))
+                if (!Directory.Exists(savepath))
                     Directory.CreateDirectory(savepath);
 
                 if (downloadlist[0].IfDownloadMusic)
@@ -457,10 +457,13 @@ namespace MusicDownloader.Library
                                 StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
                                 NeteaseLrc.Root lrc = JsonConvert.DeserializeObject<NeteaseLrc.Root>(sr.ReadToEnd());
                                 StreamWriter sw = new StreamWriter(savename);
-                                Lrc = lrc.lrc.lyric;
-                                sw.Write(lrc.lrc.lyric);
-                                sw.Flush();
-                                sw.Close();
+                                Lrc = lrc.lrc.lyric ?? "";
+                                if (Lrc == "")
+                                {
+                                    sw.Write(Lrc);
+                                    sw.Flush();
+                                    sw.Close();
+                                }
                             }
                             else if (downloadlist[0].Api == 2)
                             {
@@ -468,10 +471,13 @@ namespace MusicDownloader.Library
                                 StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
                                 QQLrc.Root lrc = JsonConvert.DeserializeObject<QQLrc.Root>(sr.ReadToEnd());
                                 StreamWriter sw = new StreamWriter(savename);
-                                Lrc = lrc.data.lrc;
-                                sw.Write(lrc.data.lrc);
-                                sw.Flush();
-                                sw.Close();
+                                Lrc = lrc.data.lrc ?? "";
+                                if (Lrc == "")
+                                {
+                                    sw.Write(Lrc);
+                                    sw.Flush();
+                                    sw.Close();
+                                }
                             }
                         }
                         catch
