@@ -89,6 +89,12 @@ namespace MusicDownloader
             SettingPage = new SettingPage(setting);
             InitializeComponent();
             frame.Content = HomePage;
+            string ver = "";
+            foreach (int s in music.version)
+            {
+                ver += s.ToString() + ".";
+            }
+            VerTextblock.Text = ver.Substring(0, ver.Length - 1);
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

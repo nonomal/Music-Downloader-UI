@@ -11,7 +11,7 @@ namespace MusicDownloader.Library
 {
     public class Music
     {
-        List<int> version = new List<int> { 1, 0, 5 };
+        public List<int> version = new List<int> { 1, 0, 5 };
         const string NeteaseApiUrl = "";//自行搭建接口
         const string QQApiUrl = "";//自行搭建接口
         public Setting setting;
@@ -31,7 +31,6 @@ namespace MusicDownloader.Library
         /// <returns></returns>
         public void Update()
         {
-
             WebClientPro wc = new WebClientPro();
             StreamReader sr = null;
             try
