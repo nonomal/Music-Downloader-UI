@@ -26,7 +26,7 @@ namespace MusicDownloader.Library
         public event NotifyConnectErrorEventHandler NotifyConnectError;
 
         /// <summary>
-        /// 获取更新数据
+        /// 获取更新数据 这个方法是获取程序更新信息 二次开发请修改
         /// </summary>
         /// <returns></returns>
         public void Update()
@@ -35,7 +35,8 @@ namespace MusicDownloader.Library
             StreamReader sr = null;
             try
             {
-                sr = new StreamReader(wc.OpenRead("http://nitian1207.cn/update/MusicDownload.json"));
+                sr = new StreamReader(wc.OpenRead(""));
+                // 读取一个在线文件判断接口状态获取网易云音乐Cookie,可以写死
             }
             catch
             {

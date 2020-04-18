@@ -27,7 +27,7 @@
                 Background="Transparent" 
                 Foreground="White"
                 FontFamily="Microsoft YaHei UI Light"
-                Margin="0,97,-0.333,66.667"
+                Margin="0,97,-0.333,166.667"
                 pu:TreeViewHelper.ItemHeight="40"
                 pu:TreeViewHelper.TreeViewStyle="Modern"
                 pu:TreeViewHelper.SelectedBackground="#22FFFFFF"
