@@ -458,12 +458,12 @@ namespace MusicDownloader.Library
                                 NeteaseLrc.Root lrc = JsonConvert.DeserializeObject<NeteaseLrc.Root>(sr.ReadToEnd());
                                 StreamWriter sw = new StreamWriter(savename);
                                 Lrc = lrc.lrc.lyric ?? "";
-                                if (Lrc == "")
+                                if (Lrc != "")
                                 {
                                     sw.Write(Lrc);
                                     sw.Flush();
-                                    sw.Close();
                                 }
+                                sw.Close();
                             }
                             else if (downloadlist[0].Api == 2)
                             {
@@ -472,12 +472,12 @@ namespace MusicDownloader.Library
                                 QQLrc.Root lrc = JsonConvert.DeserializeObject<QQLrc.Root>(sr.ReadToEnd());
                                 StreamWriter sw = new StreamWriter(savename);
                                 Lrc = lrc.data.lrc ?? "";
-                                if (Lrc == "")
+                                if (Lrc != "")
                                 {
                                     sw.Write(Lrc);
                                     sw.Flush();
-                                    sw.Close();
                                 }
+                                sw.Close();
                             }
                         }
                         catch
