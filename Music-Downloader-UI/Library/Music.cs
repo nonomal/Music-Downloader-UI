@@ -12,8 +12,8 @@ namespace MusicDownloader.Library
     public class Music
     {
         public List<int> version = new List<int> { 1, 0, 6 };
-        const string NeteaseApiUrl = "http://116.85.33.135:3000/";//自行搭建接口
-        const string QQApiUrl = "http://116.85.33.135:3300/";//自行搭建接口
+        const string NeteaseApiUrl = "";//自行搭建接口
+        const string QQApiUrl = "";//自行搭建接口
         public Setting setting;
         public List<DownloadList> downloadlist = new List<DownloadList>();
         string cookie = "";
@@ -35,7 +35,7 @@ namespace MusicDownloader.Library
             StreamReader sr = null;
             try
             {
-                sr = new StreamReader(wc.OpenRead("http://nitian1207.cn/update/MusicDownload.json"));
+                sr = new StreamReader(wc.OpenRead(""));
                 // 读取一个在线文件判断接口状态获取网易云音乐Cookie,可以写死
             }
             catch
