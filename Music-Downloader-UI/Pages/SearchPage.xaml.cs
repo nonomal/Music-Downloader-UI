@@ -114,7 +114,7 @@ namespace MusicDownloader.Pages
                         id = i[0].ToString();
                     }
                 }
-                GetMusicList(id);
+                GetNeteaseMusicList(id);
             }
         }
 
@@ -183,7 +183,10 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         private void Label_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            GetMusicList("3778678");
+            if (apiComboBox.SelectedIndex == 0)
+            { GetNeteaseMusicList("3778678"); }
+            if (apiComboBox.SelectedIndex == 1)
+            { GetQQTopList("26"); }
         }
 
         /// <summary>
@@ -193,7 +196,10 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         private void Label_PreviewMouseDown_1(object sender, MouseButtonEventArgs e)
         {
-            GetMusicList("3779629");
+            if (apiComboBox.SelectedIndex == 0)
+            { GetNeteaseMusicList("3779629"); }
+            if (apiComboBox.SelectedIndex == 1)
+            { GetQQTopList("27"); }
         }
 
         /// <summary>
@@ -203,7 +209,10 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         private void Label_PreviewMouseDown_2(object sender, MouseButtonEventArgs e)
         {
-            GetMusicList("19723756");
+            if (apiComboBox.SelectedIndex == 0)
+            { GetNeteaseMusicList("19723756"); }
+            if (apiComboBox.SelectedIndex == 1)
+            { GetQQTopList("62"); }
         }
 
         /// <summary>
@@ -213,7 +222,12 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         private void Label_PreviewMouseDown_3(object sender, MouseButtonEventArgs e)
         {
-            GetMusicList("2884035");
+            if (apiComboBox.SelectedIndex == 0)
+            { GetNeteaseMusicList("2884035"); }
+            if (apiComboBox.SelectedIndex == 1)
+            {
+                MessageBoxX.Show("QQ音乐无原创榜", "提示", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Warning });
+            }
         }
         #endregion
 
@@ -269,7 +283,7 @@ namespace MusicDownloader.Pages
             }
         }
 
-        private async void GetMusicList(string id)
+        private async void GetNeteaseMusicList(string id)
         {
             var pb = PendingBox.Show("解析中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
             {
@@ -284,6 +298,50 @@ namespace MusicDownloader.Pages
                 await Task.Run(() =>
                 {
                     musicinfo = music.GetMusicList(id, api);
+                });
+                if (musicinfo == null)
+                {
+                    pb.Close();
+                    MessageBoxX.Show("解析错误", "警告", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                    return;
+                }
+                foreach (MusicInfo m in musicinfo)
+                {
+                    SearchListItemModel mod = new SearchListItemModel()
+                    {
+                        Album = m.Album,
+                        Singer = m.Singer,
+                        IsSelected = false,
+                        Title = m.Title
+                    };
+                    SearchListItem.Add(mod);
+                }
+                List.ItemsSource = SearchListItem;
+                List.Items.Refresh();
+                pb.Close();
+            }
+            catch
+            {
+                pb.Close();
+                MessageBoxX.Show("解析错误", configurations: new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+            }
+        }
+
+        private async void GetQQTopList(string id)
+        {
+            var pb = PendingBox.Show("解析中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
+            {
+                MaxHeight = 160,
+                MinWidth = 400
+            });
+            try
+            {
+                SearchListItem.Clear();
+                musicinfo?.Clear();
+                int api = apiComboBox.SelectedIndex + 1;
+                await Task.Run(() =>
+                {
+                    musicinfo = music.GetQQTopList(id);
                 });
                 if (musicinfo == null)
                 {

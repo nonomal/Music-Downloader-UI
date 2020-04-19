@@ -11,9 +11,9 @@ namespace MusicDownloader.Library
 {
     public class Music
     {
-        public List<int> version = new List<int> { 1, 0, 5 };
-        const string NeteaseApiUrl = "";//自行搭建接口
-        const string QQApiUrl = "";//自行搭建接口
+        public List<int> version = new List<int> { 1, 0, 6 };
+        const string NeteaseApiUrl = "http://116.85.33.135:3000/";//自行搭建接口
+        const string QQApiUrl = "http://116.85.33.135:3300/";//自行搭建接口
         public Setting setting;
         public List<DownloadList> downloadlist = new List<DownloadList>();
         string cookie = "";
@@ -35,7 +35,7 @@ namespace MusicDownloader.Library
             StreamReader sr = null;
             try
             {
-                sr = new StreamReader(wc.OpenRead(""));
+                sr = new StreamReader(wc.OpenRead("http://nitian1207.cn/update/MusicDownload.json"));
                 // 读取一个在线文件判断接口状态获取网易云音乐Cookie,可以写死
             }
             catch
@@ -610,13 +610,13 @@ namespace MusicDownloader.Library
                                 _ids += _id[i * 200 + x] + ",";
                             }
                         }
-                        re.AddRange(_GetMusicList(_ids.Substring(0, _ids.Length - 1)));
+                        re.AddRange(_GetNeteaseMusicList(_ids.Substring(0, _ids.Length - 1)));
                     }
                     return re;
                 }
                 else
                 {
-                    return _GetMusicList(ids);
+                    return _GetNeteaseMusicList(ids);
                 }
             }
             else if (api == 2)
@@ -668,7 +668,7 @@ namespace MusicDownloader.Library
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        private List<MusicInfo> _GetMusicList(string ids)
+        private List<MusicInfo> _GetNeteaseMusicList(string ids)
         {
             List<Json.MusicInfo> ret = new List<Json.MusicInfo>();
             string _u = NeteaseApiUrl + "song/detail?ids=" + ids;
@@ -800,6 +800,37 @@ namespace MusicDownloader.Library
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// 获取qq音乐榜单
+        /// </summary>
+        /// <param name="id">参考接口 /top/category </param>
+        /// <returns></returns>
+        public List<MusicInfo> GetQQTopList(string id)
+        {
+            string url = QQApiUrl + "top?id=" + id;
+            using (WebClientPro wc = new WebClientPro())
+            {
+                StreamReader sr = new StreamReader(wc.OpenRead(url));
+                QQTopList.Root json = JsonConvert.DeserializeObject<QQTopList.Root>(sr.ReadToEnd());
+                List<MusicInfo> re = new List<MusicInfo>();
+                for (int i = 0; i < json.data.list.Count; i++)
+                {
+                    re.Add(new MusicInfo
+                    {
+                        Album = json.data.list[i].album.title,
+                        Api = 2,
+                        Id = json.data.list[i].mid,
+                        Singer = json.data.list[i].singerName,
+                        strMediaMid = json.data.list[i].file.media_mid,
+                        Title = json.data.list[i].title,
+                        LrcUrl = QQApiUrl + "lyric?songmid=" + json.data.list[i].mid,
+                        PicUrl = "https://y.gtimg.cn/music/photo_new/T002R300x300M000" + json.data.list[i].album.mid + ".jpg",
+                    });
+                }
+                return re;
+            }
         }
     }
 }

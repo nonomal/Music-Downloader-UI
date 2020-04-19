@@ -329,7 +329,7 @@ namespace MusicDownloader.Json
         }
 
         public class list
-        { 
+        {
             public string mid { get; set; }
             public string title { get; set; }
             public List<singer> singer { get; set; }
@@ -338,7 +338,7 @@ namespace MusicDownloader.Json
         }
 
         public class singer
-        { 
+        {
             public string title { get; set; }
         }
 
@@ -349,8 +349,41 @@ namespace MusicDownloader.Json
         }
 
         public class ksong
-        { 
+        {
             public string mid { get; set; }
+        }
+    }
+
+    public class QQTopList
+    {
+        public class Root
+        {
+            public data data { get; set; }
+        }
+
+        public class data
+        {
+            public List<list> list { get; set; }
+        }
+
+        public class list
+        {
+            public string title { get; set; }
+            public string singerName { get; set; }
+            public string mid { get; set; }
+            public album album { get; set; }
+            public file file { get; set; }
+        }
+
+        public class album
+        {
+            public string title { get; set; }
+            public string mid { get; set; }
+        }
+
+        public class file
+        {
+            public string media_mid { get; set; }
         }
     }
 }
