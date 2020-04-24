@@ -85,9 +85,9 @@
             pu:ButtonHelper.ButtonStyle="Link"
             Content="&#xF002;"
             FontFamily="{StaticResource FontAwesome}"/>
-        <ComboBox pu:ComboBoxHelper.CornerRadius="10" FontSize="13" Name="apiComboBox" HorizontalAlignment="Left" Height="29" Margin="30,4,0,0" VerticalAlignment="Top" Width="75">
-            <ComboBoxItem IsSelected="True" Content="网易云" HorizontalAlignment="Left" Width="106"/>
-            <ComboBoxItem Content="QQ" HorizontalAlignment="Left" Width="106"/>
+        <ComboBox Foreground="Red" pu:ComboBoxHelper.CornerRadius="10" FontSize="13" Name="apiComboBox" HorizontalAlignment="Left" Height="29" Margin="30,4,0,0" VerticalAlignment="Top" Width="75" SelectionChanged="apiComboBox_SelectionChanged">
+            <ComboBoxItem IsSelected="True" Foreground="Red" Content="音源1" HorizontalAlignment="Left" Width="106"/>
+            <ComboBoxItem Content="音源2" Foreground="Green" HorizontalAlignment="Left" Width="106"/>
         </ComboBox>
 
     </Grid>

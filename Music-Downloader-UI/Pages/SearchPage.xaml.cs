@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace MusicDownloader.Pages
 {
@@ -491,6 +492,18 @@ namespace MusicDownloader.Pages
             {
                 pb.Close();
                 MessageBoxX.Show("解析错误", "警告", configurations: new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+            }
+        }
+
+        private void apiComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (apiComboBox.SelectedIndex == 0)
+            {
+                apiComboBox.Foreground = new SolidColorBrush(Colors.Red);
+            }
+            if (apiComboBox.SelectedIndex == 1)
+            {
+                apiComboBox.Foreground = new SolidColorBrush(Colors.Green);
             }
         }
     }

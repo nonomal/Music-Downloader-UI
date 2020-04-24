@@ -12,8 +12,8 @@ namespace MusicDownloader.Library
     public class Music
     {
         public List<int> version = new List<int> { 1, 0, 6 };
-        const string NeteaseApiUrl = "http://116.85.33.135:3000/";//自行搭建接口
-        const string QQApiUrl = "http://116.85.33.135:3300/";//自行搭建接口
+        const string NeteaseApiUrl = "";//自行搭建接口
+        const string QQApiUrl = "";//自行搭建接口
         public Setting setting;
         public List<DownloadList> downloadlist = new List<DownloadList>();
         string cookie = "";
@@ -35,7 +35,7 @@ namespace MusicDownloader.Library
             StreamReader sr = null;
             try
             {
-                sr = new StreamReader(wc.OpenRead("http://nitian1207.cn/update/MusicDownload.json"));
+                sr = new StreamReader(wc.OpenRead(""));
                 // 读取一个在线文件判断接口状态获取网易云音乐Cookie,可以写死
             }
             catch
@@ -334,7 +334,14 @@ namespace MusicDownloader.Library
                     using (WebClientPro wc = new WebClientPro())
                     {
                         StreamReader sr = new StreamReader(wc.OpenRead(url));
-                        QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(sr.ReadToEnd());
+                        string httpjson = sr.ReadToEnd();
+                        if (httpjson == null || httpjson == "")
+                        {
+                            url = url.Replace("flac", "128").Replace("320", "128");
+                            sr = new StreamReader(wc.OpenRead(url));
+                            httpjson = sr.ReadToEnd();
+                        }
+                        QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
                         dl[i].Url = json.data;
                         dl[i].State = "准备下载";
                     }
@@ -455,29 +462,41 @@ namespace MusicDownloader.Library
                             {
                                 string savename = savepath + "\\" + filename.Replace(".flac", ".lrc").Replace(".mp3", ".lrc");
                                 StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
-                                NeteaseLrc.Root lrc = JsonConvert.DeserializeObject<NeteaseLrc.Root>(sr.ReadToEnd());
-                                StreamWriter sw = new StreamWriter(savename);
+                                string json = sr.ReadToEnd();
+                                NeteaseLrc.Root lrc = JsonConvert.DeserializeObject<NeteaseLrc.Root>(json);
                                 Lrc = lrc.lrc.lyric ?? "";
                                 if (Lrc != "")
                                 {
+                                    StreamWriter sw = new StreamWriter(savename);
                                     sw.Write(Lrc);
                                     sw.Flush();
+                                    sw.Close();
                                 }
-                                sw.Close();
+                                else
+                                {
+                                    downloadlist[0].State = "歌词下载错误";
+                                    UpdateDownloadPage();
+                                }
                             }
                             else if (downloadlist[0].Api == 2)
                             {
                                 string savename = savepath + "\\" + filename.Replace(".flac", ".lrc").Replace(".mp3", ".lrc");
                                 StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
-                                QQLrc.Root lrc = JsonConvert.DeserializeObject<QQLrc.Root>(sr.ReadToEnd());
-                                StreamWriter sw = new StreamWriter(savename);
-                                Lrc = lrc.data.lrc ?? "";
+                                string json = sr.ReadToEnd();
+                                QQLrc.Root lrc = JsonConvert.DeserializeObject<QQLrc.Root>(json);
+                                Lrc = lrc.data.lyric ?? "";
                                 if (Lrc != "")
                                 {
+                                    StreamWriter sw = new StreamWriter(savename);
                                     sw.Write(Lrc);
                                     sw.Flush();
+                                    sw.Close();
                                 }
-                                sw.Close();
+                                else
+                                {
+                                    downloadlist[0].State = "歌词下载错误";
+                                    UpdateDownloadPage();
+                                }
                             }
                         }
                         catch

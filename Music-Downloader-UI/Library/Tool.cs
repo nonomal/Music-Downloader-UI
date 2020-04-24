@@ -89,8 +89,8 @@ namespace MusicDownloader.Library
             protected override WebRequest GetWebRequest(Uri address)
             {
                 HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
-                request.Timeout = 1000 * 20;//单位为毫秒
-                request.ReadWriteTimeout = 1000 * 20;//
+                request.Timeout = 1000 * 5;//单位为毫秒
+                request.ReadWriteTimeout = 1000 * 5;//
                 return request;
             }
         }

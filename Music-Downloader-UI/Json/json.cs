@@ -279,7 +279,7 @@ namespace MusicDownloader.Json
 
         public class data
         {
-            public string lrc { get; set; }
+            public string lyric { get; set; }
         }
     }
 
