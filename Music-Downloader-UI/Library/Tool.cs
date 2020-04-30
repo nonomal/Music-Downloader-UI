@@ -5,6 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.Net;
+using System.Drawing;
+using System.Windows;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace MusicDownloader.Library
 {
@@ -94,5 +98,31 @@ namespace MusicDownloader.Library
                 return request;
             }
         }
+        static public void PngToJpg(string source)
+        {
+            Bitmap im = new Bitmap(source);
+            var eps = new EncoderParameters(1);
+            var ep = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 85L);
+            eps.Param[0] = ep;
+            var jpsEncodeer = GetEncoder(ImageFormat.Jpeg);
+            im.Save(source.Replace(Path.GetFileNameWithoutExtension(source), Path.GetFileNameWithoutExtension(source) + "-T"), jpsEncodeer, eps);
+            im.Dispose();
+            ep.Dispose();
+            eps.Dispose();
+            File.Delete(source);
+            File.Move(source.Replace(Path.GetFileNameWithoutExtension(source), Path.GetFileNameWithoutExtension(source) + "-T"), source);
+        }
+
+        public static ImageCodecInfo GetEncoder(ImageFormat format)
+        {
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+            foreach (ImageCodecInfo codec in codecs)
+            {
+                if (codec.FormatID == format.Guid)
+                    return codec;
+            }
+            return null;
+        }
+
     }
 }

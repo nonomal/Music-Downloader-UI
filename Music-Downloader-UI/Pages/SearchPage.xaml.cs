@@ -227,7 +227,7 @@ namespace MusicDownloader.Pages
             { GetNeteaseMusicList("2884035"); }
             if (apiComboBox.SelectedIndex == 1)
             {
-                MessageBoxX.Show("QQ音乐无原创榜", "提示", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Warning });
+                MessageBoxX.Show("该音源无原创榜", "提示", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Warning });
             }
         }
         #endregion

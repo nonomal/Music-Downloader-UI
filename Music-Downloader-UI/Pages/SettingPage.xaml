@@ -20,7 +20,7 @@
                 <TextBox InputMethod.IsInputMethodEnabled="False" Name="searchQuantityTextBox" Width="130" Height="25" PreviewKeyDown="searchQuantityTextBox_PreviewKeyDown"/>
             </WrapPanel>
             <WrapPanel Margin="0 3 0 0" HorizontalAlignment="Center">
-                <Label FontSize="10" VerticalAlignment="Center" Foreground="Gray" Content="不建议太高，容易导致程序崩溃，只对网易云音乐有效"/>
+                <Label FontSize="11" VerticalAlignment="Center" Foreground="Gray" Content="不建议太高，容易导致程序崩溃，只对 音源1 有效"/>
             </WrapPanel>
             <WrapPanel Margin="0 10 0 0" HorizontalAlignment="Center">
                 <Label Content="下载品质" HorizontalAlignment="Left" Height="25"  VerticalAlignment="Top"/>

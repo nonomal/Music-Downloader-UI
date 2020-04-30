@@ -285,6 +285,7 @@ namespace MusicDownloader.Json
 
     public class QQmusicdetails
     {
+        public int result { get; set; }
         public string data { get; set; }
     }
 
