@@ -30,7 +30,7 @@
         </DataGrid>
         <Label Content="打开音乐保存路径" Foreground="Blue" PreviewMouseDown="Label_PreviewMouseDown"  HorizontalAlignment="Left" Margin="10,359,0,0" VerticalAlignment="Top" Height="25"/>
         <Label Content="清除已下载项" Foreground="Blue" PreviewMouseDown="Label_PreviewMouseDown_1"  HorizontalAlignment="Left" Margin="496,359,0,0" VerticalAlignment="Top" Height="25"/>
-        <Label Content="音源1 歌词文件可能出现无法下载的情况" HorizontalAlignment="Center" Height="25" Margin="188,359,172,0" VerticalAlignment="Top" Width="227"/>
+        <Label Content="音源1 歌词可能出现无法下载的情况，过段时间再试" HorizontalAlignment="Center" Height="25" Margin="167,360,118,0" VerticalAlignment="Top" Width="302"/>
 
     </Grid>
 </Page>

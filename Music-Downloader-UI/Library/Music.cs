@@ -13,7 +13,7 @@ namespace MusicDownloader.Library
     {
         public List<int> version = new List<int> { 1, 0, 7 };
         const string NeteaseApiUrl = "";//自行搭建接口
-        const string QQApiUrl = "h";//自行搭建接口
+        const string QQApiUrl = "";//自行搭建接口
         public Setting setting;
         public List<DownloadList> downloadlist = new List<DownloadList>();
         string cookie = "";
