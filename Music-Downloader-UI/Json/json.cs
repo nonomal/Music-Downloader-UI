@@ -223,6 +223,7 @@ namespace MusicDownloader.Json
         public string State { get; set; }
         public int Api { get; set; }
         public string strMediaMid { get; set; }
+        public bool IsDownloading { get; set; }
     }
 
     public class NeteaseAlbum
