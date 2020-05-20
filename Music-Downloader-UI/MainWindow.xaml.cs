@@ -42,6 +42,9 @@ namespace MusicDownloader
                     case "赞助":
                         frame.Content = Donate;
                         break;
+                    case "反馈":
+                        Process.Start("https://docs.qq.com/form/edit/DT0RraHhRZXRmYlVY");
+                        break;
                 }
             }
         }

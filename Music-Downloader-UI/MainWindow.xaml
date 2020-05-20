@@ -27,7 +27,7 @@
                 Background="Transparent" 
                 Foreground="White"
                 FontFamily="Microsoft YaHei UI Light"
-                Margin="0,97,-0.333,76.667"
+                Margin="0,97,-0.333,18.667"
                 pu:TreeViewHelper.ItemHeight="40"
                 pu:TreeViewHelper.TreeViewStyle="Modern"
                 pu:TreeViewHelper.SelectedBackground="#22FFFFFF"
@@ -40,7 +40,9 @@
                 <TreeViewItem Header="设置"
                               pu:TreeViewHelper.ItemIcon="&#xf013;"/>
                 <TreeViewItem Header="赞助"
-                              pu:TreeViewHelper.ItemIcon="&#xf118;" Height="60"/>
+                              pu:TreeViewHelper.ItemIcon="&#xf118;"/>
+                <TreeViewItem Header="反馈"
+                    pu:TreeViewHelper.ItemIcon="&#xf188;"/>
             </TreeView>
             <TextBlock Name="VerTextblock" FontSize="14" FontFamily="Microsoft YaHei UI Light" Opacity="0.8" HorizontalAlignment="Center" Foreground="Gray" Block.TextAlignment="Center" Margin="34,71,32.667,333.667" TextWrapping="Wrap" Text="Version" Width="80"/>
         </Grid>

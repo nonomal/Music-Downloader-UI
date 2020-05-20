@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -13,7 +14,7 @@ namespace MusicDownloader.Library
 {
     public class Music
     {
-        public List<int> version = new List<int> { 1, 0, 8 };
+        public List<int> version = new List<int> { 1, 1, 1 };
         const string NeteaseApiUrl = "";//自行搭建接口
         const string QQApiUrl = "";//自行搭建接口
         public Setting setting;
@@ -47,18 +48,29 @@ namespace MusicDownloader.Library
             }
             Update update = JsonConvert.DeserializeObject<Update>(sr.ReadToEnd());
             cookie = update.Cookie;
-            bool needupdate = false;
-            if (update.Version[0] > version[0])
+            bool needupdate = true;
+
+            if (update.Version[0] < version[0])
             {
-                needupdate = true;
+                needupdate = false;
             }
-            else if (update.Version[1] > version[1])
+            else if (update.Version[0] == version[0])
             {
-                needupdate = true;
-            }
-            else if (update.Version[2] > version[2])
-            {
-                needupdate = true;
+                if (update.Version[1] < version[1])
+                {
+                    needupdate = false;
+                }
+                else if (update.Version[1] == version[1])
+                {
+                    if (update.Version[2] < version[2])
+                    {
+                        needupdate = false;
+                    }
+                    else if (update.Version[2] == version[2])
+                    { 
+                        needupdate = false; 
+                    }
+                }
             }
             if (needupdate)
             {
@@ -407,6 +419,7 @@ namespace MusicDownloader.Library
                     downloadlist[0].State = "无版权";
                     UpdateDownloadPage();
                     downloadlist.RemoveAt(0);
+                    wait = false;
                     continue;
                 }
                 UpdateDownloadPage();
@@ -448,6 +461,9 @@ namespace MusicDownloader.Library
                     {
                         downloadlist[0].State = "音乐已存在";
                         UpdateDownloadPage();
+                        downloadlist.RemoveAt(0);
+                        wait = false;
+                        continue;
                     }
                     else
                     {
@@ -465,137 +481,150 @@ namespace MusicDownloader.Library
                             {
                                 downloadlist[0].State = "音乐下载错误";
                                 downloadlist.RemoveAt(0);
+                                wait = false;
                                 UpdateDownloadPage();
                                 continue;
                             }
                         }
                     }
                 }
-                //if (downloadlist[0].IfDownloadLrc)
-                //{
-                //    downloadlist[0].State = "正在下载歌词";
-                //    UpdateDownloadPage();
-                //    using (WebClientPro wc = new WebClientPro())
-                //    {
-                //        try
-                //        {
-                //            if (downloadlist[0].Api == 1)
-                //            {
-                //                string savename = savepath + "\\" + filename.Replace(".flac", ".lrc").Replace(".mp3", ".lrc");
-                //                StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
-                //                string json = sr.ReadToEnd();
-                //                NeteaseLrc.Root lrc = JsonConvert.DeserializeObject<NeteaseLrc.Root>(json);
-                //                Lrc = lrc.lrc.lyric ?? "";
-                //                if (Lrc != "")
-                //                {
-                //                    StreamWriter sw = new StreamWriter(savename);
-                //                    sw.Write(Lrc);
-                //                    sw.Flush();
-                //                    sw.Close();
-                //                }
-                //                else
-                //                {
-                //                    downloadlist[0].State = "歌词下载错误";
-                //                    UpdateDownloadPage();
-                //                }
-                //            }
-                //            else if (downloadlist[0].Api == 2)
-                //            {
-                //                string savename = savepath + "\\" + filename.Replace(".flac", ".lrc").Replace(".mp3", ".lrc");
-                //                StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
-                //                string json = sr.ReadToEnd();
-                //                QQLrc.Root lrc = JsonConvert.DeserializeObject<QQLrc.Root>(json);
-                //                Lrc = lrc.data.lyric ?? "";
-                //                if (Lrc != "")
-                //                {
-                //                    StreamWriter sw = new StreamWriter(savename);
-                //                    sw.Write(Lrc);
-                //                    sw.Flush();
-                //                    sw.Close();
-                //                }
-                //                else
-                //                {
-                //                    downloadlist[0].State = "歌词下载错误";
-                //                    UpdateDownloadPage();
-                //                }
-                //            }
-                //        }
-                //        catch
-                //        {
-                //            downloadlist[0].State = "歌词下载错误";
-                //            UpdateDownloadPage();
-                //        }
-                //    }
-                //}
-                //if (downloadlist[0].IfDownloadPic)
-                //{
-                //    downloadlist[0].State = "正在下载图片";
-                //    UpdateDownloadPage();
-                //    using (WebClientPro wc = new WebClientPro())
-                //    {
-                //        try
-                //        {
-                //            wc.DownloadFile(downloadlist[0].PicUrl, savepath + "\\" + filename.Replace(".flac", ".jpg").Replace(".mp3", ".jpg"));
-                //        }
-                //        catch
-                //        {
-                //            downloadlist[0].State = "图片下载错误";
-                //            UpdateDownloadPage();
-                //        }
-                //    }
-                //}
-                //if (filename.IndexOf(".mp3") != -1)
-                //{
-                //    using (var tfile = TagLib.File.Create(savepath + "\\" + filename))
-                //    {
-                //        //tfile.Tag.Title = downloadlist[0].Title;
-                //        //tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
-                //        //tfile.Tag.Album = downloadlist[0].Album;
-                //        //if (downloadlist[0].IfDownloadLrc && Lrc != "" && Lrc != null)
-                //        //{
-                //        //    tfile.Tag.Lyrics = Lrc;
-                //        //}
-                //        if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
-                //        {
-                //            Tool.PngToJpg(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                //            TagLib.Picture pic = new TagLib.Picture();
-                //            pic.Type = TagLib.PictureType.FrontCover;
-                //            pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-                //            pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                //            tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
-                //        }
-                //        tfile.Save();
-                //    }
-                //}
-                //else
-                //{
-                //    using (var tfile = TagLib.Flac.File.Create(savepath + "\\" + filename))
-                //    {
-                //        tfile.Tag.Title = downloadlist[0].Title;
-                //        tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
-                //        tfile.Tag.Album = downloadlist[0].Album;
-                //        if (downloadlist[0].IfDownloadLrc && Lrc != "" && Lrc != null)
-                //        {
-                //            tfile.Tag.Lyrics = Lrc;
-                //        }
-                //        if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
-                //        {
-                //            Tool.PngToJpg(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                //            TagLib.Picture pic = new TagLib.Picture();
-                //            pic.Type = TagLib.PictureType.FrontCover;
-                //            pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-                //            pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                //            tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
-                //        }
-                //        tfile.Save();
-                //    }
-                //}
-                //downloadlist[0].State = "下载完成";
-                //UpdateDownloadPage();
-                //downloadlist.RemoveAt(0);
+                else
+                {
+                    string Lrc = "";
+                    if (downloadlist[0].IfDownloadLrc)
+                    {
+                        downloadlist[0].State = "正在下载歌词";
+                        UpdateDownloadPage();
+                        using (WebClientPro wc = new WebClientPro())
+                        {
+                            try
+                            {
+                                if (downloadlist[0].Api == 1)
+                                {
+                                    string savename = savepath + "\\" + filename.Replace(".flac", ".lrc").Replace(".mp3", ".lrc");
+                                    StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
+                                    string json = sr.ReadToEnd();
+                                    NeteaseLrc.Root lrc = JsonConvert.DeserializeObject<NeteaseLrc.Root>(json);
+                                    Lrc = lrc.lrc.lyric ?? "";
+                                    if (Lrc != "")
+                                    {
+                                        StreamWriter sw = new StreamWriter(savename);
+                                        sw.Write(Lrc);
+                                        sw.Flush();
+                                        sw.Close();
+                                    }
+                                    else
+                                    {
+                                        downloadlist[0].State = "歌词下载错误";
+                                        UpdateDownloadPage();
+                                    }
+                                }
+                                else if (downloadlist[0].Api == 2)
+                                {
+                                    string savename = savepath + "\\" + filename.Replace(".flac", ".lrc").Replace(".mp3", ".lrc");
+                                    StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
+                                    string json = sr.ReadToEnd();
+                                    QQLrc.Root lrc = JsonConvert.DeserializeObject<QQLrc.Root>(json);
+                                    Lrc = lrc.data.lyric ?? "";
+                                    if (Lrc != "")
+                                    {
+                                        StreamWriter sw = new StreamWriter(savename);
+                                        sw.Write(Lrc);
+                                        sw.Flush();
+                                        sw.Close();
+                                    }
+                                    else
+                                    {
+                                        downloadlist[0].State = "歌词下载错误";
+                                        UpdateDownloadPage();
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                downloadlist[0].State = "歌词下载错误";
+                                UpdateDownloadPage();
+                            }
+                        }
+                    }
+                    if (downloadlist[0].IfDownloadPic)
+                    {
+                        downloadlist[0].State = "正在下载图片";
+                        UpdateDownloadPage();
+                        using (WebClientPro wc = new WebClientPro())
+                        {
+                            try
+                            {
+                                wc.DownloadFile(downloadlist[0].PicUrl, savepath + "\\" + filename.Replace(".flac", ".jpg").Replace(".mp3", ".jpg"));
+                            }
+                            catch
+                            {
+                                downloadlist[0].State = "图片下载错误";
+                                UpdateDownloadPage();
+                            }
+                        }
+                    }
+                    if (File.Exists(savepath + "\\" + filename))
+                    {
+                        if (filename.IndexOf(".mp3") != -1)
+                        {
+                            using (var tfile = TagLib.File.Create(savepath + "\\" + filename))
+                            {
+                                //tfile.Tag.Title = downloadlist[0].Title;
+                                //tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
+                                //tfile.Tag.Album = downloadlist[0].Album;
+                                //if (downloadlist[0].IfDownloadLrc && Lrc != "" && Lrc != null)
+                                //{
+                                //    tfile.Tag.Lyrics = Lrc;
+                                //}
+                                if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
+                                {
+                                    Tool.PngToJpg(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                                    TagLib.Picture pic = new TagLib.Picture();
+                                    pic.Type = TagLib.PictureType.FrontCover;
+                                    pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
+                                    pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                                    tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
+                                }
+                                tfile.Save();
+                            }
+                        }
+                        else
+                        {
+                            using (var tfile = TagLib.Flac.File.Create(savepath + "\\" + filename))
+                            {
+                                tfile.Tag.Title = downloadlist[0].Title;
+                                tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
+                                tfile.Tag.Album = downloadlist[0].Album;
+                                if (downloadlist[0].IfDownloadLrc && Lrc != "" && Lrc != null)
+                                {
+                                    tfile.Tag.Lyrics = Lrc;
+                                }
+                                if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
+                                {
+                                    Tool.PngToJpg(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                                    TagLib.Picture pic = new TagLib.Picture();
+                                    pic.Type = TagLib.PictureType.FrontCover;
+                                    pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
+                                    pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                                    tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
+                                }
+                                tfile.Save();
+                            }
+                        }
+                    }
+                    downloadlist[0].State = "下载完成";
+                    UpdateDownloadPage();
+                    downloadlist.RemoveAt(0);
+                }
             }
         }
 
+        /// <summary>
+        /// 下载完成后
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Wc_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             string Lrc = "";

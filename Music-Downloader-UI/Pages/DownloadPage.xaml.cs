@@ -106,7 +106,7 @@ namespace MusicDownloader
             {
                 for (int i = 0; i < listitem.Count; i++)
                 {
-                    if (listitem[i].State == "下载完成" || listitem[i].State == "无版权" || listitem[i].State == "下载错误")
+                    if (listitem[i].State == "下载完成" || listitem[i].State == "无版权" || listitem[i].State == "下载错误" || listitem[i].State == "音乐已存在")
                     {
                         listitem.RemoveAt(i);
                     }
