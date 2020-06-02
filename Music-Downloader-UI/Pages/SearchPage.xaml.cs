@@ -4,6 +4,7 @@ using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +21,7 @@ namespace MusicDownloader.Pages
         public List<SearchListItemModel> SearchListItem = new List<SearchListItemModel>();
 
         #region 列表绑定模板
-        public class SearchListItemModel
+        public class SearchListItemModel : INotifyPropertyChanged
         {
             [DisplayName(" ")]
             public bool IsSelected { get; set; }
@@ -30,6 +31,14 @@ namespace MusicDownloader.Pages
             public string Singer { get; set; }
             [DisplayName("专辑")]
             public string Album { get; set; }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            public void OnPropertyChanged(string propertyName)
+            {
+                if (this.PropertyChanged != null)
+                    this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
         #endregion
 
@@ -55,8 +64,8 @@ namespace MusicDownloader.Pages
             foreach (SearchListItemModel m in SearchListItem)
             {
                 m.IsSelected = true;
+                m.OnPropertyChanged("IsSelected");
             }
-            List.Items.Refresh();
         }
 
         private void menu_FanSelect_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -64,8 +73,8 @@ namespace MusicDownloader.Pages
             foreach (SearchListItemModel m in SearchListItem)
             {
                 m.IsSelected = !m.IsSelected;
+                m.OnPropertyChanged("IsSelected");
             }
-            List.Items.Refresh();
         }
 
         private void menu_DownloadSelect_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -121,22 +130,22 @@ namespace MusicDownloader.Pages
 
         private void musiclistTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
-                musiclistButton_Click(this, new RoutedEventArgs());
-            if (!((74 <= (int)e.Key && (int)e.Key <= 83) || (34 <= (int)e.Key && (int)e.Key <= 43) || e.Key == Key.Back))
-            {
-                e.Handled = true;
-            }
+            //if (e.Key == Key.Enter)
+            //    musiclistButton_Click(this, new RoutedEventArgs());
+            //if (!((74 <= (int)e.Key && (int)e.Key <= 83) || (34 <= (int)e.Key && (int)e.Key <= 43) || e.Key == Key.Back))
+            //{
+            //    e.Handled = true;
+            //}
         }
 
         private void albumTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
-                albumButton_Click(this, new RoutedEventArgs());
-            if (!((74 <= (int)e.Key && (int)e.Key <= 83) || (34 <= (int)e.Key && (int)e.Key <= 43) || e.Key == Key.Back))
-            {
-                e.Handled = true;
-            }
+            //if (e.Key == Key.Enter)
+            //    albumButton_Click(this, new RoutedEventArgs());
+            //if (!((74 <= (int)e.Key && (int)e.Key <= 83) || (34 <= (int)e.Key && (int)e.Key <= 43) || e.Key == Key.Back))
+            //{
+            //    e.Handled = true;
+            //}
         }
 
         private void albumButton_Click(object sender, RoutedEventArgs e)
@@ -504,6 +513,35 @@ namespace MusicDownloader.Pages
             if (apiComboBox.SelectedIndex == 1)
             {
                 apiComboBox.Foreground = new SolidColorBrush(Colors.Green);
+            }
+        }
+
+        private void List_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key.ToString() == "Space")
+            {
+                SearchListItem[List.SelectedIndex].IsSelected = !SearchListItem[List.SelectedIndex].IsSelected;
+                SearchListItem[List.SelectedIndex].OnPropertyChanged("IsSelected");
+            }
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key.ToString() == "X")
+            {
+                Download();
+            }
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key.ToString() == "A")
+            {
+                foreach (SearchListItemModel m in SearchListItem)
+                {
+                    m.IsSelected = true;
+                    m.OnPropertyChanged("IsSelected");
+                }
+            }
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key.ToString() == "R")
+            {
+                foreach (SearchListItemModel m in SearchListItem)
+                {
+                    m.IsSelected = !m.IsSelected;
+                    m.OnPropertyChanged("IsSelected");
+                }
             }
         }
     }

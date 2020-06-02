@@ -115,5 +115,21 @@ namespace MusicDownloader
             List.ItemsSource = listitem;
             List.Items.Refresh();
         }
+
+        private void Label_PreviewMouseDown_2(object sender, MouseButtonEventArgs e)
+        {
+            for (int x = 0; x < 10; x++)
+            {
+                for (int i = 0; i < listitem.Count; i++)
+                {
+                    if (listitem[i].State == "下载完成")
+                    {
+                        listitem.RemoveAt(i);
+                    }
+                }
+            }
+            List.ItemsSource = listitem;
+            List.Items.Refresh();
+        }
     }
 }

@@ -29,8 +29,9 @@
             </DataGrid.Columns>
         </DataGrid>
         <Label Content="打开音乐保存路径" Foreground="Blue" PreviewMouseDown="Label_PreviewMouseDown"  HorizontalAlignment="Left" Margin="10,359,0,0" VerticalAlignment="Top" Height="25"/>
-        <Label Content="清除已下载项" Foreground="Blue" PreviewMouseDown="Label_PreviewMouseDown_1"  HorizontalAlignment="Left" Margin="496,359,0,0" VerticalAlignment="Top" Height="25"/>
-        <Label Content="音源1 歌词可能出现无法下载的情况，过段时间再试" HorizontalAlignment="Center" Height="25" Margin="167,360,118,0" VerticalAlignment="Top" Width="302"/>
+        <Label Content="清空列表" Foreground="Blue" PreviewMouseDown="Label_PreviewMouseDown_1"  HorizontalAlignment="Left" Margin="519,359,0,0" VerticalAlignment="Top" Height="25"/>
+        <Label Content="音源1 歌词可能出现无法下载的情况，过段时间再试" HorizontalAlignment="Center" Height="25" Margin="130,359,155,0" VerticalAlignment="Top" Width="302"/>
+        <Label Content="清除正常下载项" Foreground="Blue" PreviewMouseDown="Label_PreviewMouseDown_2"  HorizontalAlignment="Left" Margin="425,359,0,0" VerticalAlignment="Top" Height="25"/>
 
     </Grid>
 </Page>

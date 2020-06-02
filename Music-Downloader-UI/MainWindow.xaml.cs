@@ -106,6 +106,7 @@ namespace MusicDownloader
             {
                 StreamReader sr = new StreamReader("Error.log");
                 StreamWriter sw = new StreamWriter("Error.log");
+                //((Exception)e.ExceptionObject).
                 sw.WriteLine(sr.ReadToEnd() + "\r\n" + e.ExceptionObject.ToString());
                 sw.Flush();
                 sw.Close();
@@ -123,6 +124,11 @@ namespace MusicDownloader
         private void WindowX_ContentRendered(object sender, EventArgs e)
         {
             music.Update();
+        }
+
+        private void WindowX_Closed(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }
