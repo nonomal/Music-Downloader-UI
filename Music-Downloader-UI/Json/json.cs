@@ -21,6 +21,13 @@ namespace MusicDownloader.Json
         /// </summary>
         public int SavePathStyle { get; set; }
         public string SearchQuantity { get; set; }
+        /// <summary>
+        /// 0 外语; 1 翻译
+        /// </summary>
+        public int TranslateLrc { get; set; }
+        public string Api1 { get; set; }
+        public string Api2 { get; set; }
+        public string Cookie1 { get; set; }
     }
 
     public class Musiclist
@@ -263,9 +270,14 @@ namespace MusicDownloader.Json
         public class Root
         {
             public lrc lrc { get; set; }
+            public tlyric tlyric { get; set; }
         }
 
         public class lrc
+        {
+            public string lyric { get; set; }
+        }
+        public class tlyric
         {
             public string lyric { get; set; }
         }

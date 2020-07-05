@@ -1,5 +1,7 @@
 ﻿using MusicDownloader.Json;
 using MusicDownloader.Library;
+using Panuon.UI.Silver;
+using Panuon.UI.Silver.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -102,6 +104,15 @@ namespace MusicDownloader
 
         private void Label_PreviewMouseDown_1(object sender, MouseButtonEventArgs e)
         {
+            if (music.th_Download.ThreadState == System.Threading.ThreadState.Running)
+            {
+                MessageBoxX.Show("请等待下载完成后再试", "Error", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
+                {
+                    MessageBoxIcon = MessageBoxIcon.Error,
+                    MinWidth = 400,
+                    MinHeight = 160
+                });
+            }
             for (int x = 0; x < 10; x++)
             {
                 for (int i = 0; i < listitem.Count; i++)
@@ -118,6 +129,15 @@ namespace MusicDownloader
 
         private void Label_PreviewMouseDown_2(object sender, MouseButtonEventArgs e)
         {
+            if (music.th_Download.ThreadState == System.Threading.ThreadState.Running)
+            {
+                MessageBoxX.Show("请等待下载完成后再试", "Error", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
+                {
+                    MessageBoxIcon = MessageBoxIcon.Error,
+                    MinWidth = 400,
+                    MinHeight = 160
+                });
+            }
             for (int x = 0; x < 10; x++)
             {
                 for (int i = 0; i < listitem.Count; i++)

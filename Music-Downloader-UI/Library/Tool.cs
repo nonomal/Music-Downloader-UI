@@ -78,6 +78,7 @@ namespace MusicDownloader.Library
             {
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
                 req.Timeout = 20000;
+                req.AllowAutoRedirect = true;
                 string _url = req.GetResponse().ResponseUri.AbsoluteUri;
                 req.Abort();
                 return _url;

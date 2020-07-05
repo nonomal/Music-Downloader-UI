@@ -5,6 +5,7 @@ using Panuon.UI.Silver.Core;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -99,15 +100,8 @@ namespace MusicDownloader.Pages
                 {
                     if (musiclistTextBox.Text.IndexOf("http") != -1)
                     {
-                        string url = musiclistTextBox.Text;
-                        if (url.IndexOf("userid") != -1)
-                        {
-                            id = url.Substring(url.IndexOf("playlist?id=") + "playlist?id=".Length, url.IndexOf("&userid") - url.IndexOf("playlist?id=") - "playlist?id=".Length);
-                        }
-                        else
-                        {
-                            id = url.Substring(url.IndexOf("playlist?id=") + "playlist?id=".Length);
-                        }
+                        Match match = Regex.Match(id, @"(?<=playlist?id=)\d*");
+                        id = match.Value;
                     }
                 }
                 if (apiComboBox.SelectedIndex == 1)
@@ -115,13 +109,13 @@ namespace MusicDownloader.Pages
                     if (id.IndexOf("https://c.y.qq.com/") != -1)
                     {
                         string qqid = Tool.GetRealUrl(id);
-                        List<string> i = Tool.GetMidText(qqid, "id=", "&", false);
-                        id = i[0].ToString();
+                        Match match = Regex.Match(qqid, @"(?<=&id=)\d*");
+                        id = match.Value;
                     }
                     if (id.IndexOf("https://y.qq.com/") != -1)
                     {
-                        List<string> i = Tool.GetMidText(id, "playlist/", ".html", false);
-                        id = i[0].ToString();
+                        Match match = Regex.Match(id, @"(?<=playlist/)\d*");
+                        id = match.Value;
                     }
                 }
                 GetNeteaseMusicList(id);
@@ -155,18 +149,10 @@ namespace MusicDownloader.Pages
                 string id = albumTextBox.Text;
                 if (apiComboBox.SelectedIndex == 0)
                 {
-
                     if (albumTextBox.Text.IndexOf("http") != -1)
                     {
-                        string url = albumTextBox.Text;
-                        if (url.IndexOf("userid") != -1)
-                        {
-                            id = url.Substring(url.IndexOf("album?id=") + "album?id=".Length, url.IndexOf("&userid") - url.IndexOf("album?id=") - "album?id=".Length);
-                        }
-                        else
-                        {
-                            id = url.Substring(url.IndexOf("album?id=") + "album?id=".Length);
-                        }
+                        Match match = Regex.Match(id, @"(?<=album\?id=)\d*");
+                        id = match.Value;
                     }
                 }
                 if (apiComboBox.SelectedIndex == 1)
@@ -178,8 +164,8 @@ namespace MusicDownloader.Pages
                     }
                     if (id.IndexOf("https://y.qq.com/") != -1)
                     {
-                        List<string> i = Tool.GetMidText(id, "album/", ".html", false);
-                        id = i[0].ToString();
+                        Match match = Regex.Match(id, @"(?<=album/).*(?=\.)");
+                        id = match.Value;
                     }
                 }
                 GetAblum(id);
@@ -284,6 +270,7 @@ namespace MusicDownloader.Pages
                 }
                 List.ItemsSource = SearchListItem;
                 List.Items.Refresh();
+                List.ScrollIntoView(List?.Items[0]);
                 pb.Close();
             }
             catch
@@ -328,6 +315,7 @@ namespace MusicDownloader.Pages
                 }
                 List.ItemsSource = SearchListItem;
                 List.Items.Refresh();
+                List.ScrollIntoView(List?.Items[0]);
                 pb.Close();
             }
             catch
@@ -495,6 +483,7 @@ namespace MusicDownloader.Pages
                 }
                 List.ItemsSource = SearchListItem;
                 List.Items.Refresh();
+                List.ScrollIntoView(List?.Items[0]);
                 pb.Close();
             }
             catch

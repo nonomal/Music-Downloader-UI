@@ -28,16 +28,13 @@ namespace MusicDownloader.Pages
     public partial class SettingPage : Page
     {
         Setting setting;
+        Music music = null;
 
-        public SettingPage(Setting s)
+        public SettingPage(Setting s,Music m)
         {
             setting = s;
             InitializeComponent();
-        }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-
+            music = m;
         }
 
         private void browseButton_Click(object sender, RoutedEventArgs e)
@@ -69,6 +66,10 @@ namespace MusicDownloader.Pages
             pathStyleComboBox.SelectedIndex = setting.SavePathStyle;
             lrcCheckBox.IsChecked = setting.IfDownloadLrc;
             picCheckBox.IsChecked = setting.IfDownloadPic;
+            TranslateLrcComboBox.SelectedIndex = setting.TranslateLrc;
+            Source1textBox.Text = setting.Api1;
+            Source2textBox.Text = setting.Api2;
+            cookietextbox1.Text = setting.Cookie1;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -100,6 +101,37 @@ namespace MusicDownloader.Pages
             Tool.Config.Write("SaveNameStyle", nameStyleComboBox.SelectedIndex.ToString());
             Tool.Config.Write("SavePathStyle", pathStyleComboBox.SelectedIndex.ToString());
             Tool.Config.Write("SearchQuantity", searchQuantityTextBox.Text);
+            Tool.Config.Write("TranslateLrc", TranslateLrcComboBox.SelectedIndex.ToString());
+            if (Source1textBox.Text != "" && Source1textBox.Text != null)
+            {
+                Tool.Config.Write("Source1", Source1textBox.Text);
+                music.NeteaseApiUrl = Source1textBox.Text;
+            }
+            else
+            {
+                Tool.Config.Remove("Source1");
+                music.NeteaseApiUrl = music.api1;
+            }
+            if (Source2textBox.Text != "" && Source2textBox.Text != null)
+            {
+                Tool.Config.Write("Source2", Source2textBox.Text);
+                music.QQApiUrl = Source2textBox.Text;
+            }
+            else
+            {
+                Tool.Config.Remove("Source2");
+                music.QQApiUrl = music.api2;
+            }
+            if (cookietextbox1.Text != "" && cookietextbox1.Text != null)
+            {
+                Tool.Config.Write("Cookie1", cookietextbox1.Text);
+                music.cookie = cookietextbox1.Text;
+            }
+            else
+            {
+                Tool.Config.Remove("Cookie1");
+                music.cookie = music.ocookie;
+            }
             setting.SavePath = savePathTextBox.Text;
             setting.DownloadQuality = ((System.Windows.Controls.ContentControl)qualityComboBox.SelectedValue).Content.ToString().Substring(("无损(").Length, "999000".Length);
             setting.IfDownloadLrc = lrcCheckBox.IsChecked ?? false;
@@ -107,6 +139,7 @@ namespace MusicDownloader.Pages
             setting.SaveNameStyle = nameStyleComboBox.SelectedIndex;
             setting.SavePathStyle = pathStyleComboBox.SelectedIndex;
             setting.SearchQuantity = searchQuantityTextBox.Text;
+            setting.TranslateLrc = TranslateLrcComboBox.SelectedIndex;
             MessageBoxX.Show("设置保存成功", "Success", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
             {
                 MessageBoxIcon = MessageBoxIcon.Success,

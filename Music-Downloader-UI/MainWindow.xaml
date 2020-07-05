@@ -28,7 +28,7 @@
                 Background="Transparent" 
                 Foreground="White"
                 FontFamily="Microsoft YaHei UI Light"
-                Margin="0,97,-0.333,18.667"
+                Margin="0,97,-0.333,62.667"
                 pu:TreeViewHelper.ItemHeight="40"
                 pu:TreeViewHelper.TreeViewStyle="Modern"
                 pu:TreeViewHelper.SelectedBackground="#22FFFFFF"
@@ -43,8 +43,11 @@
                 <TreeViewItem Header="赞助"
                               pu:TreeViewHelper.ItemIcon="&#xf118;"/>
                 <TreeViewItem Header="反馈"
-                    pu:TreeViewHelper.ItemIcon="&#xf188;"/>
+                              pu:TreeViewHelper.ItemIcon="&#xf188;"/>
+                <TreeViewItem Header="开源"
+                              pu:TreeViewHelper.ItemIcon="&#xf121;"/>
             </TreeView>
+            <Label HorizontalContentAlignment="Center" FontSize="11" Foreground="LightGray" Content="开源应用，请勿倒卖" HorizontalAlignment="Left" Margin="0,394,-0.333,-0.333" Width="147"/>
             <TextBlock Name="VerTextblock" FontSize="14" FontFamily="Microsoft YaHei UI Light" Opacity="0.8" HorizontalAlignment="Center" Foreground="Gray" Block.TextAlignment="Center" Margin="34,71,32.667,333.667" TextWrapping="Wrap" Text="Version" Width="80"/>
         </Grid>
         <Grid Margin="146.667,0,0,0">

@@ -45,6 +45,9 @@ namespace MusicDownloader
                     case "反馈":
                         Process.Start("https://docs.qq.com/form/edit/DT0RraHhRZXRmYlVY");
                         break;
+                    case "开源":
+                        Process.Start("https://github.com/NiTian1207/Music-Downloader-UI");
+                        break;
                 }
             }
         }
@@ -61,15 +64,19 @@ namespace MusicDownloader
             {
                 Process.Start("https://www.nitian1207.cn/archives/496");
             }
+            else
+            {
+                Environment.Exit(0);
+            }
         }
 
         private void NotifyError()
         {
-            var result = MessageBoxX.Show("连接服务器错误", "提示:", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
+            var result = MessageBoxX.Show("连接更新服务器错误", "提示:", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
             {
                 MessageBoxIcon = MessageBoxIcon.Error
             });
-            Environment.Exit(0);
+            //Environment.Exit(0);
         }
         #endregion
 
@@ -84,12 +91,16 @@ namespace MusicDownloader
                 IfDownloadPic = Boolean.Parse(Tool.Config.Read("IfDownloadPic") ?? "true"),
                 SaveNameStyle = int.Parse(Tool.Config.Read("SaveNameStyle") ?? "0"),
                 SavePathStyle = int.Parse(Tool.Config.Read("SavePathStyle") ?? "0"),
-                SearchQuantity = Tool.Config.Read("SearchQuantity") ?? "100"
+                SearchQuantity = Tool.Config.Read("SearchQuantity") ?? "100",
+                TranslateLrc = int.Parse(Tool.Config.Read("TranslateLrc") ?? "0"),
+                Api1 = Tool.Config.Read("Source1") ?? "",
+                Api2 = Tool.Config.Read("Source2") ?? "",
+                Cookie1 = Tool.Config.Read("Cookie1") ?? ""
             };
             music = new Music(setting, NotifyError, NotifyUpdate);
             HomePage = new SearchPage(music, setting);
             DownloadPage = new DownloadPage(music);
-            SettingPage = new SettingPage(setting);
+            SettingPage = new SettingPage(setting, music);
             InitializeComponent();
             frame.Content = HomePage;
             string ver = "";

@@ -14,13 +14,31 @@ namespace MusicDownloader.Library
 {
     public class Music
     {
-        public List<int> version = new List<int> { 1, 1, 4 };
-        const string NeteaseApiUrl = "";//自行搭建接口
-        const string QQApiUrl = "";//自行搭建接口
+
+        /// <summary>
+        /// api1和NeteaseApiUrl相同,api2和QQApiUrl相同
+        /// </summary>
+        #region
+        public string api1 = ""; //自行搭建接口，以 / 结尾
+        public string api2 = ""; //自行搭建接口，以 / 结尾
+        public string NeteaseApiUrl = "";
+        public string QQApiUrl = "";
+        string UpdateJsonUrl = "";
+            /*
+            我的json格式,如果更改请重写下方Update()方法
+            {
+                "Version": [1,1,6],
+                "Cookie": "cookie"
+            }
+            */
+        #endregion
+
+        public List<int> version = new List<int> { 1, 1, 7 };
         public Setting setting;
         public List<DownloadList> downloadlist = new List<DownloadList>();
-        string cookie = "";
-        Thread th_Download;
+        public string ocookie = "";
+        public string cookie = "";
+        public Thread th_Download;
         public delegate void UpdateDownloadPageEventHandler();
         public delegate void NotifyUpdateEventHandler();
         public delegate void NotifyConnectErrorEventHandler();
@@ -39,14 +57,16 @@ namespace MusicDownloader.Library
             StreamReader sr = null;
             try
             {
-                sr = new StreamReader(wc.OpenRead(""));
+                sr = new StreamReader(wc.OpenRead(UpdateJsonUrl));
                 // 读取一个在线文件判断接口状态获取网易云音乐Cookie,可以写死
             }
             catch
             {
                 NotifyConnectError();
+                return;
             }
             Update update = JsonConvert.DeserializeObject<Update>(sr.ReadToEnd());
+            ocookie = update.Cookie;
             cookie = update.Cookie;
             bool needupdate = true;
 
@@ -283,24 +303,25 @@ namespace MusicDownloader.Library
 
             if (api == 1)
             {
-                int times = dl.Count / 500;
-                int remainder = dl.Count % 500;
+                int times = dl.Count / 150;
+                int remainder = dl.Count % 150;
                 if (remainder == 0)
                 {
-                    remainder = 500;
+                    remainder = 150;
+                    times++;
                 }
-                if (times == 0)
+                else
                 {
-                    times = 1;
+                    times++;
                 }
                 for (int i = 0; i < times; i++)
                 {
-                    if (i == times - 1 && times >= 1)
+                    if (i == times - 1)
                     {
                         ids = "";
                         for (int x = 0; x < remainder; x++)
                         {
-                            ids += dl[i * 500 + x].Id + ",";
+                            ids += dl[i * 150 + x].Id + ",";
                         }
                         ids = ids.Substring(0, ids.Length - 1);
                         string u = NeteaseApiUrl + "song/url?id=" + ids + "&br=" + dl[0].Quality;
@@ -320,14 +341,14 @@ namespace MusicDownloader.Library
                     else
                     {
                         ids = "";
-                        for (int x = 0; x < 500; x++)
+                        for (int x = 0; x < 150; x++)
                         {
-                            ids += dl[i * 500 + x].Id + ",";
+                            ids += dl[i * 150 + x].Id + ",";
                         }
                         ids = ids.Substring(0, ids.Length - 1);
                         string u = NeteaseApiUrl + "song/url?id=" + ids + "&br=" + dl[0].Quality;
                         Json.GetUrl.Root urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
-                        for (int x = 0; x < 100; x++)
+                        for (int x = 0; x < 150; x++)
                         {
                             for (int y = 0; y < dl.Count; y++)
                             {
@@ -509,7 +530,20 @@ namespace MusicDownloader.Library
                                     StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
                                     string json = sr.ReadToEnd();
                                     NeteaseLrc.Root lrc = JsonConvert.DeserializeObject<NeteaseLrc.Root>(json);
-                                    Lrc = lrc.lrc.lyric ?? "";
+                                    if (setting.TranslateLrc == 0)
+                                    {
+                                        Lrc = lrc.lrc.lyric ?? "";
+                                    }
+                                    if (setting.TranslateLrc == 1)
+                                    {
+                                        Lrc = lrc.tlyric.lyric ?? lrc.lrc.lyric;
+                                    }
+                                    if (setting.TranslateLrc == 2)
+                                    {
+                                        Lrc = lrc.lrc.lyric ?? "";
+                                        Lrc += lrc.tlyric.lyric ?? lrc.lrc.lyric;
+                                    }
+
                                     if (Lrc != "")
                                     {
                                         StreamWriter sw = new StreamWriter(savename);
@@ -677,7 +711,20 @@ namespace MusicDownloader.Library
                             StreamReader sr = new StreamReader(wc.OpenRead(downloadlist[0].LrcUrl));
                             string json = sr.ReadToEnd();
                             NeteaseLrc.Root lrc = JsonConvert.DeserializeObject<NeteaseLrc.Root>(json);
-                            Lrc = lrc.lrc.lyric ?? "";
+                            if (setting.TranslateLrc == 0)
+                            {
+                                Lrc = lrc.lrc.lyric ?? "";
+                            }
+                            if (setting.TranslateLrc == 1)
+                            {
+                                Lrc = lrc.tlyric.lyric ?? lrc.lrc.lyric;
+                            }
+                            if (setting.TranslateLrc == 2)
+                            {
+                                Lrc = lrc.lrc.lyric ?? "";
+                                Lrc += lrc.tlyric.lyric ?? lrc.lrc.lyric;
+                            }
+
                             if (Lrc != "")
                             {
                                 StreamWriter sw = new StreamWriter(savename);
@@ -742,13 +789,13 @@ namespace MusicDownloader.Library
                 {
                     using (var tfile = TagLib.File.Create(savepath + "\\" + filename))
                     {
-                        //tfile.Tag.Title = downloadlist[0].Title;
-                        //tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
-                        //tfile.Tag.Album = downloadlist[0].Album;
-                        //if (downloadlist[0].IfDownloadLrc && Lrc != "" && Lrc != null)
-                        //{
-                        //    tfile.Tag.Lyrics = Lrc;
-                        //}
+                        tfile.Tag.Title = downloadlist[0].Title;
+                        tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
+                        tfile.Tag.Album = downloadlist[0].Album;
+                        if (downloadlist[0].IfDownloadLrc && Lrc != "" && Lrc != null)
+                        {
+                            tfile.Tag.Lyrics = Lrc;
+                        }
                         if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
                         {
                             Tool.PngToJpg(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
