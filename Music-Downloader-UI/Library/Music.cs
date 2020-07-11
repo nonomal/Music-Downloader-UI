@@ -24,13 +24,13 @@ namespace MusicDownloader.Library
         public string NeteaseApiUrl = "";
         public string QQApiUrl = "";
         string UpdateJsonUrl = "";
-            /*
-            我的json格式,如果更改请重写下方Update()方法
-            {
-                "Version": [1,1,6],
-                "Cookie": "cookie"
-            }
-            */
+        /*
+        我的json格式,如果更改请重写下方Update()方法
+        {
+            "Version": [1,1,6],
+            "Cookie": "cookie"
+        }
+        */
         #endregion
 
         public List<int> version = new List<int> { 1, 1, 7 };
@@ -395,6 +395,40 @@ namespace MusicDownloader.Library
                 th_Download = new Thread(_Download);
                 th_Download.Start();
             }
+        }
+
+        /// <summary>
+        /// 获取单个音乐的播放链接
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="id"></param>
+        /// <param name="strMediaMid"></param>
+        /// <returns></returns>
+        public string GetMusicUrl(int api, string id, string strMediaMid = "")
+        {
+            if (api == 1)
+            {
+                string u = NeteaseApiUrl + "song/url?id=" + id + "&br=320000";
+                Json.GetUrl.Root urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
+                if (urls.data[0].url == null)
+                {
+                    u = NeteaseApiUrl + "song/url?id=" + id + "&br=128000";
+                    urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
+                }
+                return urls.data[0].url;
+            }
+            if (api == 2)
+            {
+                string url = QQApiUrl + "song/url?id=" + id + "&type=320&mediaId=" + strMediaMid;
+                QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(GetHTML(url));
+                if (json.data == null)
+                {
+                    url = QQApiUrl + "song/url?id=" + id + "&type=128&mediaId=" + strMediaMid;
+                    json = JsonConvert.DeserializeObject<QQmusicdetails>(GetHTML(url));
+                }
+                return json.data;
+            }
+            return "";
         }
 
         /// <summary>
@@ -859,6 +893,10 @@ namespace MusicDownloader.Library
                 for (int i = 0; i < musiclistjson.playlist.trackIds.Count; i++)
                 {
                     ids += musiclistjson.playlist.trackIds[i].id.ToString() + ",";
+                }
+                if (ids == "")
+                {
+                    return null;
                 }
                 ids = ids.Substring(0, ids.Length - 1);
 

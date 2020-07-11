@@ -2,11 +2,14 @@
 using MusicDownloader.Library;
 using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,8 +20,11 @@ namespace MusicDownloader.Pages
     public partial class SearchPage : Page
     {
         List<MusicInfo> musicinfo = null;
+        MediaPlayer player = new MediaPlayer();
         Music music;
         Setting setting;
+        bool isPlaying = false;
+        System.Timers.Timer timer = new System.Timers.Timer(1000);
         public List<SearchListItemModel> SearchListItem = new List<SearchListItemModel>();
 
         #region 列表绑定模板
@@ -43,7 +49,51 @@ namespace MusicDownloader.Pages
         }
         #endregion
 
-        #region 事件
+        private void menu_Pause_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (isPlaying)
+            {
+                player.Pause();
+                isPlaying = false;
+            }
+            else
+            {
+                try
+                {
+                    player.Play();
+                    isPlaying = true;
+                }
+                catch
+                { }
+            }
+        }
+
+        private void menu_Play_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            string url = music.GetMusicUrl(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].Id);
+            if (url == null)
+            {
+                MessageBoxX.Show("播放失败", "警告", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                return;
+            }
+            player.Open(new Uri(url));
+            player.Play();
+            timer.Elapsed += Timer_Elapsed;
+            timer.Enabled = true;
+            timer.AutoReset = true;
+            isPlaying = true;
+        }
+
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Slider.Dispatcher.Invoke(new Action(() =>
+            {
+                Slider.Maximum = (int)player.NaturalDuration.TimeSpan.TotalSeconds;
+                Slider.Value = (int)player.Position.TotalSeconds;
+            }));
+
+        }
+
         private void menu_DownloadSelectLrc_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             Download(true);
@@ -100,7 +150,7 @@ namespace MusicDownloader.Pages
                 {
                     if (musiclistTextBox.Text.IndexOf("http") != -1)
                     {
-                        Match match = Regex.Match(id, @"(?<=playlist?id=)\d*");
+                        Match match = Regex.Match(id, @"(?<=playlist\?id=)\d*");
                         id = match.Value;
                     }
                 }
@@ -157,6 +207,7 @@ namespace MusicDownloader.Pages
                 }
                 if (apiComboBox.SelectedIndex == 1)
                 {
+                    Tool.GetRealUrl(id);
                     if (id.IndexOf("https://c.y.qq.com/") != -1)
                     {
                         MessageBoxX.Show("请将链接复制到浏览器打开后再复制回程序", "提示", configurations: new MessageBoxXConfigurations { MessageBoxIcon = MessageBoxIcon.Warning });
@@ -225,7 +276,6 @@ namespace MusicDownloader.Pages
                 MessageBoxX.Show("该音源无原创榜", "提示", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Warning });
             }
         }
-        #endregion
 
         public SearchPage(Music m, Setting s)
         {
@@ -532,6 +582,17 @@ namespace MusicDownloader.Pages
                     m.OnPropertyChanged("IsSelected");
                 }
             }
+        }
+
+        private void Slider_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            timer.Stop();
+        }
+
+        private void Slider_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            player.Position = TimeSpan.FromSeconds(Slider.Value);
+            timer.Start();
         }
     }
 }

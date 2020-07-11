@@ -8,7 +8,8 @@
             mc:Ignorable="d"
             pu:WindowXCaption.Background="White"
             pu:WindowXCaption.Header=" "
-            BorderThickness="0"
+            BorderThickness="1"
+            BorderBrush="#3E3E3E"
             ContentRendered="WindowX_ContentRendered"
             Closed="WindowX_Closed"
             Title="Music Downloader" Height="421" Width="738" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Icon="Icon.ico">
@@ -16,7 +17,7 @@
         <Button Click="BlogButton_Click" pu:ButtonHelper.ButtonStyle="Link" Content="NiTian1207" FontSize="11" Margin="0 0 10 0" VerticalAlignment="Center"/>
     </pu:WindowXCaption.ExtendControl>
     <Grid>
-        <Grid Background="#3E3E3E" HorizontalAlignment="Left" Margin="0,-36.667,0,0" Width="146.667">
+        <Grid Background="#3E3E3E" HorizontalAlignment="Left" Margin="0,-38,0,0" Width="147">
             <TextBlock Block.TextAlignment="Center" FontSize="20" Height="62" Margin="10,7,9.667,0" TextWrapping="Wrap" VerticalAlignment="Top">
                 <Run FontSize="28" FontFamily="Microsoft YaHei UI Light" Foreground="White">Music</Run>
                 <Run FontSize="18" FontFamily="Microsoft YaHei UI Light" Foreground="LightBlue">Downloader</Run>
@@ -47,7 +48,6 @@
                 <TreeViewItem Header="开源"
                               pu:TreeViewHelper.ItemIcon="&#xf121;"/>
             </TreeView>
-            <Label HorizontalContentAlignment="Center" FontSize="11" Foreground="LightGray" Content="开源应用，请勿倒卖" HorizontalAlignment="Left" Margin="0,394,-0.333,-0.333" Width="147"/>
             <TextBlock Name="VerTextblock" FontSize="14" FontFamily="Microsoft YaHei UI Light" Opacity="0.8" HorizontalAlignment="Center" Foreground="Gray" Block.TextAlignment="Center" Margin="34,71,32.667,333.667" TextWrapping="Wrap" Text="Version" Width="80"/>
         </Grid>
         <Grid Margin="146.667,0,0,0">
