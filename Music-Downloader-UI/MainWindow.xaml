@@ -12,7 +12,7 @@
             BorderBrush="#3E3E3E"
             ContentRendered="WindowX_ContentRendered"
             Closed="WindowX_Closed"
-            Title="Music Downloader" Height="421" Width="738" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Icon="Icon.ico">
+            Title="Music Downloader" Height="421" Width="738" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Icon="Icon.ico" Closing="WindowX_Closing">
     <pu:WindowXCaption.ExtendControl>
         <Button Click="BlogButton_Click" pu:ButtonHelper.ButtonStyle="Link" Content="NiTian1207" FontSize="11" Margin="0 0 10 0" VerticalAlignment="Center"/>
     </pu:WindowXCaption.ExtendControl>
@@ -49,6 +49,7 @@
                               pu:TreeViewHelper.ItemIcon="&#xf121;"/>
             </TreeView>
             <TextBlock Name="VerTextblock" FontSize="14" FontFamily="Microsoft YaHei UI Light" Opacity="0.8" HorizontalAlignment="Center" Foreground="Gray" Block.TextAlignment="Center" Margin="34,71,32.667,333.667" TextWrapping="Wrap" Text="Version" Width="80"/>
+            <Label Content="免费程序 请勿倒卖" FontSize="12" HorizontalContentAlignment="Center" Foreground="White" HorizontalAlignment="Left" Height="30" Margin="0,394,0,0" VerticalAlignment="Top" Width="147"/>
         </Grid>
         <Grid Margin="146.667,0,0,0">
             <Frame Name="frame" NavigationUIVisibility="Hidden"/>

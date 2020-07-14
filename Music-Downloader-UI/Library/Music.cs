@@ -33,10 +33,10 @@ namespace MusicDownloader.Library
         */
         #endregion
 
-        public List<int> version = new List<int> { 1, 1, 7 };
+        public List<int> version = new List<int> { 1, 1, 8 };
         public Setting setting;
         public List<DownloadList> downloadlist = new List<DownloadList>();
-        public string ocookie = "";
+        public string _cookie = "";
         public string cookie = "";
         public Thread th_Download;
         public delegate void UpdateDownloadPageEventHandler();
@@ -66,7 +66,7 @@ namespace MusicDownloader.Library
                 return;
             }
             Update update = JsonConvert.DeserializeObject<Update>(sr.ReadToEnd());
-            ocookie = update.Cookie;
+            _cookie = update.Cookie;
             cookie = update.Cookie;
             bool needupdate = true;
 

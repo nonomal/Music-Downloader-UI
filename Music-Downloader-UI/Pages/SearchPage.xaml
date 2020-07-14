@@ -23,7 +23,7 @@
                  HorizontalAlignment="Left" 
                  Width="145"
                  pu:TextBoxHelper.CornerRadius="10"
-                 pu:TextBoxHelper.Watermark="搜索(歌名或歌手)" PreviewKeyDown="searchTextBox_PreviewKeyDown"/>
+                 pu:TextBoxHelper.Watermark="搜索(歌名/歌手/ID)" PreviewKeyDown="searchTextBox_PreviewKeyDown"/>
         <Button x:Name="searchButton" Click="searchButton_Click" HorizontalAlignment="Left" Height="35" Margin="234,0,0,0" VerticalAlignment="Top" Width="20"
                 pu:ButtonHelper.ButtonStyle="Link"
                 Content="&#xF002;"

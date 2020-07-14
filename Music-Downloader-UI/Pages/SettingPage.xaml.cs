@@ -130,7 +130,7 @@ namespace MusicDownloader.Pages
             else
             {
                 Tool.Config.Remove("Cookie1");
-                music.cookie = music.ocookie;
+                music.cookie = music._cookie;
             }
             setting.SavePath = savePathTextBox.Text;
             setting.DownloadQuality = ((System.Windows.Controls.ContentControl)qualityComboBox.SelectedValue).Content.ToString().Substring(("无损(").Length, "999000".Length);

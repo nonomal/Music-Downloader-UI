@@ -21,6 +21,7 @@ namespace MusicDownloader
         Page DownloadPage;
         Page SettingPage;
         Page Donate = new Donate();
+        System.Windows.Forms.NotifyIcon notifyicon = new System.Windows.Forms.NotifyIcon();
 
         #region 界面
         private void BlogButton_Click(object sender, RoutedEventArgs e) => Process.Start("https://www.nitian1207.cn/");
@@ -134,12 +135,53 @@ namespace MusicDownloader
 
         private void WindowX_ContentRendered(object sender, EventArgs e)
         {
+            notifyicon.Visible = true;
+            notifyicon.BalloonTipText = "Music Downloader UI";
+            notifyicon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
+            notifyicon.MouseClick += Notifyicon_MouseClick;
+            System.Windows.Forms.MenuItem menu1 = new System.Windows.Forms.MenuItem("关闭");
+            menu1.Click += Menu1_Click;
+            notifyicon.ContextMenu = new System.Windows.Forms.ContextMenu(new System.Windows.Forms.MenuItem[] { menu1 });
             music.Update();
+        }
+
+        private void Notifyicon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                if (this.Visibility == Visibility.Hidden)
+                {
+                    this.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    this.Visibility = Visibility.Hidden;
+                }
+            }
+        }
+
+        private void Menu1_Click(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
 
         private void WindowX_Closed(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            Application.Current.Shutdown();
+        }
+
+        private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MessageBoxResult result = MessageBoxX.Show("是否关闭程序\r\n是的,关闭\t不,最小化到托盘", "提示", this, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
+            {
+                MessageBoxIcon = MessageBoxIcon.Info
+            });
+            if (result == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+                this.Visibility = Visibility.Hidden;
+            }
+
         }
     }
 }

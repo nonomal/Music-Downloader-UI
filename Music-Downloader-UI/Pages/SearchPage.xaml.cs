@@ -49,6 +49,18 @@ namespace MusicDownloader.Pages
         }
         #endregion
 
+        public SearchPage(Music m, Setting s)
+        {
+            music = m;
+            setting = s;
+            InitializeComponent();
+        }
+
+        /// <summary>
+        /// 暂停播放
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menu_Pause_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (isPlaying)
@@ -68,6 +80,11 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 开始播放
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menu_Play_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             string url = music.GetMusicUrl(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].Id);
@@ -84,6 +101,11 @@ namespace MusicDownloader.Pages
             isPlaying = true;
         }
 
+        /// <summary>
+        /// 控制进度条
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Slider.Dispatcher.Invoke(new Action(() =>
@@ -94,22 +116,42 @@ namespace MusicDownloader.Pages
 
         }
 
+        /// <summary>
+        /// 下载歌词
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menu_DownloadSelectLrc_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             Download(true);
         }
 
+        /// <summary>
+        /// 下载图片
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menu_DownloadSelectPic_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             Download(false, true);
         }
 
+        /// <summary>
+        /// 搜索按钮回车
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void searchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
                 searchButton_Click(this, new RoutedEventArgs());
         }
 
+        /// <summary>
+        /// 全选
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menu_SelectAll_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             foreach (SearchListItemModel m in SearchListItem)
@@ -119,6 +161,11 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 反选
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menu_FanSelect_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             foreach (SearchListItemModel m in SearchListItem)
@@ -128,11 +175,21 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 下载选中音乐按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menu_DownloadSelect_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             Download();
         }
 
+        /// <summary>
+        /// 搜索按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void searchButton_Click(object sender, RoutedEventArgs e)
         {
             if (searchTextBox.Text?.Replace(" ", "") != "")
@@ -141,6 +198,11 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 歌单按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void musiclistButton_Click(object sender, RoutedEventArgs e)
         {
             if (musiclistTextBox.Text?.Replace(" ", "") != "")
@@ -172,6 +234,11 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 歌单按钮回车
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void musiclistTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             //if (e.Key == Key.Enter)
@@ -182,6 +249,11 @@ namespace MusicDownloader.Pages
             //}
         }
 
+        /// <summary>
+        /// 专辑按钮回车
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void albumTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             //if (e.Key == Key.Enter)
@@ -192,6 +264,11 @@ namespace MusicDownloader.Pages
             //}
         }
 
+        /// <summary>
+        /// 专辑按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void albumButton_Click(object sender, RoutedEventArgs e)
         {
             if (albumTextBox.Text?.Replace(" ", "") != "")
@@ -277,13 +354,10 @@ namespace MusicDownloader.Pages
             }
         }
 
-        public SearchPage(Music m, Setting s)
-        {
-            music = m;
-            setting = s;
-            InitializeComponent();
-        }
-
+        /// <summary>
+        /// 搜索
+        /// </summary>
+        /// <param name="key"></param>
         private async void Search(string key)
         {
             var pb = PendingBox.Show("搜索中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
@@ -330,6 +404,10 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 解析网易云歌单
+        /// </summary>
+        /// <param name="id"></param>
         private async void GetNeteaseMusicList(string id)
         {
             var pb = PendingBox.Show("解析中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
@@ -375,6 +453,10 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 获取QQ音乐榜单
+        /// </summary>
+        /// <param name="id"></param>
         private async void GetQQTopList(string id)
         {
             var pb = PendingBox.Show("解析中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
@@ -419,6 +501,11 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 下载
+        /// </summary>
+        /// <param name="ifonlydownloadlrc"></param>
+        /// <param name="ifonlydownloadpic"></param>
         private async void Download(bool ifonlydownloadlrc = false, bool ifonlydownloadpic = false)
         {
             List<DownloadList> dl = new List<DownloadList>();
@@ -498,6 +585,10 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 解析专辑
+        /// </summary>
+        /// <param name="id"></param>
         private async void GetAblum(string id)
         {
             var pb = PendingBox.Show("解析中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
@@ -543,6 +634,11 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 切换音源
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void apiComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (apiComboBox.SelectedIndex == 0)
@@ -555,6 +651,11 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 列表快捷键
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void List_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key.ToString() == "Space")
@@ -584,11 +685,21 @@ namespace MusicDownloader.Pages
             }
         }
 
+        /// <summary>
+        /// 进度条控制
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Slider_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             timer.Stop();
         }
 
+        /// <summary>
+        /// 进度条控制
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Slider_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             player.Position = TimeSpan.FromSeconds(Slider.Value);
