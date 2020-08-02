@@ -1,5 +1,7 @@
 ﻿using MusicDownloader.Json;
 using Newtonsoft.Json;
+using Panuon.UI.Silver;
+using Panuon.UI.Silver.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,6 +26,8 @@ namespace MusicDownloader.Library
         public string NeteaseApiUrl = "";
         public string QQApiUrl = "";
         string UpdateJsonUrl = "";
+        public string _cookie = "";
+        public string cookie = "";
         /*
         我的json格式,如果更改请重写下方Update()方法
         {
@@ -33,11 +37,9 @@ namespace MusicDownloader.Library
         */
         #endregion
 
-        public List<int> version = new List<int> { 1, 1, 8 };
+        public List<int> version = new List<int> { 1, 2, 0 };
         public Setting setting;
         public List<DownloadList> downloadlist = new List<DownloadList>();
-        public string _cookie = "";
-        public string cookie = "";
         public Thread th_Download;
         public delegate void UpdateDownloadPageEventHandler();
         public delegate void NotifyUpdateEventHandler();
@@ -51,7 +53,7 @@ namespace MusicDownloader.Library
         /// 获取更新数据 这个方法是获取程序更新信息 二次开发请修改
         /// </summary>
         /// <returns></returns>
-        public void Update()
+        public string Update()
         {
             WebClientPro wc = new WebClientPro();
             StreamReader sr = null;
@@ -62,12 +64,14 @@ namespace MusicDownloader.Library
             }
             catch
             {
-                NotifyConnectError();
-                return;
+                return "Error";
             }
             Update update = JsonConvert.DeserializeObject<Update>(sr.ReadToEnd());
-            _cookie = update.Cookie;
-            cookie = update.Cookie;
+            if (update.Cookie != null)
+            {
+                _cookie = update.Cookie;
+                cookie = update.Cookie;
+            }
             bool needupdate = true;
 
             if (update.Version[0] < version[0])
@@ -94,7 +98,11 @@ namespace MusicDownloader.Library
             }
             if (needupdate)
             {
-                NotifyUpdate();
+                return "Needupdate";
+            }
+            else
+            {
+                return "";
             }
         }
 
@@ -208,7 +216,6 @@ namespace MusicDownloader.Library
             {
                 return null;
             }
-            WebClientPro wc = new WebClientPro();
             string offset = ((Page - 1) * 100).ToString();
             string url = NeteaseApiUrl + "search?keywords=" + Key + "&limit=" + limit.ToString() + "&offset=" + offset;
             string json = GetHTML(url);
@@ -297,7 +304,7 @@ namespace MusicDownloader.Library
         /// 下载方法
         /// </summary>
         /// <param name="dl"></param>
-        public void Download(List<DownloadList> dl, int api)
+        public string Download(List<DownloadList> dl, int api)
         {
             string ids = "";
 
@@ -361,6 +368,7 @@ namespace MusicDownloader.Library
                         }
                     }
                 }
+                return "";
             }
             else if (api == 2)
             {
@@ -369,7 +377,13 @@ namespace MusicDownloader.Library
                     string url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + dl[i].strMediaMid;
                     using (WebClientPro wc = new WebClientPro())
                     {
-                        StreamReader sr = new StreamReader(wc.OpenRead(url));
+                        StreamReader sr = null; ;
+                        try { sr = new StreamReader(wc.OpenRead(url)); }
+                        catch (Exception e)
+                        {
+                            return e.Message;
+                        }
+
                         string httpjson = sr.ReadToEnd();
                         QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
                         if (json.result != 100)
@@ -387,6 +401,7 @@ namespace MusicDownloader.Library
                         dl[i].State = "准备下载";
                     }
                 }
+                return "";
             }
             downloadlist.AddRange(dl);
             UpdateDownloadPage();
@@ -395,6 +410,7 @@ namespace MusicDownloader.Library
                 th_Download = new Thread(_Download);
                 th_Download.Start();
             }
+            return "";
         }
 
         /// <summary>

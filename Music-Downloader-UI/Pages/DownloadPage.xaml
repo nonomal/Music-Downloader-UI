@@ -20,7 +20,7 @@
                   CanUserAddRows="False"
                   AutoGenerateColumns="False"
                   BorderThickness="1" Margin="11,0,0,0"
-                  ItemsSource="{Binding listitem}">
+                  ItemsSource="{Binding listitem}" CanUserSortColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="标题" Width="*" Binding="{Binding Title}"/>
                 <DataGridTextColumn Header="歌手" Width="*" Binding="{Binding Singer}"/>

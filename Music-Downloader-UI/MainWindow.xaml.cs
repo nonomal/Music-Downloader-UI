@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -49,6 +50,9 @@ namespace MusicDownloader
                     case "开源":
                         Process.Start("https://github.com/NiTian1207/Music-Downloader-UI");
                         break;
+                    case "帮助":
+                        Process.Start("https://www.nitian1207.cn/archives/663");
+                        break;
                 }
             }
         }
@@ -73,10 +77,11 @@ namespace MusicDownloader
 
         private void NotifyError()
         {
-            var result = MessageBoxX.Show("连接更新服务器错误", "提示:", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
-            {
-                MessageBoxIcon = MessageBoxIcon.Error
-            });
+            VerTextblock.Text += "(Error)";
+            //var result = MessageBoxX.Show("连接更新服务器错误", "提示:", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
+            //{
+            //    MessageBoxIcon = MessageBoxIcon.Error
+            //});
             //Environment.Exit(0);
         }
         #endregion
@@ -133,7 +138,7 @@ namespace MusicDownloader
             MessageBox.Show("遇到未知错误，具体信息查看 " + Environment.CurrentDirectory + "\\Error.log");
         }
 
-        private void WindowX_ContentRendered(object sender, EventArgs e)
+        async private void WindowX_ContentRendered(object sender, EventArgs e)
         {
             notifyicon.Visible = true;
             notifyicon.BalloonTipText = "Music Downloader UI";
@@ -142,7 +147,18 @@ namespace MusicDownloader
             System.Windows.Forms.MenuItem menu1 = new System.Windows.Forms.MenuItem("关闭");
             menu1.Click += Menu1_Click;
             notifyicon.ContextMenu = new System.Windows.Forms.ContextMenu(new System.Windows.Forms.MenuItem[] { menu1 });
-            music.Update();
+            string result = "";
+            await Task.Run(()=> {
+                result = music.Update();
+            });
+            if (result == "Error")
+            {
+                NotifyError();
+            }
+            if (result == "Needupdate")
+            {
+                NotifyUpdate();
+            }
         }
 
         private void Notifyicon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -167,12 +183,13 @@ namespace MusicDownloader
 
         private void WindowX_Closed(object sender, EventArgs e)
         {
+            notifyicon.Dispose();
             Application.Current.Shutdown();
         }
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MessageBoxResult result = MessageBoxX.Show("是否关闭程序\r\n是的,关闭\t不,最小化到托盘", "提示", this, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
+            MessageBoxResult result = MessageBoxX.Show("是否关闭程序\r\n是的，关闭\t不，最小化到托盘", "提示", this, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
             {
                 MessageBoxIcon = MessageBoxIcon.Info
             });

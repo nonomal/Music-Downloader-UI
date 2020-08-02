@@ -67,6 +67,7 @@ namespace MusicDownloader.Pages
             {
                 player.Pause();
                 isPlaying = false;
+                CtrlButton.Text = "▶";
             }
             else
             {
@@ -74,6 +75,7 @@ namespace MusicDownloader.Pages
                 {
                     player.Play();
                     isPlaying = true;
+                    CtrlButton.Text = "┃┃";
                 }
                 catch
                 { }
@@ -99,6 +101,7 @@ namespace MusicDownloader.Pages
             timer.Enabled = true;
             timer.AutoReset = true;
             isPlaying = true;
+            CtrlButton.Text = "┃┃";
         }
 
         /// <summary>
@@ -577,11 +580,16 @@ namespace MusicDownloader.Pages
                     MaxHeight = 160,
                     MinWidth = 400
                 });
+                string res = "";
                 await Task.Run(() =>
                 {
-                    music.Download(dl, api);
+                    res = music.Download(dl, api);
                 });
                 pb.Close();
+                if (res != "")
+                {
+                    MessageBoxX.Show(res, "提示", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Info });
+                }
             }
         }
 
@@ -683,6 +691,14 @@ namespace MusicDownloader.Pages
                     m.OnPropertyChanged("IsSelected");
                 }
             }
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key.ToString() == "P")
+            {
+                menu_Play_PreviewMouseDown(null, null);
+            }
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key.ToString() == "P")
+            {
+                menu_Pause_PreviewMouseDown(null, null);
+            }
         }
 
         /// <summary>
@@ -704,6 +720,45 @@ namespace MusicDownloader.Pages
         {
             player.Position = TimeSpan.FromSeconds(Slider.Value);
             timer.Start();
+        }
+
+        /// <summary>
+        /// apiComboBox快捷键
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void apiComboBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key.ToString() == "Q")
+            {
+                if (++apiComboBox.SelectedIndex == apiComboBox.Items.Count)
+                {
+                    apiComboBox.SelectedIndex = 0;
+                }
+                else
+                {
+                    apiComboBox.SelectedIndex += 1;
+                }
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (player.Source != null)
+            {
+                if (CtrlButton.Text == "▶")
+                {
+                    CtrlButton.Text = "┃┃";
+                    menu_Pause_PreviewMouseDown(null, null);
+                    return;
+                }
+                if (CtrlButton.Text == "┃┃")
+                {
+                    CtrlButton.Text = "▶";
+                    menu_Pause_PreviewMouseDown(null, null);
+                    return;
+                }
+            }
         }
     }
 }
