@@ -41,15 +41,15 @@
         </DataGrid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="310*"/>
+                <ColumnDefinition Width="110*"/>
+                <ColumnDefinition Width="60*"/>
+                <ColumnDefinition Width="100*"/>
             </Grid.ColumnDefinitions>
-            <Label Content="打开音乐保存路径" HorizontalAlignment="Center" Foreground="LightGray" PreviewMouseDown="Label_PreviewMouseDown" Grid.Column="1"/>
-            <Label Content="清空列表" HorizontalAlignment="Center" Foreground="LightGray" PreviewMouseDown="Label_PreviewMouseDown_1" Grid.Column="2"/>
+            <Label Content="打开音乐保存路径" Foreground="LightGray" PreviewMouseDown="Label_PreviewMouseDown" Grid.Column="1"/>
+            <Label Content="清空列表" Foreground="LightGray" PreviewMouseDown="Label_PreviewMouseDown_1" Grid.Column="2"/>
             <Label Content="音源1 歌词可能出现无法下载的情况，过段时间再试" Foreground="White" Grid.Column="0" HorizontalAlignment="Center"/>
-            <Label Content="清除正常下载项" Foreground="LightGray" PreviewMouseDown="Label_PreviewMouseDown_2" Grid.Column="3" HorizontalAlignment="Center"/>
+            <Label Content="清除正常下载项" Foreground="LightGray" PreviewMouseDown="Label_PreviewMouseDown_2" Grid.Column="3"/>
         </Grid>
 
     </Grid>

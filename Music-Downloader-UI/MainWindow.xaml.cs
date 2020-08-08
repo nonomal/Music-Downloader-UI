@@ -91,6 +91,8 @@ namespace MusicDownloader
 
         public MainWindow()
         {
+            MusicDownloader.Pages.SettingPage.ChangeBlurEvent += BlurChange;
+            MusicDownloader.Pages.SettingPage.SaveBlurEvent += BlurSave;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             setting = new Setting()
             {
@@ -125,7 +127,11 @@ namespace MusicDownloader
             }
             if (!String.IsNullOrEmpty(Tool.Config.Read("Backgroud")) && File.Exists(Tool.Config.Read("Backgroud")))
             {
-                BG.ImageSource = new BitmapImage(new Uri(Tool.Config.Read("Backgroud")));
+                BG.Source = new BitmapImage(new Uri(Tool.Config.Read("Backgroud")));
+            }
+            if (!String.IsNullOrEmpty(Tool.Config.Read("Blur")))
+            {
+                Blur.Radius = double.Parse(Tool.Config.Read("Blur"));
             }
         }
 
@@ -338,7 +344,7 @@ namespace MusicDownloader
             string path = ofd.FileName;
             if (path != "")
             {
-                BG.ImageSource = new BitmapImage(new Uri(path));
+                BG.Source = new BitmapImage(new Uri(path));
                 Tool.Config.Write("Backgroud", path);
             }
         }
@@ -346,6 +352,21 @@ namespace MusicDownloader
         private void NT_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://www.nitian1207.cn");
+        }
+
+        private void BG_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        public void BlurChange(double value)
+        {
+            Blur.Radius = value;
+        }
+
+        public void BlurSave(double value)
+        {
+            Tool.Config.Write("Blur", value.ToString());
         }
     }
 }

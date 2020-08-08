@@ -20,11 +20,14 @@ namespace MusicDownloader.Library
         /// <summary>
         /// api1和NeteaseApiUrl相同,api2和QQApiUrl相同
         /// </summary>
-        public List<int> version = new List<int> { 1, 2, 2 };
-        public string api1, NeteaseApiUrl = ""; //自行搭建接口，以 / 结尾
-        public string api2, QQApiUrl = ""; //自行搭建接口，以 / 结尾
+        public List<int> version = new List<int> { 1, 2, 4 };
+        public string api1 = ""; //自行搭建接口，以 / 结尾
+        public string NeteaseApiUrl = "";
+        public string api2 = ""; //自行搭建接口，以 / 结尾
+        public string QQApiUrl = "";
         string UpdateJsonUrl = "";
-        public string _cookie, cookie = "";
+        public string cookie = "";
+        public string _cookie = "";
         /*
         我的json格式,如果更改请重写下方Update()方法
         {

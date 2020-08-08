@@ -53,7 +53,7 @@
                      pu:TextBoxHelper.CornerRadius="3"
                  x:Name="searchTextBox"
                  Foreground="LightGray" 
-                 Background="#10FFFFFF"
+                 Background="#20FFFFFF"
                  FontSize="13"
                  TextWrapping="Wrap"
                  Text="搜索(歌名/歌手/ID)" PreviewKeyDown="searchTextBox_PreviewKeyDown" TabIndex="1" Grid.Column="1" GotFocus="searchTextBox_GotFocus" LostFocus="searchTextBox_LostFocus"/>
@@ -68,7 +68,7 @@
             x:Name="musiclistTextBox"
             Foreground="LightGray" 
             FontSize="13"
-            Background="#10FFFFFF"
+            Background="#20FFFFFF"
             TextWrapping="Wrap" 
             InputMethod.IsInputMethodEnabled="False"
             Text="歌单(ID/链接)" PreviewKeyDown="musiclistTextBox_PreviewKeyDown" TabIndex="2" Grid.Column="2" LostFocus="musiclistTextBox_LostFocus" GotFocus="musiclistTextBox_GotFocus"/>
@@ -83,7 +83,7 @@
             x:Name="albumTextBox"
             Foreground="LightGray" 
             FontSize="13"
-            Background="#10FFFFFF"
+            Background="#20FFFFFF"
             TextWrapping="Wrap" 
             InputMethod.IsInputMethodEnabled="False"
             Text="专辑(ID/链接)" PreviewKeyDown="albumTextBox_PreviewKeyDown" TabIndex="3" Grid.Column="3" GotFocus="albumTextBox_GotFocus" LostFocus="albumTextBox_LostFocus"/>

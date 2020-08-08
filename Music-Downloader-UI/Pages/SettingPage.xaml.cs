@@ -28,6 +28,10 @@ namespace MusicDownloader.Pages
     /// </summary>
     public partial class SettingPage : Page
     {
+        public delegate void ChangeBlur(double value);
+        public static event ChangeBlur ChangeBlurEvent;
+        public delegate void SaveBlur(double value);
+        public static event SaveBlur SaveBlurEvent;
         Setting setting;
         Music music = null;
 
@@ -80,6 +84,10 @@ namespace MusicDownloader.Pages
             {
                 cookietextbox1.Text = setting.Cookie1;
             }
+            if (!string.IsNullOrEmpty(Tool.Config.Read("Blur")))
+            {
+                BlurSlider.Value = double.Parse(Tool.Config.Read("Blur"));
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -102,20 +110,22 @@ namespace MusicDownloader.Pages
             Tool.Config.Write("SavePathStyle", pathStyleComboBox.SelectedIndex.ToString());
             Tool.Config.Write("SearchQuantity", searchQuantityTextBox.Text);
             Tool.Config.Write("TranslateLrc", TranslateLrcComboBox.SelectedIndex.ToString());
-            if (Source1textBox.Text != "" && Source1textBox.Text != null)
+            if (Source1textBox.Text != "" && Source1textBox.Text != null && Source1textBox.Text != "http://example:port/")
             {
                 Tool.Config.Write("Source1", Source1textBox.Text);
                 music.NeteaseApiUrl = Source1textBox.Text;
+                setting.Api1 = Source1textBox.Text;
             }
             else
             {
                 Tool.Config.Write("Source1", "");
                 music.NeteaseApiUrl = music.api1;
             }
-            if (Source2textBox.Text != "" && Source2textBox.Text != null)
+            if (Source2textBox.Text != "" && Source2textBox.Text != null && Source2textBox.Text != "http://example:port/")
             {
                 Tool.Config.Write("Source2", Source2textBox.Text);
                 music.QQApiUrl = Source2textBox.Text;
+                setting.Api2 = Source2textBox.Text;
             }
             else
             {
@@ -185,6 +195,16 @@ namespace MusicDownloader.Pages
                 Source2textBox.Text = "";
                 Source2textBox.Foreground = new SolidColorBrush(Colors.White);
             }
+        }
+
+        private void BlurSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ChangeBlurEvent(BlurSlider.Value);
+        }
+
+        private void BlurSlider_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            SaveBlurEvent(BlurSlider.Value);
         }
     }
 }

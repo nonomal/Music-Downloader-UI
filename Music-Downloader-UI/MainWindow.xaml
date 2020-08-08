@@ -12,12 +12,12 @@
             BorderThickness="20"
             ContentRendered="WindowX_ContentRendered"
             Closed="WindowX_Closed"
-            Title="Music Downloader" Height="485" MinHeight="485" Width="740" MinWidth="740" ResizeMode="CanResizeWithGrip" WindowStyle="None" WindowStartupLocation="CenterScreen" Icon="Icon.ico" Closing="WindowX_Closing" AllowsTransparency="True" StateChanged="Window_StateChanged">
-    <pu:WindowXCaption.ExtendControl>
-        <Button Click="BlogButton_Click" pu:ButtonHelper.ButtonStyle="Link" Content="NiTian1207" FontSize="11" Margin="0 0 10 0" VerticalAlignment="Center"/>
-    </pu:WindowXCaption.ExtendControl>
+            Title="Music Downloader" Height="485" MinHeight="485" Width="755" MinWidth="755" ResizeMode="CanResizeWithGrip" WindowStyle="None" WindowStartupLocation="CenterScreen" Icon="Icon.ico" Closing="WindowX_Closing" AllowsTransparency="True" StateChanged="Window_StateChanged">
+    <Window.Background>
+        <ImageBrush Stretch="Fill"/>
+    </Window.Background>
     <Window.Effect>
-        <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.4"/>
+        <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.3"/>
     </Window.Effect>
     <Window.Resources>
         <ResourceDictionary>
@@ -34,48 +34,55 @@
             <Geometry x:Key="Icon_Help">M512 84.48C275.968 84.48 84.48 276.48 84.48 512s191.488 427.52 427.52 427.52 427.52-192 427.52-427.52-191.488-427.52-427.52-427.52z m38.4 651.264c-10.752 10.24-24.064 15.36-38.4 15.36h-1.024c-14.848 0-28.672-5.632-38.912-15.872s-15.872-24.064-15.872-38.912c0-15.872 5.632-28.672 16.384-38.912 9.728-10.24 23.04-15.36 38.912-15.36h13.312v1.536c10.24 2.048 19.456 6.656 26.112 13.824 10.24 10.24 15.872 23.04 15.872 38.912 0 15.36-5.632 28.672-16.384 39.424z m80.384-236.544c-3.584 4.608-12.8 13.824-50.176 46.592-9.216 7.68-16.384 16.896-20.992 26.112-5.12 9.728-7.68 19.968-7.68 32.256v23.04H463.872V604.16c0-24.576 4.096-44.544 12.8-60.928 8.704-17.408 30.208-41.472 67.584-73.728l9.216-10.24c9.216-11.264 13.312-22.528 13.312-33.792 0-16.384-4.608-29.184-13.312-38.4-8.704-8.704-22.016-13.312-39.424-13.312-21.504 0-36.864 6.144-45.568 18.944-8.704 11.776-13.312 28.672-13.312 51.2v13.312h-87.04v-13.312c0-45.056 13.312-81.92 39.936-108.544 26.624-27.136 64-40.96 110.08-40.96 40.448 0 73.728 11.264 98.816 33.792 26.112 22.528 38.912 53.76 38.4 92.672 0 30.72-8.192 57.344-24.576 78.336z</Geometry>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="160"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.Background>
-            <ImageBrush x:Name="BG" ImageSource="Images/Background.jpg" Stretch="UniformToFill"/>
-        </Grid.Background>
-        <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Background="#25FFFFFF">
+    <Grid>
+        <Image x:Name="BG" Source="/Images/Background.jpg" Stretch="Fill" MouseLeftButtonDown="BG_MouseLeftButtonDown">
+            <Image.Effect>
+                <BlurEffect x:Name="Blur" Radius="0" RenderingBias="Performance" KernelType="Gaussian"/>
+            </Image.Effect>
+        </Image>
+        <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
             <Grid.RowDefinitions>
-                <RowDefinition Height="150"/>
+                <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Image Source="Images/Logo.png" Margin="5 20 5 30" Grid.Row="0"/>
-            <TextBlock Name="VerTextblock" Text="Verison" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="16" Grid.Row="0"/>
-            <StackPanel Margin="0 5" Grid.Row="1">
-                <controls:ImageRadioButton x:Name="Home" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Home}" Content="主页" IsChecked="True" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Home_Checked"/>
-                <controls:ImageRadioButton x:Name="Download" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Download}" Content="下载" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Download_Checked"/>
-                <controls:ImageRadioButton x:Name="Setting" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Setting}" Content="设置" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Setting_Checked"/>
-                <controls:ImageRadioButton x:Name="Donat" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Donat}" Content="赞助" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Donat_Checked"/>
-                <controls:ImageRadioButton x:Name="Feedback" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Feedback}" Content="反馈" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Feedback_Checked"/>
-                <controls:ImageRadioButton x:Name="Code" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Code}" Content="开源" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Code_Checked"/>
-                <controls:ImageRadioButton x:Name="Help" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Help}" Content="帮助" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Help_Checked"/>
-            </StackPanel>
-            <TextBlock Margin="0 0 0 5" Grid.Row="1" VerticalAlignment="Bottom" Text="免费软件 请勿倒卖" Foreground="White" FontFamily="Microsoft Yahei UI" FontSize="12" HorizontalAlignment="Center"/>
-        </Grid>
-        <Grid Grid.Column="1">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Width="207">
-                <Button Name="NT" Style="{StaticResource ResourceKey=SysButton}" Content="NiTian1207" Width="65" Height="17" Margin="0 0 9 0" Click="NT_Click"/>
-                <Button Name="Skin" Style="{StaticResource ResourceKey=SysButton}" Content="&#xe631;" Width="25" Height="17" Margin="0 0 9 0" Click="Skin_Click"/>
-                <TextBlock Foreground="White" VerticalAlignment="Center" Text="|" FontSize="16" Margin="0 0 8 0"/>
-                <Button Name="Minimize" Style="{StaticResource ResourceKey=SysButton}" Content="&#xE6C1;" Width="25" Height="17" Margin="1 0 1 0" Click="Minimize_Click"/>
-                <Button Name="Maximize" Style="{StaticResource ResourceKey=SysButton}" Content="&#xE60A;" Width="25" Height="17" Margin="1 0 1 0" Click="Maximize_Click"/>
-                <Button Name="Close" Style="{StaticResource ResourceKey=SysButton}" Content="&#xE609;" Width="25" Height="17" Margin="1 0 1 0" Click="Close_Click"/>
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Column="1" Grid.Row="1">
-            <Frame Name="frame" NavigationUIVisibility="Hidden"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!--<Grid.Background>
+            <ImageBrush x:Name="BG" ImageSource="Images/Background.jpg" Stretch="UniformToFill"/>
+        </Grid.Background>-->
+            <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Background="#25FFFFFF">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Image Source="Images/Logo.png" Margin="5 20 5 30" Grid.Row="0"/>
+                <TextBlock Name="VerTextblock" Text="Verison" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="16" Grid.Row="0"/>
+                <StackPanel Margin="0 5" Grid.Row="1">
+                    <controls:ImageRadioButton x:Name="Home" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Home}" Content="主页" IsChecked="True" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Home_Checked"/>
+                    <controls:ImageRadioButton x:Name="Download" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Download}" Content="下载" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Download_Checked"/>
+                    <controls:ImageRadioButton x:Name="Setting" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Setting}" Content="设置" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Setting_Checked"/>
+                    <controls:ImageRadioButton x:Name="Donat" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Donat}" Content="赞助" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Donat_Checked"/>
+                    <controls:ImageRadioButton x:Name="Feedback" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Feedback}" Content="反馈" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Feedback_Checked"/>
+                    <controls:ImageRadioButton x:Name="Code" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Code}" Content="开源" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Code_Checked"/>
+                    <controls:ImageRadioButton x:Name="Help" ImageHeight="15" ImageWidth="15" Image="{StaticResource Icon_Help}" Content="帮助" GroupName="Menu" Margin="10 0 10 0" Foreground="White" Checked="Help_Checked"/>
+                </StackPanel>
+                <TextBlock Margin="0 0 0 5" Grid.Row="1" VerticalAlignment="Bottom" Text="免费软件 请勿倒卖" Foreground="White" FontFamily="Microsoft Yahei UI" FontSize="12" HorizontalAlignment="Center"/>
+            </Grid>
+            <Grid Grid.Column="1">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Width="206">
+                    <Button Name="NT" Style="{StaticResource ResourceKey=SysButton}" Content="NiTian1207" Width="65" Height="17" Margin="0 0 9 0" Click="NT_Click"/>
+                    <Button Name="Skin" Style="{StaticResource ResourceKey=SysButton}" Content="&#xe631;" Width="25" Height="17" Margin="0 0 9 0" Click="Skin_Click"/>
+                    <TextBlock Foreground="White" VerticalAlignment="Center" Text="|" FontSize="16" Margin="0 0 8 0"/>
+                    <Button Name="Minimize" Style="{StaticResource ResourceKey=SysButton}" Content="&#xE6C1;" Width="25" Height="17" Margin="1 0 1 0" Click="Minimize_Click"/>
+                    <Button Name="Maximize" Style="{StaticResource ResourceKey=SysButton}" Content="&#xE60A;" Width="25" Height="17" Margin="1 0 1 0" Click="Maximize_Click"/>
+                    <Button Name="Close" Style="{StaticResource ResourceKey=SysButton}" Content="&#xE609;" Width="25" Height="17" Margin="1 0 1 0" Click="Close_Click"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="1" Grid.Row="1">
+                <Frame Name="frame" NavigationUIVisibility="Hidden"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
