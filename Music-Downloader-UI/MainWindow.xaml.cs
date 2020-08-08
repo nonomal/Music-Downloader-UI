@@ -1,4 +1,6 @@
-﻿using MusicDownloader.Json;
+﻿using AduSkin.Controls.Metro;
+using Microsoft.Win32;
+using MusicDownloader.Json;
 using MusicDownloader.Library;
 using MusicDownloader.Pages;
 using Panuon.UI.Silver;
@@ -10,10 +12,13 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
 
 namespace MusicDownloader
 {
-    public partial class MainWindow : WindowX
+    public partial class MainWindow : Window
     {
         Music music = null;
         Setting setting;
@@ -23,48 +28,46 @@ namespace MusicDownloader
         Page SettingPage;
         Page Donate = new Donate();
         System.Windows.Forms.NotifyIcon notifyicon = new System.Windows.Forms.NotifyIcon();
+        //BG.ImageSource = new BitmapImage(new Uri(@"C:\Users\10240\Desktop\Background3.jpg"));
 
         #region 界面
         private void BlogButton_Click(object sender, RoutedEventArgs e) => Process.Start("https://www.nitian1207.cn/");
-        private void LeftMenu_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (frame != null)
-            {
-                switch (((System.Windows.Controls.HeaderedItemsControl)e.NewValue).Header)
-                {
-                    case "主页":
-                        frame.Content = HomePage;
-                        break;
-                    case "下载":
-                        frame.Content = DownloadPage;
-                        break;
-                    case "设置":
-                        frame.Content = SettingPage;
-                        break;
-                    case "赞助":
-                        frame.Content = Donate;
-                        break;
-                    case "反馈":
-                        Process.Start("https://docs.qq.com/form/edit/DT0RraHhRZXRmYlVY");
-                        break;
-                    case "开源":
-                        Process.Start("https://github.com/NiTian1207/Music-Downloader-UI");
-                        break;
-                    case "帮助":
-                        Process.Start("https://www.nitian1207.cn/archives/663");
-                        break;
-                }
-            }
-        }
+        //private void LeftMenu_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        //{
+        //    if (frame != null)
+        //    {
+        //        switch (((System.Windows.Controls.HeaderedItemsControl)e.NewValue).Header)
+        //        {
+        //            case "主页":
+        //                frame.Content = HomePage;
+        //                break;
+        //            case "下载":
+        //                frame.Content = DownloadPage;
+        //                break;
+        //            case "设置":
+        //                frame.Content = SettingPage;
+        //                break;
+        //            case "赞助":
+        //                frame.Content = Donate;
+        //                break;
+        //            case "反馈":
+        //                Process.Start("https://docs.qq.com/form/edit/DT0RraHhRZXRmYlVY");
+        //                break;
+        //            case "开源":
+        //                Process.Start("https://github.com/NiTian1207/Music-Downloader-UI");
+        //                break;
+        //            case "帮助":
+        //                Process.Start("https://www.nitian1207.cn/archives/663");
+        //                break;
+        //        }
+        //    }
+        //}
         #endregion
 
         #region 事件
         private void NotifyUpdate()
         {
-            var result = MessageBoxX.Show("检测到新版,是否更新", "提示:", Application.Current.MainWindow, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
-            {
-                MessageBoxIcon = MessageBoxIcon.Warning
-            });
+            var result = AduMessageBox.Show("检测到新版,是否更新", "提示", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
                 Process.Start("https://www.nitian1207.cn/archives/496");
@@ -78,7 +81,7 @@ namespace MusicDownloader
         private void NotifyError()
         {
             VerTextblock.Text += "(Error)";
-            //var result = MessageBoxX.Show("连接更新服务器错误", "提示:", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
+            //var result = AduMessageBox.Show("连接更新服务器错误", "提示", Application.Current.MainWindow, MessageBoxButton.OK, new AduMessageBoxConfigurations()
             //{
             //    MessageBoxIcon = MessageBoxIcon.Error
             //});
@@ -103,7 +106,7 @@ namespace MusicDownloader
                 Api2 = Tool.Config.Read("Source2") ?? "",
                 Cookie1 = Tool.Config.Read("Cookie1") ?? ""
             };
-            music = new Music(setting, NotifyError, NotifyUpdate);
+            music = new Music(setting);
             HomePage = new SearchPage(music, setting);
             DownloadPage = new DownloadPage(music);
             SettingPage = new SettingPage(setting, music);
@@ -115,6 +118,15 @@ namespace MusicDownloader
                 ver += s.ToString() + ".";
             }
             VerTextblock.Text = ver.Substring(0, ver.Length - 1);
+            if (Tool.Config.Read("H") != null)
+            {
+                this.Height = Int32.Parse(Tool.Config.Read("H"));
+                this.Width = Int32.Parse(Tool.Config.Read("W"));
+            }
+            if (!String.IsNullOrEmpty(Tool.Config.Read("Backgroud")) && File.Exists(Tool.Config.Read("Backgroud")))
+            {
+                BG.ImageSource = new BitmapImage(new Uri(Tool.Config.Read("Backgroud")));
+            }
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -148,7 +160,8 @@ namespace MusicDownloader
             menu1.Click += Menu1_Click;
             notifyicon.ContextMenu = new System.Windows.Forms.ContextMenu(new System.Windows.Forms.MenuItem[] { menu1 });
             string result = "";
-            await Task.Run(()=> {
+            await Task.Run(() =>
+            {
                 result = music.Update();
             });
             if (result == "Error")
@@ -183,22 +196,156 @@ namespace MusicDownloader
 
         private void WindowX_Closed(object sender, EventArgs e)
         {
+            Tool.Config.Write("H", ((int)this.Height).ToString());
+            Tool.Config.Write("W", ((int)this.Width).ToString());
             notifyicon.Dispose();
             Application.Current.Shutdown();
         }
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MessageBoxResult result = MessageBoxX.Show("是否关闭程序\r\n是的，关闭\t不，最小化到托盘", "提示", this, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
-            {
-                MessageBoxIcon = MessageBoxIcon.Info
-            });
+            MessageBoxResult result = AduMessageBox.ShowYesNo("                    确定关闭程序?", "提示", "退出", "最小化");
             if (result == MessageBoxResult.No)
             {
                 e.Cancel = true;
                 this.Visibility = Visibility.Hidden;
             }
+            if (result == MessageBoxResult.Yes)
+            {
+                notifyicon.Dispose();
+                Application.Current.Shutdown();
+            }
+            //if (result == MessageBoxResult.Cancel)
+            //{
+            //    e.Cancel = true;
+            //}
+        }
 
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Maximize_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Normal)
+            {
+                WindowState = WindowState.Maximized;
+            }
+            else if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            DropShadowEffect de = null;
+            if (this.WindowState == WindowState.Normal)
+            {
+                de = new DropShadowEffect();
+                this.BorderThickness = new Thickness(20);
+                de.BlurRadius = 20;
+                de.Opacity = 0.15;
+                de.ShadowDepth = 0;
+                this.Effect = de;
+            }
+            else
+            {
+                this.BorderThickness = new Thickness(5);
+                this.Effect = null;
+            }
+        }
+
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void Grid_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        private void Home_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if ((bool)Home.IsChecked)
+                {
+                    frame.Content = HomePage;
+                }
+            }
+            catch { }
+        }
+
+        private void Download_Checked(object sender, RoutedEventArgs e)
+        {
+            if ((bool)Download.IsChecked)
+            {
+                frame.Content = DownloadPage;
+            }
+        }
+
+        private void Setting_Checked(object sender, RoutedEventArgs e)
+        {
+            if ((bool)Setting.IsChecked)
+            {
+                frame.Content = SettingPage;
+            }
+        }
+
+        private void Donat_Checked(object sender, RoutedEventArgs e)
+        {
+            if ((bool)Donat.IsChecked)
+            {
+                frame.Content = Donate;
+            }
+        }
+
+        private void Feedback_Checked(object sender, RoutedEventArgs e)
+        {
+            if ((bool)Feedback.IsChecked)
+            {
+                Process.Start("https://docs.qq.com/form/edit/DT0RraHhRZXRmYlVY");
+                Home.IsChecked = true;
+            }
+        }
+
+        private void Code_Checked(object sender, RoutedEventArgs e)
+        {
+            if ((bool)Code.IsChecked)
+            {
+                Process.Start("https://github.com/NiTian1207/Music-Downloader-UI");
+                Home.IsChecked = true;
+            }
+        }
+
+        private void Help_Checked(object sender, RoutedEventArgs e)
+        {
+            if ((bool)Help.IsChecked)
+            {
+                Process.Start("https://www.nitian1207.cn/archives/663");
+                Home.IsChecked = true;
+            }
+        }
+
+        private void Skin_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "图片文件(*.jpg,*.bmp,*.png)|*.jpg;*.bmp;*.png";
+            ofd.ShowDialog();
+            string path = ofd.FileName;
+            if (path != "")
+            {
+                BG.ImageSource = new BitmapImage(new Uri(path));
+                Tool.Config.Write("Backgroud", path);
+            }
+        }
+
+        private void NT_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.nitian1207.cn");
         }
     }
 }

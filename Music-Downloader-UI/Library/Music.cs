@@ -16,18 +16,15 @@ namespace MusicDownloader.Library
 {
     public class Music
     {
-
+        #region 二次开发需要修改的信息
         /// <summary>
         /// api1和NeteaseApiUrl相同,api2和QQApiUrl相同
         /// </summary>
-        #region
-        public string api1 = ""; //自行搭建接口，以 / 结尾
-        public string api2 = ""; //自行搭建接口，以 / 结尾
-        public string NeteaseApiUrl = "";
-        public string QQApiUrl = "";
+        public List<int> version = new List<int> { 1, 2, 2 };
+        public string api1, NeteaseApiUrl = ""; //自行搭建接口，以 / 结尾
+        public string api2, QQApiUrl = ""; //自行搭建接口，以 / 结尾
         string UpdateJsonUrl = "";
-        public string _cookie = "";
-        public string cookie = "";
+        public string _cookie, cookie = "";
         /*
         我的json格式,如果更改请重写下方Update()方法
         {
@@ -37,7 +34,6 @@ namespace MusicDownloader.Library
         */
         #endregion
 
-        public List<int> version = new List<int> { 1, 2, 0 };
         public Setting setting;
         public List<DownloadList> downloadlist = new List<DownloadList>();
         public Thread th_Download;
@@ -45,8 +41,6 @@ namespace MusicDownloader.Library
         public delegate void NotifyUpdateEventHandler();
         public delegate void NotifyConnectErrorEventHandler();
         public event UpdateDownloadPageEventHandler UpdateDownloadPage;
-        public event NotifyUpdateEventHandler NotifyUpdate;
-        public event NotifyConnectErrorEventHandler NotifyConnectError;
         bool wait = false;
 
         /// <summary>
@@ -59,6 +53,7 @@ namespace MusicDownloader.Library
             StreamReader sr = null;
             try
             {
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 sr = new StreamReader(wc.OpenRead(UpdateJsonUrl));
                 // 读取一个在线文件判断接口状态获取网易云音乐Cookie,可以写死
             }
@@ -110,11 +105,21 @@ namespace MusicDownloader.Library
         /// 构造函数 需要提供设置参数
         /// </summary>
         /// <param name="setting"></param>
-        public Music(Setting setting, NotifyConnectErrorEventHandler ConnectErrorEventHandler, NotifyUpdateEventHandler UpdateEventHandler)
+        public Music(Setting setting)
         {
             this.setting = setting;
-            NotifyConnectError += ConnectErrorEventHandler;
-            NotifyUpdate += UpdateEventHandler;
+            if (setting.Api1 != "")
+            {
+                NeteaseApiUrl = setting.Api1;
+            }
+            if (setting.Api2 != "")
+            {
+                QQApiUrl = setting.Api2;
+            }
+            if (setting.Cookie1 != "")
+            {
+                cookie = setting.Cookie1;
+            }
         }
 
         /// <summary>
@@ -197,7 +202,7 @@ namespace MusicDownloader.Library
                 StreamReader sr = new StreamReader(s);
                 return sr.ReadToEnd();
             }
-            catch
+            catch (Exception e)
             {
                 return null;
             }
@@ -315,7 +320,6 @@ namespace MusicDownloader.Library
                 if (remainder == 0)
                 {
                     remainder = 150;
-                    times++;
                 }
                 else
                 {
@@ -368,7 +372,6 @@ namespace MusicDownloader.Library
                         }
                     }
                 }
-                return "";
             }
             else if (api == 2)
             {
@@ -388,20 +391,19 @@ namespace MusicDownloader.Library
                         QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
                         if (json.result != 100)
                         {
-                            url = url.Replace("flac", "320").Replace("128", "320");
+                            url = url.Replace("flac", "128").Replace("320", "128");
                             sr = new StreamReader(wc.OpenRead(url));
                             httpjson = sr.ReadToEnd();
                             json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
                             if (url.IndexOf("flac") != -1 && json.result == 100)
                             {
-                                dl[i].Quality = "320000";
+                                dl[i].Quality = "128000";
                             }
                         }
                         dl[i].Url = json.data;
                         dl[i].State = "准备下载";
                     }
                 }
-                return "";
             }
             downloadlist.AddRange(dl);
             UpdateDownloadPage();
@@ -467,6 +469,11 @@ namespace MusicDownloader.Library
             return re;
         }
 
+        /// <summary>
+        /// 刷新下载进度
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DownloadProgressUpdate(object sender, DownloadProgressChangedEventArgs e)
         {
             downloadlist[0].State = e.ProgressPercentage.ToString() + "%";
@@ -747,6 +754,15 @@ namespace MusicDownloader.Library
             }
             if (!Directory.Exists(savepath))
                 Directory.CreateDirectory(savepath);
+            FileInfo f = new FileInfo(savepath + "\\" + filename);
+            if (f.Length == 0)
+            {
+                downloadlist[0].State = "无版权";
+                UpdateDownloadPage();
+                downloadlist.RemoveAt(0);
+                wait = false;
+                return;
+            }
             if (downloadlist[0].IfDownloadLrc)
             {
                 downloadlist[0].State = "正在下载歌词";

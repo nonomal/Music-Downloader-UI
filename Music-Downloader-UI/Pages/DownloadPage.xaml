@@ -7,31 +7,50 @@
       xmlns:local="clr-namespace:MusicDownloader"
       mc:Ignorable="d" 
       FontSize="12"
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="DownloadPage" Height="394" Width="587">
+      d:DesignHeight="394" d:DesignWidth="587"
+      Title="DownloadPage">
 
     <Grid>
-        <DataGrid HorizontalAlignment="Left" 
-                  Name="List"
-                  Height="359" 
-                  VerticalAlignment="Top" 
-                  Width="567" 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+        <DataGrid Name="List"
+                  pu:DataGridHelper.HeaderBackground="#20FFFFFF"
+                  pu:DataGridHelper.HeaderForeground="LightGray"
                   pu:DataGridHelper.HeaderMinHeight="25"
+                  Background="Transparent"
                   CanUserAddRows="False"
                   AutoGenerateColumns="False"
-                  BorderThickness="1" Margin="11,0,0,0"
-                  ItemsSource="{Binding listitem}" CanUserSortColumns="False">
+                  BorderThickness="1"
+                  ItemsSource="{Binding listitem}" CanUserSortColumns="False"
+                  Grid.Row="0">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="标题" Width="*" Binding="{Binding Title}"/>
                 <DataGridTextColumn Header="歌手" Width="*" Binding="{Binding Singer}"/>
                 <DataGridTextColumn Header="专辑" Width="*" Binding="{Binding Album}"/>
                 <DataGridTextColumn Header="状态" Width="*" Binding="{Binding State}"/>
             </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Height" Value="40"/>
+                </Style>
+            </DataGrid.RowStyle>
         </DataGrid>
-        <Label Content="打开音乐保存路径" Foreground="Blue" PreviewMouseDown="Label_PreviewMouseDown"  HorizontalAlignment="Left" Margin="10,359,0,0" VerticalAlignment="Top" Height="25"/>
-        <Label Content="清空列表" Foreground="Blue" PreviewMouseDown="Label_PreviewMouseDown_1"  HorizontalAlignment="Left" Margin="519,359,0,0" VerticalAlignment="Top" Height="25"/>
-        <Label Content="音源1 歌词可能出现无法下载的情况，过段时间再试" HorizontalAlignment="Center" Height="25" Margin="130,359,155,0" VerticalAlignment="Top" Width="302"/>
-        <Label Content="清除正常下载项" Foreground="Blue" PreviewMouseDown="Label_PreviewMouseDown_2"  HorizontalAlignment="Left" Margin="425,359,0,0" VerticalAlignment="Top" Height="25"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="打开音乐保存路径" HorizontalAlignment="Center" Foreground="LightGray" PreviewMouseDown="Label_PreviewMouseDown" Grid.Column="1"/>
+            <Label Content="清空列表" HorizontalAlignment="Center" Foreground="LightGray" PreviewMouseDown="Label_PreviewMouseDown_1" Grid.Column="2"/>
+            <Label Content="音源1 歌词可能出现无法下载的情况，过段时间再试" Foreground="White" Grid.Column="0" HorizontalAlignment="Center"/>
+            <Label Content="清除正常下载项" Foreground="LightGray" PreviewMouseDown="Label_PreviewMouseDown_2" Grid.Column="3" HorizontalAlignment="Center"/>
+        </Grid>
 
     </Grid>
 </Page>

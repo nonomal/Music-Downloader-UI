@@ -19,6 +19,7 @@ using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
 using MessageBoxIcon = Panuon.UI.Silver.MessageBoxIcon;
 using Application = System.Windows.Application;
+using AduSkin.Controls.Metro;
 
 namespace MusicDownloader.Pages
 {
@@ -30,7 +31,7 @@ namespace MusicDownloader.Pages
         Setting setting;
         Music music = null;
 
-        public SettingPage(Setting s,Music m)
+        public SettingPage(Setting s, Music m)
         {
             setting = s;
             InitializeComponent();
@@ -67,31 +68,30 @@ namespace MusicDownloader.Pages
             lrcCheckBox.IsChecked = setting.IfDownloadLrc;
             picCheckBox.IsChecked = setting.IfDownloadPic;
             TranslateLrcComboBox.SelectedIndex = setting.TranslateLrc;
-            Source1textBox.Text = setting.Api1;
-            Source2textBox.Text = setting.Api2;
-            cookietextbox1.Text = setting.Cookie1;
+            if (setting.Api1 != "")
+            {
+                Source1textBox.Text = setting.Api1;
+            }
+            if (setting.Api2 != "")
+            {
+                Source2textBox.Text = setting.Api2;
+            }
+            if (setting.Cookie1 != "")
+            {
+                cookietextbox1.Text = setting.Cookie1;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (savePathTextBox.Text == "")
             {
-                MessageBoxX.Show("路径不能为空", "Error", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
-                {
-                    MessageBoxIcon = MessageBoxIcon.Error,
-                    MinWidth = 400,
-                    MinHeight = 160
-                });
+                AduMessageBox.Show("路径不能为空", "提示", MessageBoxButton.OK);
                 return;
             }
             if (searchQuantityTextBox.Text == "")
             {
-                MessageBoxX.Show("搜索数量不能为空", "Error", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
-                {
-                    MessageBoxIcon = MessageBoxIcon.Error,
-                    MinWidth = 400,
-                    MinHeight = 160
-                });
+                AduMessageBox.Show("搜索数量不能为空", "提示", MessageBoxButton.OK);
                 return;
             }
             Tool.Config.Write("SavePath", savePathTextBox.Text);
@@ -109,7 +109,7 @@ namespace MusicDownloader.Pages
             }
             else
             {
-                Tool.Config.Remove("Source1");
+                Tool.Config.Write("Source1", "");
                 music.NeteaseApiUrl = music.api1;
             }
             if (Source2textBox.Text != "" && Source2textBox.Text != null)
@@ -119,7 +119,7 @@ namespace MusicDownloader.Pages
             }
             else
             {
-                Tool.Config.Remove("Source2");
+                Tool.Config.Write("Source2", "");
                 music.QQApiUrl = music.api2;
             }
             if (cookietextbox1.Text != "" && cookietextbox1.Text != null)
@@ -129,7 +129,7 @@ namespace MusicDownloader.Pages
             }
             else
             {
-                Tool.Config.Remove("Cookie1");
+                Tool.Config.Write("Cookie1", "");
                 music.cookie = music._cookie;
             }
             setting.SavePath = savePathTextBox.Text;
@@ -140,12 +140,7 @@ namespace MusicDownloader.Pages
             setting.SavePathStyle = pathStyleComboBox.SelectedIndex;
             setting.SearchQuantity = searchQuantityTextBox.Text;
             setting.TranslateLrc = TranslateLrcComboBox.SelectedIndex;
-            MessageBoxX.Show("设置保存成功", "Success", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
-            {
-                MessageBoxIcon = MessageBoxIcon.Success,
-                MinWidth = 400,
-                MinHeight = 160
-            });
+            AduMessageBox.Show("设置保存成功", "提示", MessageBoxButton.OK);
         }
 
         private void searchQuantityTextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -153,6 +148,42 @@ namespace MusicDownloader.Pages
             if (!((74 <= (int)e.Key && (int)e.Key <= 83) || (34 <= (int)e.Key && (int)e.Key <= 43) || e.Key == Key.Back || e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.PageDown || e.Key == Key.PageUp))
             {
                 e.Handled = true;
+            }
+        }
+
+        private void Source1textBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (Source1textBox.Text == "http://example:port/")
+            {
+                Source1textBox.Text = "";
+                Source1textBox.Foreground = new SolidColorBrush(Colors.White);
+            }
+        }
+
+        private void Source1textBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (Source1textBox.Text == "")
+            {
+                Source1textBox.Text = "http://example:port/";
+                Source1textBox.Foreground = new SolidColorBrush(Colors.LightGray);
+            }
+        }
+
+        private void Source2textBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (Source2textBox.Text == "")
+            {
+                Source2textBox.Text = "http://example:port/";
+                Source2textBox.Foreground = new SolidColorBrush(Colors.LightGray);
+            }
+        }
+
+        private void Source2textBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (Source2textBox.Text == "http://example:port/")
+            {
+                Source2textBox.Text = "";
+                Source2textBox.Foreground = new SolidColorBrush(Colors.White);
             }
         }
     }

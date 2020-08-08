@@ -1,4 +1,5 @@
-﻿using MusicDownloader.Json;
+﻿using AduSkin.Controls.Metro;
+using MusicDownloader.Json;
 using MusicDownloader.Library;
 using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
@@ -106,12 +107,8 @@ namespace MusicDownloader
         {
             if (music.th_Download.ThreadState == System.Threading.ThreadState.Running)
             {
-                MessageBoxX.Show("请等待下载完成后再试", "Error", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
-                {
-                    MessageBoxIcon = MessageBoxIcon.Error,
-                    MinWidth = 400,
-                    MinHeight = 160
-                });
+                AduMessageBox.Show("请等待下载完成后再试", "提示", MessageBoxButton.OK);
+                return;
             }
             for (int x = 0; x < 10; x++)
             {
@@ -131,18 +128,14 @@ namespace MusicDownloader
         {
             if (music.th_Download.ThreadState == System.Threading.ThreadState.Running)
             {
-                MessageBoxX.Show("请等待下载完成后再试", "Error", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations()
-                {
-                    MessageBoxIcon = MessageBoxIcon.Error,
-                    MinWidth = 400,
-                    MinHeight = 160
-                });
+                AduMessageBox.Show("请等待下载完成后再试", "提示", MessageBoxButton.OK);
+                return;
             }
             for (int x = 0; x < 10; x++)
             {
                 for (int i = 0; i < listitem.Count; i++)
                 {
-                    if (listitem[i].State == "下载完成")
+                    if (listitem[i].State == "下载完成" || listitem[i].State == "音乐已存在")
                     {
                         listitem.RemoveAt(i);
                     }

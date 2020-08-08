@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using AduSkin.Controls.Metro;
 
 namespace MusicDownloader.Pages
 {
@@ -67,7 +68,7 @@ namespace MusicDownloader.Pages
             {
                 player.Pause();
                 isPlaying = false;
-                CtrlButton.Text = "▶";
+                CtrlButton.Text= "\xe607";
             }
             else
             {
@@ -75,7 +76,7 @@ namespace MusicDownloader.Pages
                 {
                     player.Play();
                     isPlaying = true;
-                    CtrlButton.Text = "┃┃";
+                    CtrlButton.Text= "\xe61d";
                 }
                 catch
                 { }
@@ -92,7 +93,7 @@ namespace MusicDownloader.Pages
             string url = music.GetMusicUrl(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].Id);
             if (url == null)
             {
-                MessageBoxX.Show("播放失败", "警告", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                AduMessageBox.Show("播放失败", "提示", MessageBoxButton.OK);
                 return;
             }
             player.Open(new Uri(url));
@@ -101,7 +102,7 @@ namespace MusicDownloader.Pages
             timer.Enabled = true;
             timer.AutoReset = true;
             isPlaying = true;
-            CtrlButton.Text = "┃┃";
+            CtrlButton.Text= "\xe61d";
         }
 
         /// <summary>
@@ -290,7 +291,7 @@ namespace MusicDownloader.Pages
                     Tool.GetRealUrl(id);
                     if (id.IndexOf("https://c.y.qq.com/") != -1)
                     {
-                        MessageBoxX.Show("请将链接复制到浏览器打开后再复制回程序", "提示", configurations: new MessageBoxXConfigurations { MessageBoxIcon = MessageBoxIcon.Warning });
+                        AduMessageBox.Show("请将链接复制到浏览器打开后再复制回程序", "提示");
                         return;
                     }
                     if (id.IndexOf("https://y.qq.com/") != -1)
@@ -353,7 +354,7 @@ namespace MusicDownloader.Pages
             { GetNeteaseMusicList("2884035"); }
             if (apiComboBox.SelectedIndex == 1)
             {
-                MessageBoxX.Show("该音源无原创榜", "提示", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Warning });
+                AduMessageBox.Show("该音源无原创榜", "提示",  MessageBoxButton.OK);
             }
         }
 
@@ -365,8 +366,10 @@ namespace MusicDownloader.Pages
         {
             var pb = PendingBox.Show("搜索中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
             {
-                MaxHeight = 160,
-                MinWidth = 400
+                MinHeight=110,
+                MaxHeight = 110,
+                MinWidth=280,
+                MaxWidth = 280
             });
             try
             {
@@ -381,7 +384,7 @@ namespace MusicDownloader.Pages
                 if (musicinfo == null)
                 {
                     pb.Close();
-                    MessageBoxX.Show("搜索错误", "警告", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                    AduMessageBox.Show("搜索错误", "提示", MessageBoxButton.OK);
                     return;
                 }
                 foreach (MusicInfo m in musicinfo)
@@ -403,7 +406,7 @@ namespace MusicDownloader.Pages
             catch
             {
                 pb.Close();
-                MessageBoxX.Show("搜索错误", "警告", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                AduMessageBox.Show("搜索错误", "提示", MessageBoxButton.OK);
             }
         }
 
@@ -415,8 +418,10 @@ namespace MusicDownloader.Pages
         {
             var pb = PendingBox.Show("解析中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
             {
-                MaxHeight = 160,
-                MinWidth = 400
+                MinHeight = 110,
+                MaxHeight = 110,
+                MinWidth = 280,
+                MaxWidth = 280
             });
             try
             {
@@ -430,7 +435,7 @@ namespace MusicDownloader.Pages
                 if (musicinfo == null)
                 {
                     pb.Close();
-                    MessageBoxX.Show("解析错误", "警告", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                    AduMessageBox.Show("解析错误", "提示", MessageBoxButton.OK);
                     return;
                 }
                 foreach (MusicInfo m in musicinfo)
@@ -452,7 +457,7 @@ namespace MusicDownloader.Pages
             catch
             {
                 pb.Close();
-                MessageBoxX.Show("解析错误", configurations: new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                AduMessageBox.Show("解析错误","提示");
             }
         }
 
@@ -464,8 +469,10 @@ namespace MusicDownloader.Pages
         {
             var pb = PendingBox.Show("解析中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
             {
-                MaxHeight = 160,
-                MinWidth = 400
+                MinHeight = 110,
+                MaxHeight = 110,
+                MinWidth = 280,
+                MaxWidth = 280
             });
             try
             {
@@ -479,7 +486,7 @@ namespace MusicDownloader.Pages
                 if (musicinfo == null)
                 {
                     pb.Close();
-                    MessageBoxX.Show("解析错误", "警告", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                    AduMessageBox.Show("解析错误", "提示", MessageBoxButton.OK);
                     return;
                 }
                 foreach (MusicInfo m in musicinfo)
@@ -500,7 +507,7 @@ namespace MusicDownloader.Pages
             catch
             {
                 pb.Close();
-                MessageBoxX.Show("解析错误", configurations: new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                AduMessageBox.Show("解析错误","提示");
             }
         }
 
@@ -577,8 +584,10 @@ namespace MusicDownloader.Pages
                 int api = apiComboBox.SelectedIndex + 1;
                 var pb = PendingBox.Show("请求处理中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
                 {
-                    MaxHeight = 160,
-                    MinWidth = 400
+                    MinHeight = 110,
+                    MaxHeight = 110,
+                    MinWidth = 280,
+                    MaxWidth = 280
                 });
                 string res = "";
                 await Task.Run(() =>
@@ -588,7 +597,7 @@ namespace MusicDownloader.Pages
                 pb.Close();
                 if (res != "")
                 {
-                    MessageBoxX.Show(res, "提示", Application.Current.MainWindow, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Info });
+                    AduMessageBox.Show(res, "提示", MessageBoxButton.OK);
                 }
             }
         }
@@ -601,8 +610,10 @@ namespace MusicDownloader.Pages
         {
             var pb = PendingBox.Show("解析中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
             {
-                MaxHeight = 160,
-                MinWidth = 400
+                MinHeight = 110,
+                MaxHeight = 110,
+                MinWidth = 280,
+                MaxWidth = 280
             });
             try
             {
@@ -616,7 +627,7 @@ namespace MusicDownloader.Pages
                 if (musicinfo == null)
                 {
                     pb.Close();
-                    MessageBoxX.Show("解析错误", "警告", configurations: new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                    AduMessageBox.Show("解析错误", "提示");
                     return;
                 }
                 foreach (MusicInfo m in musicinfo)
@@ -638,7 +649,7 @@ namespace MusicDownloader.Pages
             catch
             {
                 pb.Close();
-                MessageBoxX.Show("解析错误", "警告", configurations: new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                AduMessageBox.Show("解析错误", "提示");
             }
         }
 
@@ -649,14 +660,14 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         private void apiComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (apiComboBox.SelectedIndex == 0)
-            {
-                apiComboBox.Foreground = new SolidColorBrush(Colors.Red);
-            }
-            if (apiComboBox.SelectedIndex == 1)
-            {
-                apiComboBox.Foreground = new SolidColorBrush(Colors.Green);
-            }
+            //if (apiComboBox.SelectedIndex == 0)
+            //{
+            //    apiComboBox.Foreground = new SolidColorBrush(Colors.Red);
+            //}
+            //if (apiComboBox.SelectedIndex == 1)
+            //{
+            //    apiComboBox.Foreground = new SolidColorBrush(Colors.Green);
+            //}
         }
 
         /// <summary>
@@ -746,18 +757,72 @@ namespace MusicDownloader.Pages
         {
             if (player.Source != null)
             {
-                if (CtrlButton.Text == "▶")
+                if (CtrlButton.Text == "\xe607")
                 {
-                    CtrlButton.Text = "┃┃";
+                    CtrlButton.Text= "\xe61d";
                     menu_Pause_PreviewMouseDown(null, null);
                     return;
                 }
-                if (CtrlButton.Text == "┃┃")
+                if (CtrlButton.Text == "\xe61d")
                 {
-                    CtrlButton.Text = "▶";
+                    CtrlButton.Text= "\xe607";;
                     menu_Pause_PreviewMouseDown(null, null);
                     return;
                 }
+            }
+        }
+
+        private void searchTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (searchTextBox.Text == "搜索(歌名/歌手/ID)")
+            {
+                searchTextBox.Text = "";
+                searchTextBox.Foreground = new SolidColorBrush(Colors.White);
+            }
+        }
+
+        private void searchTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (searchTextBox.Text == "")
+            {
+                searchTextBox.Text = "搜索(歌名/歌手/ID)";
+                searchTextBox.Foreground = new SolidColorBrush(Colors.LightGray);
+            }
+        }
+
+        private void musiclistTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (musiclistTextBox.Text == "")
+            {
+                musiclistTextBox.Text = "歌单(ID/链接)";
+                musiclistTextBox.Foreground = new SolidColorBrush(Colors.LightGray);
+            }
+        }
+
+        private void musiclistTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (musiclistTextBox.Text == "歌单(ID/链接)")
+            {
+                musiclistTextBox.Text = "";
+                musiclistTextBox.Foreground = new SolidColorBrush(Colors.White);
+            }
+        }
+
+        private void albumTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (albumTextBox.Text == "专辑(ID/链接)")
+            {
+                albumTextBox.Text = "";
+                albumTextBox.Foreground = new SolidColorBrush(Colors.White);
+            }
+        }
+
+        private void albumTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (albumTextBox.Text == "")
+            {
+                albumTextBox.Text = "专辑(ID/链接)";
+                albumTextBox.Foreground = new SolidColorBrush(Colors.LightGray);
             }
         }
     }

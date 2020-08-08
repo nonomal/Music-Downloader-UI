@@ -5,77 +5,90 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
       xmlns:local="clr-namespace:MusicDownloader.Pages"
+      xmlns:Aduskin="clr-namespace:AduSkin.Controls.Metro;assembly=AduSkin"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="SettingPage" Height="394" Width="587" Loaded="Page_Loaded">
+      d:DesignHeight="394" d:DesignWidth="587"
+      Title="SettingPage" Loaded="Page_Loaded" Foreground="White">
 
     <Grid>
         <ScrollViewer HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <StackPanel ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical" Height="508">
+            <StackPanel ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
                 <WrapPanel Margin="0 10 0 0" HorizontalAlignment="Center">
-                    <Label Content="保存路径" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="60"/>
-                    <TextBox Name="savePathTextBox" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Center" Width="250" RenderTransformOrigin="0.438,0.4"/>
-                    <Button Click="browseButton_Click" Name="browseButton" Content="浏览" FontSize="13" HorizontalAlignment="Left" Height="25" Margin="10,2,0,0" VerticalAlignment="Top" Width="50"/>
+                    <Label Foreground="White" Content="保存路径" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="60"/>
+                    <TextBox Foreground="White" Background="#10FFFFFF" BorderThickness="0" Name="savePathTextBox" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Center" Width="250" RenderTransformOrigin="0.438,0.4"/>
+                    <Button Background="#20FFFFFF" Click="browseButton_Click" Name="browseButton" Content="浏览" FontSize="13" HorizontalAlignment="Left" Height="25" Margin="10,2,0,0" VerticalAlignment="Top" Width="50"/>
                 </WrapPanel>
                 <WrapPanel Margin="0 10 0 0" HorizontalAlignment="Center">
-                    <Label Content="单次搜索数量"/>
-                    <TextBox InputMethod.IsInputMethodEnabled="False" Name="searchQuantityTextBox" Width="130" Height="25" PreviewKeyDown="searchQuantityTextBox_PreviewKeyDown"/>
+                    <Label Foreground="White" Content="单次搜索数量"/>
+                    <TextBox Foreground="White" Background="#10FFFFFF" BorderThickness="0" InputMethod.IsInputMethodEnabled="False" Name="searchQuantityTextBox" Width="130" Height="25" PreviewKeyDown="searchQuantityTextBox_PreviewKeyDown"/>
                 </WrapPanel>
                 <WrapPanel Margin="0 3 0 0" HorizontalAlignment="Center">
-                    <Label FontSize="11" VerticalAlignment="Center" Foreground="Gray" Content="不建议太高，容易导致程序崩溃，只对 音源1 有效"/>
+                    <Label Foreground="LightGray" FontSize="11" VerticalAlignment="Center" Content="不建议太高，容易导致程序崩溃，只对 音源1 有效"/>
                 </WrapPanel>
                 <WrapPanel Margin="0 10 0 0" HorizontalAlignment="Center">
-                    <Label Content="下载品质" HorizontalAlignment="Left" Height="25"  VerticalAlignment="Top"/>
-                    <ComboBox Name="qualityComboBox" Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="25">
+                    <Label Foreground="White" Content="下载品质" HorizontalAlignment="Left" Height="25"  VerticalAlignment="Top"/>
+                    <ComboBox Foreground="White" 
+                      Background="#10FFFFFF"
+                      pu:ComboBoxHelper.SelectedBackground="#80FFFFFF"
+                      BorderBrush="Transparent" Name="qualityComboBox" Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="25">
                         <ComboBoxItem Content="无损(999000)" IsSelected="True" HorizontalAlignment="Left" Width="200" Margin="0,0,-2,0"/>
                         <ComboBoxItem Content="极高(320000)" HorizontalAlignment="Left" Width="200"/>
                         <ComboBoxItem Content="标准(128000)" HorizontalAlignment="Left" Width="200"/>
                     </ComboBox>
                 </WrapPanel>
                 <WrapPanel Margin="0 10 0 0" HorizontalAlignment="Center">
-                    <Label Content="文件名保存格式" HorizontalAlignment="Left" Height="25"  VerticalAlignment="Top"/>
-                    <ComboBox Name="nameStyleComboBox" Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="25">
+                    <Label Foreground="White" Content="文件名保存格式" HorizontalAlignment="Left" Height="25"  VerticalAlignment="Top"/>
+                    <ComboBox Name="nameStyleComboBox" Foreground="White" 
+                      Background="#10FFFFFF"
+                      pu:ComboBoxHelper.SelectedBackground="#80FFFFFF"
+                      BorderBrush="Transparent" Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="25">
                         <ComboBoxItem Content="标题 - 歌手" IsSelected="True" HorizontalAlignment="Left" Width="200" Margin="0,0,-2,0"/>
                         <ComboBoxItem Content="歌手 - 标题" HorizontalAlignment="Left" Width="200"/>
                     </ComboBox>
                 </WrapPanel>
                 <WrapPanel Margin="0 10 0 0" HorizontalAlignment="Center">
-                    <Label Content="路径保存格式" HorizontalAlignment="Left" Height="25"  VerticalAlignment="Top"/>
-                    <ComboBox Name="pathStyleComboBox" Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="25">
+                    <Label Foreground="White" Content="路径保存格式" HorizontalAlignment="Left" Height="25"  VerticalAlignment="Top"/>
+                    <ComboBox Foreground="White" 
+                      Background="#10FFFFFF"
+                      pu:ComboBoxHelper.SelectedBackground="#80FFFFFF"
+                      BorderBrush="Transparent" Name="pathStyleComboBox" Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="25">
                         <ComboBoxItem Content="无" IsSelected="True" HorizontalAlignment="Left" Width="200" Margin="0,0,-2,0"/>
                         <ComboBoxItem Content="歌手 - 音乐" HorizontalAlignment="Left" Width="200"/>
                         <ComboBoxItem Content="歌手 - 专辑 - 音乐" HorizontalAlignment="Left" Width="200"/>
                     </ComboBox>
                 </WrapPanel>
                 <WrapPanel Margin="0 10 0 0" HorizontalAlignment="Center">
-                    <Label Content="外语歌曲歌词下载类型" HorizontalAlignment="Left" Height="25"  VerticalAlignment="Top"/>
-                    <ComboBox Name="TranslateLrcComboBox" Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="154" Height="25">
+                    <Label Foreground="White" Content="外语歌曲歌词下载类型" HorizontalAlignment="Left" Height="25"  VerticalAlignment="Top"/>
+                    <ComboBox Foreground="White" 
+                      Background="#10FFFFFF"
+                      pu:ComboBoxHelper.SelectedBackground="#80FFFFFF"
+                      BorderBrush="Transparent" Name="TranslateLrcComboBox" Margin="10 0 0 0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="154" Height="25">
                         <ComboBoxItem Content="外语" IsSelected="True" HorizontalAlignment="Left" Width="154" Margin="0,0,-2,0"/>
                         <ComboBoxItem Content="翻译" HorizontalAlignment="Left" Width="154"/>
                         <ComboBoxItem Content="外语+翻译" HorizontalAlignment="Left" Width="154"/>
                     </ComboBox>
                 </WrapPanel>
                 <WrapPanel>
-                    <Label HorizontalAlignment="Center" Margin="100 0 0 0" FontSize="11" VerticalAlignment="Center" Foreground="Gray" Content="只对 音源1 有效"/>
+                    <Label HorizontalAlignment="Center" Margin="100 0 0 0" FontSize="11" VerticalAlignment="Center" Foreground="LightGray" Content="只对 音源1 有效"/>
                 </WrapPanel>
                 <WrapPanel>
-                    <Label Margin="0 10 0 0" Content="自定义音源1"/>
-                    <TextBox Margin="0 10 0 0" Name="Source1textBox" pu:TextBoxHelper.Watermark="http://example:port/" Width="267" Height="25" />
+                    <Label Foreground="White" Margin="0 10 0 0" Content="自定义音源1"/>
+                    <TextBox Foreground="LightGray" Background="#10FFFFFF" BorderThickness="0" Margin="0 10 0 0" Name="Source1textBox" Text="http://example:port/" Width="267" Height="25" GotFocus="Source1textBox_GotFocus" LostFocus="Source1textBox_LostFocus" />
                 </WrapPanel>
                 <WrapPanel>
-                    <Label Margin="0 10 0 0" Content="自定义音源1Cookie"/>
-                    <TextBox Margin="0 10 0 0" Name="cookietextbox1" Width="217" Height="25" />
+                    <Label Foreground="White" Margin="0 10 0 0" Content="自定义音源1Cookie"/>
+                    <TextBox Background="#10FFFFFF" BorderThickness="0" Margin="0 10 0 0" Name="cookietextbox1" Width="217" Height="25" />
                 </WrapPanel>
                 <WrapPanel>
-                    <Label Margin="0 10 0 0" Content="自定义音源2"/>
-                    <TextBox Margin="0 10 0 0" Name="Source2textBox" pu:TextBoxHelper.Watermark="http://example:port/" Width="267" Height="25" />
+                    <Label Foreground="White" Margin="0 10 0 0" Content="自定义音源2"/>
+                    <TextBox Foreground="LightGray" Background="#10FFFFFF" BorderThickness="0" Margin="0 10 0 0" Name="Source2textBox" Text="http://example:port/" Width="267" Height="25" LostFocus="Source2textBox_LostFocus" GotFocus="Source2textBox_GotFocus" />
                 </WrapPanel>
                 <WrapPanel Margin="0 3 0 0" HorizontalAlignment="Center">
 
                 </WrapPanel>
-                <CheckBox Name="lrcCheckBox" Margin="0 5 0 0" Content="下载歌词" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <CheckBox Name="picCheckBox" Margin="0 5 0 0" Content="下载封面" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <Button Click="Button_Click"  Content="保存" Margin="0 5 0 0" HorizontalAlignment="Center" Width="100" Height="40" />
+                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Switch2" Name="lrcCheckBox" Margin="0 5 0 0" Content="下载歌词" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Switch2" Name="picCheckBox" Margin="0 5 0 0" Content="下载封面" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Button Click="Button_Click" Background="#20FFFFFF" Content="保存" Margin="0 10 0 10" HorizontalAlignment="Center" Width="100" Height="40" />
             </StackPanel>
         </ScrollViewer>
     </Grid>
