@@ -14,6 +14,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/DataGridForSong.xaml"/>
                 <ResourceDictionary Source="/Styles/Style.xaml"/>
+                <ResourceDictionary Source="/Styles/ComboBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
@@ -40,16 +41,12 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <ComboBox Name="apiComboBox" Margin="5 5 5 5"
-                      Foreground="White" 
-                      Background="#10FFFFFF"
-                      pu:ComboBoxHelper.SelectedBackground="#80FFFFFF"
-                      BorderBrush="Transparent"
-                      FontSize="13"
+                      Style="{StaticResource ComboxTemplate}"
                       SelectionChanged="apiComboBox_SelectionChanged" 
                       PreviewKeyDown="apiComboBox_PreviewKeyDown" TabIndex="0"
                       Grid.Column="0">
-                <ComboBoxItem IsSelected="True" Foreground="Red" Content="音源1" HorizontalAlignment="Left" Width="106"/>
-                <ComboBoxItem Content="音源2" Foreground="Green" HorizontalAlignment="Left" Width="106"/>
+                <ComboBoxItem Content="音源1" Foreground="Red" Width="auto" IsSelected="True"/>
+                <ComboBoxItem Content="音源2" Foreground="Green" Width="auto"/>
             </ComboBox>
             <TextBox Margin="5 5 5 5"
                      BorderThickness="0"

@@ -3,7 +3,7 @@ WPF+C# 编写的音乐下载器<br>
 [博客文章](https://www.nitian1207.cn/archives/496)
 
 ## 运行截图
-![界面](https://www.nitian1207.cn/wp-content/uploads/2020/04/mdui.png)
+![界面](http://cdn.nitian1207.cn/PIC.png)
 
 ## 二次开发注意事项
 本项目所需接口需要自行搭建，具体信息参考下文 "使用的开源项目"<br>
@@ -21,6 +21,7 @@ WPF+C# 编写的音乐下载器<br>
 ## 使用的开源项目
 * Newtonsoft.Json
 * Panuon.UI.Silver
+* AduSkin
 * TagLibSharp
 * [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 * [jsososo/QQMusicApi](https://github.com/jsososo/QQMusicApi)
