@@ -125,9 +125,9 @@ namespace MusicDownloader
                 this.Height = Int32.Parse(Tool.Config.Read("H"));
                 this.Width = Int32.Parse(Tool.Config.Read("W"));
             }
-            if (!String.IsNullOrEmpty(Tool.Config.Read("Backgroud")) && File.Exists(Tool.Config.Read("Backgroud")))
+            if (!String.IsNullOrEmpty(Tool.Config.Read("Background")) && File.Exists(Tool.Config.Read("Background")))
             {
-                BG.Source = new BitmapImage(new Uri(Tool.Config.Read("Backgroud")));
+                BG.Source = new BitmapImage(new Uri(Tool.Config.Read("Background")));
             }
             if (!String.IsNullOrEmpty(Tool.Config.Read("Blur")))
             {
@@ -210,21 +210,34 @@ namespace MusicDownloader
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MessageBoxResult result = AduMessageBox.ShowYesNo("                    确定关闭程序?", "提示", "退出", "最小化");
-            if (result == MessageBoxResult.No)
+            if (!string.IsNullOrEmpty(Tool.Config.Read("Close")))
             {
-                e.Cancel = true;
-                this.Visibility = Visibility.Hidden;
+                switch (int.Parse(Tool.Config.Read("Close")))
+                {
+                    case 0:
+                        MessageBoxResult result = AduMessageBox.ShowYesNo("                    确定关闭程序?", "提示", "退出", "最小化");
+                        if (result == MessageBoxResult.No)
+                        {
+                            e.Cancel = true;
+                            this.Visibility = Visibility.Hidden;
+                        }
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            notifyicon.Dispose();
+                            Application.Current.Shutdown();
+                        }
+                        break;
+                    case 1:
+                        e.Cancel = true;
+                        this.Visibility = Visibility.Hidden;
+                        break;
+                    case 2:
+                        notifyicon.Dispose();
+                        Application.Current.Shutdown();
+                        break;
+
+                }
             }
-            if (result == MessageBoxResult.Yes)
-            {
-                notifyicon.Dispose();
-                Application.Current.Shutdown();
-            }
-            //if (result == MessageBoxResult.Cancel)
-            //{
-            //    e.Cancel = true;
-            //}
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)
@@ -345,7 +358,7 @@ namespace MusicDownloader
             if (path != "")
             {
                 BG.Source = new BitmapImage(new Uri(path));
-                Tool.Config.Write("Backgroud", path);
+                Tool.Config.Write("Background", path);
             }
         }
 

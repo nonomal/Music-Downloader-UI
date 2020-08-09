@@ -20,7 +20,7 @@ namespace MusicDownloader.Library
         /// <summary>
         /// api1和NeteaseApiUrl相同,api2和QQApiUrl相同
         /// </summary>
-        public List<int> version = new List<int> { 1, 2, 4 };
+        public List<int> version = new List<int> { 1, 2, 5 };
         public string api1 = ""; //自行搭建接口，以 / 结尾
         public string NeteaseApiUrl = "";
         public string api2 = ""; //自行搭建接口，以 / 结尾
@@ -380,7 +380,15 @@ namespace MusicDownloader.Library
             {
                 for (int i = 0; i < dl.Count; i++)
                 {
-                    string url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + dl[i].strMediaMid;
+                    string url = null;
+                    if (!string.IsNullOrEmpty(dl[i].strMediaMid))
+                    {
+                        url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + dl[i].strMediaMid;
+                    }
+                    else
+                    {
+                        url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac");
+                    }
                     using (WebClientPro wc = new WebClientPro())
                     {
                         StreamReader sr = null; ;
@@ -440,7 +448,15 @@ namespace MusicDownloader.Library
             }
             if (api == 2)
             {
-                string url = QQApiUrl + "song/url?id=" + id + "&type=320&mediaId=" + strMediaMid;
+                string url = null;
+                if (!string.IsNullOrEmpty(strMediaMid))
+                {
+                    url = QQApiUrl + "song/url?id=" + id + "&type=320&mediaId=" + strMediaMid;
+                }
+                else
+                {
+                    url = QQApiUrl + "song/url?id=" + id + "&type=320";
+                }
                 QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(GetHTML(url));
                 if (json.data == null)
                 {

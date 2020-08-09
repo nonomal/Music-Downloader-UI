@@ -72,6 +72,10 @@ namespace MusicDownloader.Pages
             lrcCheckBox.IsChecked = setting.IfDownloadLrc;
             picCheckBox.IsChecked = setting.IfDownloadPic;
             TranslateLrcComboBox.SelectedIndex = setting.TranslateLrc;
+            if (!string.IsNullOrEmpty(Tool.Config.Read("Close")))
+            {
+                CloseComboBox.SelectedIndex = int.Parse(Tool.Config.Read("Close"));
+            }
             if (setting.Api1 != "")
             {
                 Source1textBox.Text = setting.Api1;
@@ -110,6 +114,7 @@ namespace MusicDownloader.Pages
             Tool.Config.Write("SavePathStyle", pathStyleComboBox.SelectedIndex.ToString());
             Tool.Config.Write("SearchQuantity", searchQuantityTextBox.Text);
             Tool.Config.Write("TranslateLrc", TranslateLrcComboBox.SelectedIndex.ToString());
+            Tool.Config.Write("Close", CloseComboBox.SelectedIndex.ToString());
             if (Source1textBox.Text != "" && Source1textBox.Text != null && Source1textBox.Text != "http://example:port/")
             {
                 Tool.Config.Write("Source1", Source1textBox.Text);
@@ -205,6 +210,12 @@ namespace MusicDownloader.Pages
         private void BlurSlider_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             SaveBlurEvent(BlurSlider.Value);
+        }
+
+        private void ReBG_Click(object sender, RoutedEventArgs e)
+        {
+            Tool.Config.Write("Background", "");
+            AduMessageBox.Show("恢复完成，重启后生效", "提示");
         }
     }
 }
