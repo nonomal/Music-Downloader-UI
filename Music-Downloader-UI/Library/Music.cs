@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using static MusicDownloader.Library.Tool;
@@ -20,7 +21,7 @@ namespace MusicDownloader.Library
         /// <summary>
         /// api1和NeteaseApiUrl相同,api2和QQApiUrl相同
         /// </summary>
-        public List<int> version = new List<int> { 1, 2, 5 };
+        public List<int> version = new List<int> { 1, 2, 6 };
         public string api1 = ""; //自行搭建接口，以 / 结尾
         public string NeteaseApiUrl = "";
         public string api2 = ""; //自行搭建接口，以 / 结尾
@@ -133,6 +134,7 @@ namespace MusicDownloader.Library
         /// <returns></returns>
         public List<MusicInfo> Search(string Key, int api)
         {
+            Key = Uri.EscapeDataString(Key).Replace("&", "%26");
             if (api == 1)
             {
                 try
@@ -261,7 +263,8 @@ namespace MusicDownloader.Library
                     PicUrl = mdr.songs[i].al.picUrl + "?param=300y300",
                     Singer = singer.Substring(0, singer.Length - 1),
                     Title = mdr.songs[i].name,
-                    Api = 1
+                    Api = 1,
+                    MVID = mdr.songs[i].mv.ToString()
                 };
                 ret.Add(mi);
             }
@@ -302,7 +305,8 @@ namespace MusicDownloader.Library
                         PicUrl = "https://y.gtimg.cn/music/photo_new/T002R500x500M000" + json.data.list[i].albummid + ".jpg",
                         Singer = singers,
                         Api = 2,
-                        strMediaMid = json.data.list[i].strMediaMid
+                        strMediaMid = json.data.list[i].strMediaMid,
+                        MVID = json.data.list[i].songid.ToString()
                     });
             }
             return res;
@@ -381,6 +385,11 @@ namespace MusicDownloader.Library
                 for (int i = 0; i < dl.Count; i++)
                 {
                     string url = null;
+                    if (dl[i].Id == "0")
+                    {
+                        dl[i].State = "无版权";
+                        continue;
+                    }
                     if (!string.IsNullOrEmpty(dl[i].strMediaMid))
                     {
                         url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + dl[i].strMediaMid;
@@ -449,6 +458,10 @@ namespace MusicDownloader.Library
             if (api == 2)
             {
                 string url = null;
+                if (id == "0")
+                {
+                    return "";
+                }
                 if (!string.IsNullOrEmpty(strMediaMid))
                 {
                     url = QQApiUrl + "song/url?id=" + id + "&type=320&mediaId=" + strMediaMid;
@@ -1201,6 +1214,31 @@ namespace MusicDownloader.Library
                 }
                 return re;
             }
+        }
+
+        public string GetMvUrl(int api, string id)
+        {
+            string url = null;
+            if (api == 1)
+            {
+                url = NeteaseApiUrl + "mv/url?id=" + id;
+                WebClientPro wc = new WebClientPro();
+                StreamReader sr = new StreamReader(wc.OpenRead(url));
+                string pattern = "(?<=\"url\":\").+?(?=\")";
+                return Regex.Match(sr.ReadToEnd(), pattern).Value;
+            }
+            if (api == 2)
+            {
+                url = QQApiUrl + "song/mv?id=" + id;
+                WebClientPro wc = new WebClientPro();
+                StreamReader sr = new StreamReader(wc.OpenRead(url));
+                string pattern = "(?<=\"vid\":\").+?(?=\")";
+                url = QQApiUrl + "mv/url?id=" + Regex.Match(sr.ReadToEnd(), pattern).Value;
+                sr = new StreamReader(wc.OpenRead(url));
+                pattern = "(?<=http:).+?(?=\")";
+                return "http:" + Regex.Match(sr.ReadToEnd(), pattern).Value;
+            }
+            return "";
         }
     }
 }

@@ -68,6 +68,7 @@ namespace MusicDownloader.Json
         /// 只有QQ音乐需要该参数
         /// </summary>
         public string strMediaMid { get; set; }
+        public string MVID { get; set; }
     }
 
     public class NeteaseMusicDetails
@@ -148,6 +149,7 @@ namespace MusicDownloader.Json
 
         public class list
         {
+            public int songid { get; set; }
             public string songmid { get; set; }
             public string strMediaMid { get; set; }
             public string albumname { get; set; }
