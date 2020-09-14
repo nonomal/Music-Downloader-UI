@@ -106,7 +106,8 @@ namespace MusicDownloader
                 TranslateLrc = int.Parse(Tool.Config.Read("TranslateLrc") ?? "0"),
                 Api1 = Tool.Config.Read("Source1") ?? "",
                 Api2 = Tool.Config.Read("Source2") ?? "",
-                Cookie1 = Tool.Config.Read("Cookie1") ?? ""
+                Cookie1 = Tool.Config.Read("Cookie1") ?? "",
+                AutoLowerQuality = Boolean.Parse(Tool.Config.Read("AutoLowerQuality") ?? "true") 
             };
             music = new Music(setting);
             HomePage = new SearchPage(music, setting);
@@ -120,6 +121,10 @@ namespace MusicDownloader
                 ver += s.ToString() + ".";
             }
             VerTextblock.Text = ver.Substring(0, ver.Length - 1);
+            if (music.Beta)
+            {
+                VerTextblock.Text += "(Beta)";
+            }
             if (Tool.Config.Read("H") != null)
             {
                 this.Height = Int32.Parse(Tool.Config.Read("H"));
@@ -135,24 +140,49 @@ namespace MusicDownloader
             }
         }
 
+        /// <summary>
+        /// 处理未知异常 保存日志
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            SaveLog(e);
+        }
+
+        static public void SaveLog(UnhandledExceptionEventArgs e)
+        {
+            StreamWriter sw = null;
             if (File.Exists("Error.log"))
             {
-                StreamReader sr = new StreamReader("Error.log");
-                StreamWriter sw = new StreamWriter("Error.log");
-                //((Exception)e.ExceptionObject).
-                sw.WriteLine(sr.ReadToEnd() + "\r\n" + e.ExceptionObject.ToString());
-                sw.Flush();
-                sw.Close();
+                sw = File.AppendText("Error.log");
             }
             else
             {
-                StreamWriter sw = new StreamWriter("Error.log");
-                sw.WriteLine(e.ExceptionObject.ToString());
-                sw.Flush();
-                sw.Close();
+                sw = new StreamWriter("Error.log");
+                sw.WriteLine($"--- {DateTime.Now.ToString("G")} ---");
             }
+            sw.WriteLine(e.ExceptionObject.ToString());
+            sw.Flush();
+            sw.Close();
+            MessageBox.Show("遇到未知错误，具体信息查看 " + Environment.CurrentDirectory + "\\Error.log");
+        }
+
+        static public void SaveLog(Exception e)
+        {
+            StreamWriter sw = null;
+            if (File.Exists("Error.log"))
+            {
+                sw = File.AppendText("Error.log");
+            }
+            else
+            {
+                sw = new StreamWriter("Error.log");
+                sw.WriteLine($"--- {DateTime.Now.ToString("G")} ---");
+            }
+            sw.WriteLine(e.Message.ToString() + "/r/n" + e.StackTrace);
+            sw.Flush();
+            sw.Close();
             MessageBox.Show("遇到未知错误，具体信息查看 " + Environment.CurrentDirectory + "\\Error.log");
         }
 
@@ -166,6 +196,7 @@ namespace MusicDownloader
             menu1.Click += Menu1_Click;
             notifyicon.ContextMenu = new System.Windows.Forms.ContextMenu(new System.Windows.Forms.MenuItem[] { menu1 });
             string result = "";
+            NoticeManager.Initialize();
             await Task.Run(() =>
             {
                 result = music.Update();
@@ -205,6 +236,7 @@ namespace MusicDownloader
             Tool.Config.Write("H", ((int)this.Height).ToString());
             Tool.Config.Write("W", ((int)this.Width).ToString());
             notifyicon.Dispose();
+            NoticeManager.ExitNotifiaction();
             Application.Current.Shutdown();
         }
 

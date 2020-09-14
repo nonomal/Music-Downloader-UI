@@ -56,7 +56,7 @@
                  Background="#20FFFFFF"
                  FontSize="13"
                  TextWrapping="Wrap"
-                 Text="搜索(歌名/歌手/ID)" PreviewKeyDown="searchTextBox_PreviewKeyDown" TabIndex="1" Grid.Column="1" GotFocus="searchTextBox_GotFocus" LostFocus="searchTextBox_LostFocus"/>
+                 Text="搜索(歌名/歌手/ID)" PreviewKeyDown="searchTextBox_Click" TabIndex="1" Grid.Column="1" GotFocus="searchTextBox_GotFocus" LostFocus="searchTextBox_LostFocus"/>
             <Button x:Name="searchButton" Click="searchButton_Click" Height="35" Width="20" HorizontalAlignment="Right" Margin="0 0 8 0"
                 pu:ButtonHelper.ButtonStyle="Link"
                 Content="&#xF002;"
@@ -96,7 +96,7 @@
         </Grid>
 
         <DataGrid Grid.Row="2"
-                  x:Name="List"
+                  x:Name="List" IsReadOnly="True"
                   pu:DataGridHelper.HeaderBackground="#20FFFFFF"
                   pu:DataGridHelper.HeaderForeground="LightGray"
                   pu:DataGridHelper.HoverBackground="Transparent"
@@ -111,14 +111,17 @@
                   ItemsSource="{Binding SearchListItem}" PreviewKeyDown="List_PreviewKeyDown" TabIndex="4" CanUserSortColumns="False">
             <DataGrid.ContextMenu>
                 <ContextMenu pu:ContextMenuHelper.CornerRadius="5" Width="200">
-                    <MenuItem x:Name="menu_Play" Header="播放(单选)" PreviewMouseDown="menu_Play_PreviewMouseDown"/>
-                    <MenuItem x:Name="menu_Pause" Header="暂停/继续" PreviewMouseDown="menu_Pause_PreviewMouseDown"/>
-                    <MenuItem x:Name="menu_SelectAll" Header="全选" PreviewMouseDown="menu_SelectAll_PreviewMouseDown"/>
-                    <MenuItem x:Name="menu_FanSelect" Header="反选" PreviewMouseDown="menu_FanSelect_PreviewMouseDown"/>
-                    <MenuItem x:Name="menu_DownloadSelect" Header="下载选中音乐" PreviewMouseDown="menu_DownloadSelect_PreviewMouseDown"/>
-                    <MenuItem x:Name="menu_DownloadSelectLrc" Header="下载选中歌词" PreviewMouseDown="menu_DownloadSelectLrc_PreviewMouseDown"/>
-                    <MenuItem x:Name="menu_DownloadSelectPic" Header="下载选中图片" PreviewMouseDown="menu_DownloadSelectPic_PreviewMouseDown"/>
-                    <MenuItem x:Name="menu_MVUrl" Header="复制MV链接(单选)" PreviewMouseDown="menu_MVUrl_PreviewMouseDown"/>
+                    <MenuItem x:Name="menu_Play" Header="播放(单选)" Click="menu_Play_PreviewMouseDown"/>
+                    <MenuItem x:Name="menu_Pause" Header="暂停/继续" Click="menu_Pause_Click"/>
+                    <MenuItem x:Name="menu_SelectAll" Header="全选" Click="menu_SelectAll_Click"/>
+                    <MenuItem x:Name="menu_FanSelect" Header="反选" Click="menu_FanSelect_Click"/>
+                    <MenuItem x:Name="menu_DownloadSelect" Header="下载选中音乐" Click="menu_DownloadSelect_Click"/>
+                    <MenuItem x:Name="menu_DownloadSelectLrc" Header="下载选中歌词" Click="menu_DownloadSelectLrc_Click"/>
+                    <MenuItem x:Name="menu_DownloadSelectPic" Header="下载选中图片" Click="menu_DownloadSelectPic_Click"/>
+                    <MenuItem x:Name="menu_MVUrl" Header="复制MV链接(单选)" Click="menu_MVUrl_Click"/>
+                    <MenuItem x:Name="menu_Title" Header="复制标题(单选)" Click="menu_Title_Click"/>
+                    <MenuItem x:Name="menu_Singer" Header="复制歌手(单选)" Click="menu_Singer_Click"/>
+                    <MenuItem x:Name="menu_Album" Header="复制专辑(单选)" Click="menu_Album_Click"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.RowStyle>

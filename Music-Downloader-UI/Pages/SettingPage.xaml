@@ -87,7 +87,7 @@
                         <ComboBoxItem Content="退出" HorizontalAlignment="Left" Width="154"/>
                     </ComboBox>
                 </WrapPanel>
-                        <WrapPanel HorizontalAlignment="Center">
+                <WrapPanel HorizontalAlignment="Center">
                     <Label Content="模糊度" Foreground="White"/>
                     <Slider VerticalAlignment="Center" x:Name="BlurSlider" Minimum="0" Maximum="5" Width="150" ValueChanged="BlurSlider_ValueChanged" pu:SliderHelper.IsTickValueVisible="False" PreviewMouseLeftButtonUp="BlurSlider_PreviewMouseLeftButtonUp"/>
                 </WrapPanel>
@@ -112,6 +112,7 @@
                 </WrapPanel>
                 <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Switch2" Name="lrcCheckBox" Margin="0 5 0 0" Content="下载歌词" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Switch2" Name="picCheckBox" Margin="0 5 0 0" Content="下载封面" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Switch2" Name="lowqCheckBox" Margin="0 5 0 0" Content="下载错误时自动降低音质" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <Button Click="Button_Click" Background="#30FFFFFF" Content="保存" Margin="0 10 0 10" HorizontalAlignment="Center" Width="100" Height="40" />
             </StackPanel>
         </ScrollViewer>

@@ -71,6 +71,7 @@ namespace MusicDownloader.Pages
             pathStyleComboBox.SelectedIndex = setting.SavePathStyle;
             lrcCheckBox.IsChecked = setting.IfDownloadLrc;
             picCheckBox.IsChecked = setting.IfDownloadPic;
+            lowqCheckBox.IsChecked = setting.AutoLowerQuality;
             TranslateLrcComboBox.SelectedIndex = setting.TranslateLrc;
             if (!string.IsNullOrEmpty(Tool.Config.Read("Close")))
             {
@@ -110,6 +111,7 @@ namespace MusicDownloader.Pages
             Tool.Config.Write("DownloadQuality", ((System.Windows.Controls.ContentControl)qualityComboBox.SelectedValue).Content.ToString().Substring(("无损(").Length, 6));
             Tool.Config.Write("IfDownloadLrc", lrcCheckBox.IsChecked.ToString());
             Tool.Config.Write("IfDownloadPic", picCheckBox.IsChecked.ToString());
+            Tool.Config.Write("AutoLowerQuality", lowqCheckBox.IsChecked.ToString());
             Tool.Config.Write("SaveNameStyle", nameStyleComboBox.SelectedIndex.ToString());
             Tool.Config.Write("SavePathStyle", pathStyleComboBox.SelectedIndex.ToString());
             Tool.Config.Write("SearchQuantity", searchQuantityTextBox.Text);
@@ -155,6 +157,7 @@ namespace MusicDownloader.Pages
             setting.SavePathStyle = pathStyleComboBox.SelectedIndex;
             setting.SearchQuantity = searchQuantityTextBox.Text;
             setting.TranslateLrc = TranslateLrcComboBox.SelectedIndex;
+            setting.AutoLowerQuality = lowqCheckBox.IsChecked ?? false;
             AduMessageBox.Show("设置保存成功", "提示", MessageBoxButton.OK);
         }
 

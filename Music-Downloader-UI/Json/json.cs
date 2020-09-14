@@ -28,6 +28,7 @@ namespace MusicDownloader.Json
         public string Api1 { get; set; }
         public string Api2 { get; set; }
         public string Cookie1 { get; set; }
+        public bool AutoLowerQuality { get; set;}
     }
 
     public class Musiclist
@@ -176,6 +177,7 @@ namespace MusicDownloader.Json
             /// http://m8.music.126.net/20190912230430/712bef7a551e78ec25ebef60253543dc/ymusic/7f59/3fb1/2416/00bf36a7fbd8eb8e8a2ed762e39a4cfd.flac
             /// </summary>
             public string url { get; set; }
+            public long br { get; set; }
         }
 
         public class Root

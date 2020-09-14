@@ -105,7 +105,7 @@ namespace MusicDownloader
 
         private void Label_PreviewMouseDown_1(object sender, MouseButtonEventArgs e)
         {
-            if (music.th_Download.ThreadState == System.Threading.ThreadState.Running)
+            if (music.th_Download?.ThreadState == System.Threading.ThreadState.Running)
             {
                 AduMessageBox.Show("请等待下载完成后再试", "提示", MessageBoxButton.OK);
                 return;
@@ -126,7 +126,7 @@ namespace MusicDownloader
 
         private void Label_PreviewMouseDown_2(object sender, MouseButtonEventArgs e)
         {
-            if (music.th_Download.ThreadState == System.Threading.ThreadState.Running)
+            if (music.th_Download?.ThreadState == System.Threading.ThreadState.Running)
             {
                 AduMessageBox.Show("请等待下载完成后再试", "提示", MessageBoxButton.OK);
                 return;
@@ -143,6 +143,48 @@ namespace MusicDownloader
             }
             List.ItemsSource = listitem;
             List.Items.Refresh();
+        }
+        private void menu_Title_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(listitem[List.SelectedIndex].Title);
+            NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+            {
+                Title = "提示",
+                Content = "已复制"
+            });
+        }
+
+        private void menu_Singer_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(listitem[List.SelectedIndex].Singer);
+            NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+            {
+                Title = "提示",
+                Content = "已复制"
+            });
+        }
+
+        private void menu_Album_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(listitem[List.SelectedIndex].Album);
+            NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+            {
+                Title = "提示",
+                Content = "已复制"
+            });
+        }
+
+        private void menu_Pause_Click(object sender, RoutedEventArgs e)
+        {
+            if (music.pause)
+            {
+                menu_Pause.Header = "暂停后续";
+            }
+            else
+            {
+                menu_Pause.Header = "继续下载";
+            }
+            music.pause = !music.pause;
         }
     }
 }

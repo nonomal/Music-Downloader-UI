@@ -15,6 +15,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using AduSkin.Controls.Metro;
+using System.Web.UI.WebControls;
+using System.Data;
 
 namespace MusicDownloader.Pages
 {
@@ -62,7 +64,7 @@ namespace MusicDownloader.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void menu_Pause_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void menu_Pause_Click(object sender, RoutedEventArgs e)
         {
             if (isPlaying)
             {
@@ -88,7 +90,7 @@ namespace MusicDownloader.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void menu_Play_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void menu_Play_PreviewMouseDown(object sender, RoutedEventArgs e)
         {
             string url = music.GetMusicUrl(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].Id);
             if (string.IsNullOrEmpty(url))
@@ -125,7 +127,7 @@ namespace MusicDownloader.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void menu_DownloadSelectLrc_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void menu_DownloadSelectLrc_Click(object sender, RoutedEventArgs e)
         {
             Download(true);
         }
@@ -135,7 +137,7 @@ namespace MusicDownloader.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void menu_DownloadSelectPic_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void menu_DownloadSelectPic_Click(object sender, RoutedEventArgs e)
         {
             Download(false, true);
         }
@@ -145,7 +147,7 @@ namespace MusicDownloader.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void searchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void searchTextBox_Click(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
                 searchButton_Click(this, new RoutedEventArgs());
@@ -156,7 +158,7 @@ namespace MusicDownloader.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void menu_SelectAll_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void menu_SelectAll_Click(object sender, RoutedEventArgs e)
         {
             foreach (SearchListItemModel m in SearchListItem)
             {
@@ -170,7 +172,7 @@ namespace MusicDownloader.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void menu_FanSelect_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void menu_FanSelect_Click(object sender, RoutedEventArgs e)
         {
             foreach (SearchListItemModel m in SearchListItem)
             {
@@ -184,7 +186,7 @@ namespace MusicDownloader.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void menu_DownloadSelect_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void menu_DownloadSelect_Click(object sender, RoutedEventArgs e)
         {
             Download();
         }
@@ -708,7 +710,7 @@ namespace MusicDownloader.Pages
             }
             if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key.ToString() == "P")
             {
-                menu_Pause_PreviewMouseDown(null, null);
+                menu_Pause_Click(null, null);
             }
         }
 
@@ -760,13 +762,13 @@ namespace MusicDownloader.Pages
                 if (CtrlButton.Text == "\xe607")
                 {
                     CtrlButton.Text = "\xe61d";
-                    menu_Pause_PreviewMouseDown(null, null);
+                    menu_Pause_Click(null, null);
                     return;
                 }
                 if (CtrlButton.Text == "\xe61d")
                 {
                     CtrlButton.Text = "\xe607"; ;
-                    menu_Pause_PreviewMouseDown(null, null);
+                    menu_Pause_Click(null, null);
                     return;
                 }
             }
@@ -826,17 +828,55 @@ namespace MusicDownloader.Pages
             }
         }
 
-        private void menu_MVUrl_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void menu_MVUrl_Click(object sender, RoutedEventArgs e)
         {
             if (musicinfo[List.SelectedIndex].MVID != "0" && !string.IsNullOrEmpty(musicinfo[List.SelectedIndex].MVID))
             {
                 Clipboard.SetText(music.GetMvUrl(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].MVID));
-                AduMessageBox.Show("已复制", "提示");
+                NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+                {
+                    Title = "提示",
+                    Content = "已复制"
+                });
             }
             else
             {
-                AduMessageBox.Show("无法获取Mv链接", "提示");
+                NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+                {
+                    Title = "提示",
+                    Content = "无法获取MV链接"
+                });
             }
+        }
+
+        private void menu_Title_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(SearchListItem[List.SelectedIndex].Title);
+            NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+            {
+                Title = "提示",
+                Content = "已复制"
+            });
+        }
+
+        private void menu_Singer_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(SearchListItem[List.SelectedIndex].Singer);
+            NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+            {
+                Title = "提示",
+                Content = "已复制"
+            });
+        }
+
+        private void menu_Album_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(SearchListItem[List.SelectedIndex].Album);
+            NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+            {
+                Title = "提示",
+                Content = "已复制"
+            });
         }
     }
 }

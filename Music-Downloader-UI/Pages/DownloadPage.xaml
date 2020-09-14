@@ -15,7 +15,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
-        <DataGrid Name="List"
+        <DataGrid Name="List" IsReadOnly="True"
                   pu:DataGridHelper.HeaderBackground="#20FFFFFF"
                   pu:DataGridHelper.HeaderForeground="LightGray"
                   pu:DataGridHelper.HeaderMinHeight="25"
@@ -25,6 +25,14 @@
                   BorderThickness="1"
                   ItemsSource="{Binding listitem}" CanUserSortColumns="False"
                   Grid.Row="0">
+            <DataGrid.ContextMenu>
+                <ContextMenu pu:ContextMenuHelper.CornerRadius="5" Width="200">
+                    <MenuItem x:Name="menu_Pause" Header="暂停后续" Click="menu_Pause_Click"/>
+                    <MenuItem x:Name="menu_Title" Header="复制标题(单选)" Click="menu_Title_Click"/>
+                    <MenuItem x:Name="menu_Singer" Header="复制歌手(单选)" Click="menu_Singer_Click"/>
+                    <MenuItem x:Name="menu_Album" Header="复制专辑(单选)" Click="menu_Album_Click"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="标题" Width="*" Binding="{Binding Title}"/>
                 <DataGridTextColumn Header="歌手" Width="*" Binding="{Binding Singer}"/>
