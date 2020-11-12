@@ -12,6 +12,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using static MusicDownloader.Library.Tool;
+using NT.Tools;
+using TagLib.IFD.Tags;
 
 namespace MusicDownloader.Library
 {
@@ -21,7 +23,7 @@ namespace MusicDownloader.Library
         /// <summary>
         /// api1和NeteaseApiUrl相同,api2和QQApiUrl相同
         /// </summary>
-        public List<int> version = new List<int> { 1, 2, 8 };
+        public List<int> version = new List<int> { 1, 3, 0 };
         public bool Beta = false;
         public string api1 = ""; //自行搭建接口，以 / 结尾
         public string NeteaseApiUrl = "";
@@ -48,6 +50,7 @@ namespace MusicDownloader.Library
         public event UpdateDownloadPageEventHandler UpdateDownloadPage;
         bool wait = false;
         public bool pause = false;
+        DownloadManager downloadManager = new DownloadManager();
 
         /// <summary>
         /// 获取更新数据 这个方法是获取程序更新信息 二次开发请修改
@@ -290,261 +293,68 @@ namespace MusicDownloader.Library
         List<MusicInfo> QQSearch(string Key)
         {
             List<MusicInfo> res = new List<MusicInfo>();
-            string url = QQApiUrl + "search?key=" + Key + "&pageSize=60";
-            string resjson = "";
-            using (WebClientPro wc = new WebClientPro())
+            //http://c.y.qq.com/soso/fcgi-bin/client_search_cp?format=json&w={key}&cr=1&g_tk=5381
+            string url = "";
+
+            int pages = int.Parse(setting.SearchQuantity) / 60;
+            int m = int.Parse(setting.SearchQuantity) % 60;
+            if (m != 0)
             {
-                StreamReader sr = new StreamReader(wc.OpenRead(url));
-                resjson = sr.ReadToEnd();
+                pages++;
             }
-            QQMusicDetails.Root json = JsonConvert.DeserializeObject<QQMusicDetails.Root>(resjson);
-            for (int i = 0; i < json.data.list.Count; i++)
+
+            for (int x = 1; x <= pages; x++)
             {
-                string singers = "";
-                foreach (QQMusicDetails.singer singer in json.data.list[i].singer)
+                if (x != pages)
                 {
-                    singers += singer.name + "、";
+                    url = $"http://c.y.qq.com/soso/fcgi-bin/client_search_cp?format=json&w={Key}&cr=1&g_tk=5381&n=60&p={x}";
                 }
-                if (singers.Length > 100)
+                else
                 {
-                    singers = "群星.";
+                    url = $"http://c.y.qq.com/soso/fcgi-bin/client_search_cp?format=json&w={Key}&cr=1&g_tk=5381&n={m}&p={x}";
                 }
-                singers = singers.Substring(0, singers.Length - 1);
-                res.Add(
-                    new MusicInfo
+                string resjson = "";
+                using (WebClientPro wc = new WebClientPro())
+                {
+                    StreamReader sr = new StreamReader(wc.OpenRead(url));
+                    resjson = sr.ReadToEnd();
+                }
+                QQMusicDetails.Root json = JsonConvert.DeserializeObject<QQMusicDetails.Root>(resjson);
+                for (int i = 0; i < json.data.song.list.Count; i++)
+                {
+                    string singers = "";
+                    foreach (QQMusicDetails.singer singer in json.data.song.list[i].singer)
                     {
-                        Album = json.data.list[i].albumname,
-                        Id = json.data.list[i].songmid,
-                        Title = json.data.list[i].songname,
-                        LrcUrl = QQApiUrl + "lyric?songmid=" + json.data.list[i].songmid,
-                        PicUrl = "https://y.gtimg.cn/music/photo_new/T002R500x500M000" + json.data.list[i].albummid + ".jpg",
-                        Singer = singers,
-                        Api = 2,
-                        strMediaMid = json.data.list[i].strMediaMid,
-                        MVID = json.data.list[i].songid.ToString()
-                    });
+                        singers += singer.name + "、";
+                    }
+                    if (singers.Length > 100)
+                    {
+                        singers = "群星.";
+                    }
+                    singers = singers.Substring(0, singers.Length - 1);
+                    res.Add(
+                        new MusicInfo
+                        {
+                            Album = json.data.song.list[i].albumname,
+                            Id = json.data.song.list[i].songmid,
+                            Title = json.data.song.list[i].songname,
+                            LrcUrl = QQApiUrl + "lyric?songmid=" + json.data.song.list[i].songmid,
+                            PicUrl = "https://y.gtimg.cn/music/photo_new/T002R500x500M000" + json.data.song.list[i].albummid + ".jpg",
+                            Singer = singers,
+                            Api = 2,
+                            strMediaMid = json.data.song.list[i].strMediaMid,
+                            MVID = json.data.song.list[i].songid.ToString()
+                        });
+                }
             }
             return res;
         }
 
-        /// <summary>
-        /// 下载方法
-        /// </summary>
-        /// <param name="dl"></param>
-        public string Download(List<DownloadList> dl, int api)
+        public string AddToDownloadList(List<DownloadList> dl)
         {
-            string ids = "";
-            if (api == 1)
+            for(int i=0;i<dl.Count;i++)
             {
-                int times = dl.Count / 150;
-                int remainder = dl.Count % 150;
-                if (remainder == 0)
-                {
-                    remainder = 150;
-                }
-                else
-                {
-                    times++;
-                }
-                for (int i = 0; i < times; i++)
-                {
-                    if (i == times - 1)
-                    {
-                        ids = "";
-                        for (int x = 0; x < remainder; x++)
-                        {
-                            ids += dl[i * 150 + x].Id + ",";
-                        }
-                        ids = ids.Substring(0, ids.Length - 1);
-                        string u = NeteaseApiUrl + "song/url?id=" + ids + "&br=" + dl[0].Quality;
-                        //??接口本身就会降音质
-                        Json.GetUrl.Root urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
-                        for (int x = 0; x < remainder; x++)
-                        {
-                            for (int y = 0; y < dl.Count; y++)
-                            {
-                                if (urls.data[x].id.ToString() == dl[y].Id)
-                                {
-                                    //检测音质是否正确
-                                    if (dl[0].Quality == "999000")
-                                    {
-                                        if (urls.data[x].br == 320000 || urls.data[x].br == 128000)
-                                        {
-                                            //音质降低
-                                            if (setting.AutoLowerQuality)
-                                            {
-                                                dl[y].Url = urls.data[x].url;
-                                            }
-                                            else
-                                            {
-                                                dl[y].Url = null;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            dl[y].Url = urls.data[x].url;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (dl[0].Quality == urls.data[x].br.ToString())
-                                        {
-                                            //音质没降
-                                            dl[y].Url = urls.data[x].url;
-                                        }
-                                        else
-                                        {
-                                            //音质降低
-                                            if (setting.AutoLowerQuality)
-                                            {
-                                                dl[y].Url = urls.data[x].url;
-                                            }
-                                            else
-                                            {
-                                                dl[y].Url = null;
-                                            }
-                                        }
-                                    }
-                                    dl[y].State = "准备下载";
-                                    //降音质
-                                    //if (setting.AutoLowerQuality && string.IsNullOrEmpty(urls.data[x].url))
-                                    //{
-                                    //    if (string.IsNullOrEmpty(urls.data[x].url))
-                                    //    {
-                                    //        if (dl[0].Quality == "999000")
-                                    //        {
-                                    //            string _url = NeteaseApiUrl + "song/url?id=" + urls.data[x].id + "&br=320000";
-                                    //            Json.GetUrl.Root _urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(_url));
-                                    //            if (string.IsNullOrEmpty(_urls.data[0].url))
-                                    //            {
-                                    //                _url = NeteaseApiUrl + "song/url?id=" + urls.data[x].id + "&br=128000";
-                                    //                _urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(_url));
-                                    //            }
-                                    //            if (!string.IsNullOrEmpty(_urls.data[0].url))
-                                    //            {
-                                    //                dl[y].Url = _urls.data[0].url;
-                                    //            }
-                                    //            else
-                                    //            {
-                                    //                dl[y].Url = "";
-                                    //            }
-                                    //        }
-                                    //        if (dl[0].Quality == "320000")
-                                    //        {
-                                    //            string _url = NeteaseApiUrl + "song/url?id=" + urls.data[x].id + "&br=128000";
-                                    //            Json.GetUrl.Root _urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(_url));
-                                    //            if (string.IsNullOrEmpty(_urls.data[0].url))
-                                    //            {
-                                    //                dl[y].Url = "";
-                                    //            }
-                                    //            else
-                                    //            {
-                                    //                dl[y].Url = _urls.data[0].url;
-                                    //            }
-                                    //        }
-                                    //    }
-                                    //}
-                                    //else
-                                    //{
-                                    //    if (urls.data[x].br == long.Parse(dl[0].Quality))
-                                    //    {
-                                    //        dl[y].Url = urls.data[x].url;
-                                    //        dl[y].State = "准备下载";
-                                    //    }
-                                    //    else if (urls.data[x].br != long.Parse(dl[0].Quality) && !string.IsNullOrEmpty(urls.data[x].url) && setting.AutoLowerQuality)
-                                    //    {
-                                    //        dl[y].Url = urls.data[x].url;
-                                    //        dl[y].State = "准备下载";
-                                    //    }
-                                    //}
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        ids = "";
-                        for (int x = 0; x < 150; x++)
-                        {
-                            ids += dl[i * 150 + x].Id + ",";
-                        }
-                        ids = ids.Substring(0, ids.Length - 1);
-                        string u = NeteaseApiUrl + "song/url?id=" + ids + "&br=" + dl[0].Quality;
-                        Json.GetUrl.Root urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
-                        for (int x = 0; x < 150; x++)
-                        {
-                            for (int y = 0; y < dl.Count; y++)
-                            {
-                                if (urls.data[x].id.ToString() == dl[y].Id)
-                                {
-                                    dl[y].Url = urls.data[x].url;
-                                    dl[y].State = "准备下载";
-                                }
-                            }
-                        }
-                    }
-                    Thread.Sleep(1000);
-                }
-            }
-            else if (api == 2)
-            {
-                for (int i = 0; i < dl.Count; i++)
-                {
-                    string url = null;
-                    if (dl[i].Id == "0")
-                    {
-                        dl[i].State = "无版权";
-                        continue;
-                    }
-                    if (!string.IsNullOrEmpty(dl[i].strMediaMid))
-                    {
-                        url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + dl[i].strMediaMid;
-                    }
-                    else
-                    {
-                        url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac");
-                    }
-                    using (WebClientPro wc = new WebClientPro())
-                    {
-                        StreamReader sr = null; ;
-                        try { sr = new StreamReader(wc.OpenRead(url)); }
-                        catch (Exception e)
-                        {
-                            return e.Message;
-                        }
-
-                        string httpjson = sr.ReadToEnd();
-                        QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
-
-                        //降音质
-                        if (json.result != 100 && setting.AutoLowerQuality)
-                        {
-                            if (dl[i].Quality == "999000")
-                            {
-                                url = url.Replace("flac", "320");
-                                sr = new StreamReader(wc.OpenRead(url));
-                                httpjson = sr.ReadToEnd();
-                                json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
-                                if (json.result != 100)
-                                {
-                                    url = url.Replace("320", "128");
-                                    sr = new StreamReader(wc.OpenRead(url));
-                                    httpjson = sr.ReadToEnd();
-                                    json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
-                                }
-                            }
-                            if (dl[i].Quality == "320000")
-                            {
-                                url = url.Replace("320", "128");
-                                sr = new StreamReader(wc.OpenRead(url));
-                                httpjson = sr.ReadToEnd();
-                                json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
-                            }
-                        }
-                        dl[i].Url = json.data;
-                        dl[i].State = "准备下载";
-                    }
-                }
+                dl[i].State = "准备下载";
             }
             downloadlist.AddRange(dl);
             UpdateDownloadPage();
@@ -555,6 +365,292 @@ namespace MusicDownloader.Library
             }
             return "";
         }
+
+        public string Download()
+        {
+            if (downloadlist[0].Api == 1)
+            {
+                string u = NeteaseApiUrl + "song/url?id=" + downloadlist[0].Id + "&br=" + downloadlist[0].Quality;
+                //??接口本身就会降音质
+                Json.GetUrl.Root urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
+                //检测音质是否正确
+                if (downloadlist[0].Quality == "999000")
+                {
+                    if (urls.data[0].br == 320000 || urls.data[0].br == 128000)
+                    {
+                        //音质降低
+                        if (setting.AutoLowerQuality)
+                        {
+                            downloadlist[0].Url = urls.data[0].url;
+                        }
+                        else
+                        {
+                            downloadlist[0].Url = null;
+                        }
+                    }
+                    else
+                    {
+                        downloadlist[0].Url = urls.data[0].url;
+                    }
+                }
+                else
+                {
+                    if (downloadlist[0].Quality == urls.data[0].br.ToString())
+                    {
+                        //音质没降
+                        downloadlist[0].Url = urls.data[0].url;
+                    }
+                    else
+                    {
+                        //音质降低
+                        if (setting.AutoLowerQuality)
+                        {
+                            downloadlist[0].Url = urls.data[0].url;
+                        }
+                        else
+                        {
+                            downloadlist[0].Url = null;
+                        }
+                    }
+                }
+                downloadlist[0].State = "准备下载";
+            }
+            if (downloadlist[0].Api == 2)
+            {
+                string url = "";
+                if (downloadlist[0].Id == "0")
+                {
+                    downloadlist[0].State = "无版权";
+                }
+                if (!string.IsNullOrEmpty(downloadlist[0].strMediaMid))
+                {
+                    url = QQApiUrl + "song/url?id=" + downloadlist[0].Id + "&type=" + downloadlist[0].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + downloadlist[0].strMediaMid;
+                }
+                else
+                {
+                    url = QQApiUrl + "song/url?id=" + downloadlist[0].Id + "&type=" + downloadlist[0].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac");
+                }
+                using (WebClientPro wc = new WebClientPro())
+                {
+                    StreamReader sr = null; ;
+                    try { sr = new StreamReader(wc.OpenRead(url)); }
+                    catch (Exception e)
+                    {
+                        return e.Message;
+                    }
+
+                    string httpjson = sr.ReadToEnd();
+                    QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
+
+                    //降音质
+                    if (json.result != 100 && setting.AutoLowerQuality)
+                    {
+                        if (downloadlist[0].Quality == "999000")
+                        {
+                            url = url.Replace("flac", "320");
+                            sr = new StreamReader(wc.OpenRead(url));
+                            httpjson = sr.ReadToEnd();
+                            json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
+                            if (json.result != 100)
+                            {
+                                url = url.Replace("320", "128");
+                                sr = new StreamReader(wc.OpenRead(url));
+                                httpjson = sr.ReadToEnd();
+                                json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
+                            }
+                        }
+                        if (downloadlist[0].Quality == "320000")
+                        {
+                            url = url.Replace("320", "128");
+                            sr = new StreamReader(wc.OpenRead(url));
+                            httpjson = sr.ReadToEnd();
+                            json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
+                        }
+                    }
+                    downloadlist[0].Url = json.data;
+                    downloadlist[0].State = "准备下载";
+                }
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// 下载方法
+        /// </summary>
+        /// <param name="dl"></param>
+        //public string Download(List<DownloadList> dl, int api)
+        //{
+        //    string ids = "";
+        //    if (api == 1)
+        //    {
+        //        int times = dl.Count / 150;
+        //        int remainder = dl.Count % 150;
+        //        if (remainder == 0)
+        //        {
+        //            remainder = 150;
+        //        }
+        //        else
+        //        {
+        //            times++;
+        //        }
+        //        for (int i = 0; i < times; i++)
+        //        {
+        //            if (i == times - 1)
+        //            {
+        //                ids = "";
+        //                for (int x = 0; x < remainder; x++)
+        //                {
+        //                    ids += dl[i * 150 + x].Id + ",";
+        //                }
+        //                ids = ids.Substring(0, ids.Length - 1);
+        //                string u = NeteaseApiUrl + "song/url?id=" + ids + "&br=" + dl[0].Quality;
+        //                //??接口本身就会降音质
+        //                Json.GetUrl.Root urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
+        //                for (int x = 0; x < remainder; x++)
+        //                {
+        //                    for (int y = 0; y < dl.Count; y++)
+        //                    {
+        //                        if (urls.data[x].id.ToString() == dl[y].Id)
+        //                        {
+        //                            //检测音质是否正确
+        //                            if (dl[0].Quality == "999000")
+        //                            {
+        //                                if (urls.data[x].br == 320000 || urls.data[x].br == 128000)
+        //                                {
+        //                                    //音质降低
+        //                                    if (setting.AutoLowerQuality)
+        //                                    {
+        //                                        dl[y].Url = urls.data[x].url;
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        dl[y].Url = null;
+        //                                    }
+        //                                }
+        //                                else
+        //                                {
+        //                                    dl[y].Url = urls.data[x].url;
+        //                                }
+        //                            }
+        //                            else
+        //                            {
+        //                                if (dl[0].Quality == urls.data[x].br.ToString())
+        //                                {
+        //                                    //音质没降
+        //                                    dl[y].Url = urls.data[x].url;
+        //                                }
+        //                                else
+        //                                {
+        //                                    //音质降低
+        //                                    if (setting.AutoLowerQuality)
+        //                                    {
+        //                                        dl[y].Url = urls.data[x].url;
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        dl[y].Url = null;
+        //                                    }
+        //                                }
+        //                            }
+        //                            dl[y].State = "准备下载";
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            else
+        //            {
+        //                ids = "";
+        //                for (int x = 0; x < 150; x++)
+        //                {
+        //                    ids += dl[i * 150 + x].Id + ",";
+        //                }
+        //                ids = ids.Substring(0, ids.Length - 1);
+        //                string u = NeteaseApiUrl + "song/url?id=" + ids + "&br=" + dl[0].Quality;
+        //                Json.GetUrl.Root urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
+        //                for (int x = 0; x < 150; x++)
+        //                {
+        //                    for (int y = 0; y < dl.Count; y++)
+        //                    {
+        //                        if (urls.data[x].id.ToString() == dl[y].Id)
+        //                        {
+        //                            dl[y].Url = urls.data[x].url;
+        //                            dl[y].State = "准备下载";
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            Thread.Sleep(1000);
+        //        }
+        //    }
+        //    else if (api == 2)
+        //    {
+        //        for (int i = 0; i < dl.Count; i++)
+        //        {
+        //            string url = null;
+        //            if (dl[i].Id == "0")
+        //            {
+        //                dl[i].State = "无版权";
+        //                continue;
+        //            }
+        //            if (!string.IsNullOrEmpty(dl[i].strMediaMid))
+        //            {
+        //                url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + dl[i].strMediaMid;
+        //            }
+        //            else
+        //            {
+        //                url = QQApiUrl + "song/url?id=" + dl[i].Id + "&type=" + dl[i].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac");
+        //            }
+        //            using (WebClientPro wc = new WebClientPro())
+        //            {
+        //                StreamReader sr = null; ;
+        //                try { sr = new StreamReader(wc.OpenRead(url)); }
+        //                catch (Exception e)
+        //                {
+        //                    return e.Message;
+        //                }
+
+        //                string httpjson = sr.ReadToEnd();
+        //                QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
+
+        //                //降音质
+        //                if (json.result != 100 && setting.AutoLowerQuality)
+        //                {
+        //                    if (dl[i].Quality == "999000")
+        //                    {
+        //                        url = url.Replace("flac", "320");
+        //                        sr = new StreamReader(wc.OpenRead(url));
+        //                        httpjson = sr.ReadToEnd();
+        //                        json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
+        //                        if (json.result != 100)
+        //                        {
+        //                            url = url.Replace("320", "128");
+        //                            sr = new StreamReader(wc.OpenRead(url));
+        //                            httpjson = sr.ReadToEnd();
+        //                            json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
+        //                        }
+        //                    }
+        //                    if (dl[i].Quality == "320000")
+        //                    {
+        //                        url = url.Replace("320", "128");
+        //                        sr = new StreamReader(wc.OpenRead(url));
+        //                        httpjson = sr.ReadToEnd();
+        //                        json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
+        //                    }
+        //                }
+        //                dl[i].Url = json.data;
+        //                dl[i].State = "准备下载";
+        //            }
+        //        }
+        //    }
+        //    downloadlist.AddRange(dl);
+        //    UpdateDownloadPage();
+        //    if (th_Download == null || th_Download?.ThreadState == System.Threading.ThreadState.Stopped)
+        //    {
+        //        th_Download = new Thread(_Download);
+        //        th_Download.Start();
+        //    }
+        //    return "";
+        //}
 
         /// <summary>
         /// 获取单个音乐的播放链接
@@ -649,6 +745,7 @@ namespace MusicDownloader.Library
                     continue;
                 }
                 downloadlist[0].State = "正在下载音乐";
+                Download();
                 if (downloadlist[0].Url == null)
                 {
                     downloadlist[0].State = "无版权";
@@ -1131,36 +1228,37 @@ namespace MusicDownloader.Library
                 string url = QQApiUrl + "songlist?id=" + Id;
                 using (WebClientPro wc = new WebClientPro())
                 {
-                    StreamReader sr = new StreamReader(wc.OpenRead(url));
-                    string httpres = sr.ReadToEnd();
+                    Dictionary<string, string> headers = new Dictionary<string, string> { { "Referer", "https://y.qq.com/n/yqq/playlist" } };
+                    Dictionary<string, string> vk = new Dictionary<string, string> { { "format", "json" }, { "type", "1" }, { "utf8", "1" }, { "disstid", Id }, { "loginUin", "0" } };
+                    string httpres = HttpHelper.Post("http://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg", headers, vk);
                     if (httpres == null)
                     {
                         return null;
                     }
                     QQmusiclist.Root json = JsonConvert.DeserializeObject<QQmusiclist.Root>(httpres);
                     List<MusicInfo> re = new List<MusicInfo>();
-                    if (json.data.songlist == null)
+                    if (json.cdlist[0].songlist == null)
                     {
                         return null;
                     }
-                    for (int i = 0; i < json.data.songlist.Count; i++)
+                    for (int i = 0; i < json.cdlist[0].songlist.Count; i++)
                     {
                         string singers = "";
-                        foreach (QQmusiclist.singer singer in json.data.songlist[i].singer)
+                        foreach (QQmusiclist.singer singer in json.cdlist[0].songlist[i].singer)
                         {
                             singers += singer.name + "、";
                         }
                         singers = singers.Substring(0, singers.Length - 1);
                         re.Add(new MusicInfo()
                         {
-                            Album = json.data.songlist[i].albumname,
+                            Album = json.cdlist[0].songlist[i].albumname,
                             Api = 2,
-                            Id = json.data.songlist[i].songmid,
-                            LrcUrl = QQApiUrl + "lyric?songmid=" + json.data.songlist[i].songmid,
-                            PicUrl = "https://y.gtimg.cn/music/photo_new/T002R500x500M000" + json.data.songlist[i].albummid + ".jpg",
+                            Id = json.cdlist[0].songlist[i].songmid,
+                            LrcUrl = QQApiUrl + "lyric?songmid=" + json.cdlist[0].songlist[i].songmid,
+                            PicUrl = "https://y.gtimg.cn/music/photo_new/T002R500x500M000" + json.cdlist[0].songlist[i].albummid + ".jpg",
                             Singer = singers,
-                            strMediaMid = json.data.songlist[i].strMediaMid,
-                            Title = json.data.songlist[i].songname
+                            strMediaMid = json.cdlist[0].songlist[i].strMediaMid,
+                            Title = json.cdlist[0].songlist[i].songname
                         }
                             );
                     }

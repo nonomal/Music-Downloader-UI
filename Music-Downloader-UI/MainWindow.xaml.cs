@@ -67,15 +67,7 @@ namespace MusicDownloader
         #region 事件
         private void NotifyUpdate()
         {
-            var result = AduMessageBox.Show("检测到新版,是否更新", "提示", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
-            {
-                Process.Start("https://www.nitian1207.cn/archives/496");
-            }
-            else
-            {
-                Environment.Exit(0);
-            }
+            AduMessageBox.Show("检测到新版,请到Github,Telegram,52pojie更新", "提示");
         }
 
         private void NotifyError()
@@ -107,7 +99,7 @@ namespace MusicDownloader
                 Api1 = Tool.Config.Read("Source1") ?? "",
                 Api2 = Tool.Config.Read("Source2") ?? "",
                 Cookie1 = Tool.Config.Read("Cookie1") ?? "",
-                AutoLowerQuality = Boolean.Parse(Tool.Config.Read("AutoLowerQuality") ?? "true") 
+                AutoLowerQuality = Boolean.Parse(Tool.Config.Read("AutoLowerQuality") ?? "true")
             };
             music = new Music(setting);
             HomePage = new SearchPage(music, setting);
@@ -315,7 +307,7 @@ namespace MusicDownloader
 
         private void Grid_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            this.DragMove();
+            try { this.DragMove(); } catch { }
         }
 
         private void Home_Checked(object sender, RoutedEventArgs e)
@@ -374,11 +366,12 @@ namespace MusicDownloader
 
         private void Help_Checked(object sender, RoutedEventArgs e)
         {
-            if ((bool)Help.IsChecked)
-            {
-                Process.Start("https://www.nitian1207.cn/archives/663");
-                Home.IsChecked = true;
-            }
+            //if ((bool)Help.IsChecked)
+            //{
+            //    Process.Start("https://www.nitian1207.cn/archives/663");
+            //    Home.IsChecked = true;
+            //}
+            AduMessageBox.Show("因帮助页面为博客链接，为避广告嫌疑，52Pojie版暂无帮助页面，请见谅", "提示");
         }
 
         private void Skin_Click(object sender, RoutedEventArgs e)

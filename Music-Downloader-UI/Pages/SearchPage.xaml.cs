@@ -594,7 +594,8 @@ namespace MusicDownloader.Pages
                 string res = "";
                 await Task.Run(() =>
                 {
-                    res = music.Download(dl, api);
+                    //res = music.Download(dl,api); 
+                    res = music.AddToDownloadList(dl);
                 });
                 pb.Close();
                 if (res != "")

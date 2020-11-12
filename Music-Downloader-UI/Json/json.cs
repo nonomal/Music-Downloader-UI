@@ -145,6 +145,11 @@ namespace MusicDownloader.Json
 
         public class data
         {
+            public song song { get; set; }
+        }
+
+        public class song
+        {
             public List<list> list { get; set; }
         }
 
@@ -310,10 +315,10 @@ namespace MusicDownloader.Json
     {
         public class Root
         {
-            public data data { get; set; }
+            public List<cdlist> cdlist { get; set; }
         }
 
-        public class data
+        public class cdlist
         {
             public List<songlist> songlist { get; set; }
         }
