@@ -879,5 +879,15 @@ namespace MusicDownloader.Pages
                 Content = "已复制"
             });
         }
+
+        private void Label_PreviewMouseDown_4(object sender, MouseButtonEventArgs e)
+        {
+            Process.Start("https://dy52127live-my.sharepoint.com/:f:/g/personal/tongkeke_dy52127live_onmicrosoft_com/Etuqtlw8-wlKhFjBXsR0tvEBriMgj5w2zrlGt2nikojXQw?e=rfVjgI");
+        }
+
+        private void List_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            menu_Play_PreviewMouseDown(this, null);
+        }
     }
 }

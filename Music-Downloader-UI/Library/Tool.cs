@@ -16,6 +16,10 @@ namespace MusicDownloader.Library
     {
         public class Config
         {
+            string ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Config.json";
+
+
+
             static public void Write(string key, string value)
             {
                 bool Exist = false;

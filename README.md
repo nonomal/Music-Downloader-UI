@@ -13,10 +13,11 @@ WPF+C# 编写的音乐下载器<br>
 * 搜索
 * 歌单解析
 * 专辑解析
-* 下载
+* 排行榜解析
+* 歌曲、歌词、专辑图片、MV下载
 
 ## 环境
-.NET Framework 4.5
+.NET Framework 4.8
 
 ## 使用的开源项目
 * Newtonsoft.Json

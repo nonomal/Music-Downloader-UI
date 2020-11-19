@@ -3,8 +3,6 @@ using Microsoft.Win32;
 using MusicDownloader.Json;
 using MusicDownloader.Library;
 using MusicDownloader.Pages;
-using Panuon.UI.Silver;
-using Panuon.UI.Silver.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +10,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 
@@ -20,18 +17,22 @@ namespace MusicDownloader
 {
     public partial class MainWindow : Window
     {
-        Music music = null;
-        Setting setting;
-        List<DownloadList> downloadlist = new List<DownloadList>();
-        Page HomePage;
-        Page DownloadPage;
-        Page SettingPage;
-        Page Donate = new Donate();
-        System.Windows.Forms.NotifyIcon notifyicon = new System.Windows.Forms.NotifyIcon();
+        private readonly Music music = null;
+        private readonly Setting setting;
+        private readonly List<DownloadList> downloadlist = new List<DownloadList>();
+        private readonly Page HomePage;
+        private readonly Page DownloadPage;
+        private readonly Page SettingPage;
+        private readonly Page Donate = new Donate();
+        private readonly System.Windows.Forms.NotifyIcon notifyicon = new System.Windows.Forms.NotifyIcon();
         //BG.ImageSource = new BitmapImage(new Uri(@"C:\Users\10240\Desktop\Background3.jpg"));
 
         #region 界面
-        private void BlogButton_Click(object sender, RoutedEventArgs e) => Process.Start("https://www.nitian1207.cn/");
+        private void BlogButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://www.nitian1207.cn/");
+        }
+
         //private void LeftMenu_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         //{
         //    if (frame != null)
@@ -90,8 +91,8 @@ namespace MusicDownloader
             {
                 SavePath = Tool.Config.Read("SavePath") ?? Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
                 DownloadQuality = Tool.Config.Read("DownloadQuality") ?? "999000",
-                IfDownloadLrc = Boolean.Parse(Tool.Config.Read("IfDownloadLrc") ?? "true"),
-                IfDownloadPic = Boolean.Parse(Tool.Config.Read("IfDownloadPic") ?? "true"),
+                IfDownloadLrc = bool.Parse(Tool.Config.Read("IfDownloadLrc") ?? "true"),
+                IfDownloadPic = bool.Parse(Tool.Config.Read("IfDownloadPic") ?? "true"),
                 SaveNameStyle = int.Parse(Tool.Config.Read("SaveNameStyle") ?? "0"),
                 SavePathStyle = int.Parse(Tool.Config.Read("SavePathStyle") ?? "0"),
                 SearchQuantity = Tool.Config.Read("SearchQuantity") ?? "100",
@@ -99,7 +100,7 @@ namespace MusicDownloader
                 Api1 = Tool.Config.Read("Source1") ?? "",
                 Api2 = Tool.Config.Read("Source2") ?? "",
                 Cookie1 = Tool.Config.Read("Cookie1") ?? "",
-                AutoLowerQuality = Boolean.Parse(Tool.Config.Read("AutoLowerQuality") ?? "true")
+                AutoLowerQuality = bool.Parse(Tool.Config.Read("AutoLowerQuality") ?? "true")
             };
             music = new Music(setting);
             HomePage = new SearchPage(music, setting);
@@ -119,14 +120,14 @@ namespace MusicDownloader
             }
             if (Tool.Config.Read("H") != null)
             {
-                this.Height = Int32.Parse(Tool.Config.Read("H"));
-                this.Width = Int32.Parse(Tool.Config.Read("W"));
+                Height = int.Parse(Tool.Config.Read("H"));
+                Width = int.Parse(Tool.Config.Read("W"));
             }
-            if (!String.IsNullOrEmpty(Tool.Config.Read("Background")) && File.Exists(Tool.Config.Read("Background")))
+            if (!string.IsNullOrEmpty(Tool.Config.Read("Background")) && File.Exists(Tool.Config.Read("Background")))
             {
                 BG.Source = new BitmapImage(new Uri(Tool.Config.Read("Background")));
             }
-            if (!String.IsNullOrEmpty(Tool.Config.Read("Blur")))
+            if (!string.IsNullOrEmpty(Tool.Config.Read("Blur")))
             {
                 Blur.Radius = double.Parse(Tool.Config.Read("Blur"));
             }
@@ -142,7 +143,7 @@ namespace MusicDownloader
             SaveLog(e);
         }
 
-        static public void SaveLog(UnhandledExceptionEventArgs e)
+        public static void SaveLog(UnhandledExceptionEventArgs e)
         {
             StreamWriter sw = null;
             if (File.Exists("Error.log"))
@@ -160,7 +161,7 @@ namespace MusicDownloader
             MessageBox.Show("遇到未知错误，具体信息查看 " + Environment.CurrentDirectory + "\\Error.log");
         }
 
-        static public void SaveLog(Exception e)
+        public static void SaveLog(Exception e)
         {
             StreamWriter sw = null;
             if (File.Exists("Error.log"))
@@ -178,7 +179,7 @@ namespace MusicDownloader
             MessageBox.Show("遇到未知错误，具体信息查看 " + Environment.CurrentDirectory + "\\Error.log");
         }
 
-        async private void WindowX_ContentRendered(object sender, EventArgs e)
+        private async void WindowX_ContentRendered(object sender, EventArgs e)
         {
             notifyicon.Visible = true;
             notifyicon.BalloonTipText = "Music Downloader UI";
@@ -207,13 +208,13 @@ namespace MusicDownloader
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                if (this.Visibility == Visibility.Hidden)
+                if (Visibility == Visibility.Hidden)
                 {
-                    this.Visibility = Visibility.Visible;
+                    Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    this.Visibility = Visibility.Hidden;
+                    Visibility = Visibility.Hidden;
                 }
             }
         }
@@ -225,8 +226,8 @@ namespace MusicDownloader
 
         private void WindowX_Closed(object sender, EventArgs e)
         {
-            Tool.Config.Write("H", ((int)this.Height).ToString());
-            Tool.Config.Write("W", ((int)this.Width).ToString());
+            Tool.Config.Write("H", ((int)Height).ToString());
+            Tool.Config.Write("W", ((int)Width).ToString());
             notifyicon.Dispose();
             NoticeManager.ExitNotifiaction();
             Application.Current.Shutdown();
@@ -243,7 +244,7 @@ namespace MusicDownloader
                         if (result == MessageBoxResult.No)
                         {
                             e.Cancel = true;
-                            this.Visibility = Visibility.Hidden;
+                            Visibility = Visibility.Hidden;
                         }
                         if (result == MessageBoxResult.Yes)
                         {
@@ -253,7 +254,7 @@ namespace MusicDownloader
                         break;
                     case 1:
                         e.Cancel = true;
-                        this.Visibility = Visibility.Hidden;
+                        Visibility = Visibility.Hidden;
                         break;
                     case 2:
                         notifyicon.Dispose();
@@ -266,7 +267,7 @@ namespace MusicDownloader
 
         private void Close_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void Maximize_Click(object sender, RoutedEventArgs e)
@@ -284,19 +285,19 @@ namespace MusicDownloader
         private void Window_StateChanged(object sender, EventArgs e)
         {
             DropShadowEffect de = null;
-            if (this.WindowState == WindowState.Normal)
+            if (WindowState == WindowState.Normal)
             {
                 de = new DropShadowEffect();
-                this.BorderThickness = new Thickness(20);
+                BorderThickness = new Thickness(20);
                 de.BlurRadius = 20;
                 de.Opacity = 0.15;
                 de.ShadowDepth = 0;
-                this.Effect = de;
+                Effect = de;
             }
             else
             {
-                this.BorderThickness = new Thickness(5);
-                this.Effect = null;
+                BorderThickness = new Thickness(5);
+                Effect = null;
             }
         }
 
@@ -307,7 +308,7 @@ namespace MusicDownloader
 
         private void Grid_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            try { this.DragMove(); } catch { }
+            try { DragMove(); } catch { }
         }
 
         private void Home_Checked(object sender, RoutedEventArgs e)
@@ -376,8 +377,10 @@ namespace MusicDownloader
 
         private void Skin_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "图片文件(*.jpg,*.bmp,*.png)|*.jpg;*.bmp;*.png";
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Filter = "图片文件(*.jpg,*.bmp,*.png)|*.jpg;*.bmp;*.png"
+            };
             ofd.ShowDialog();
             string path = ofd.FileName;
             if (path != "")
@@ -394,7 +397,7 @@ namespace MusicDownloader
 
         private void BG_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            this.DragMove();
+            DragMove();
         }
 
         public void BlurChange(double value)
