@@ -1,19 +1,13 @@
 ﻿using MusicDownloader.Json;
 using Newtonsoft.Json;
-using Panuon.UI.Silver;
-using Panuon.UI.Silver.Core;
+using NT.Tools;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using static MusicDownloader.Library.Tool;
-using NT.Tools;
-using TagLib.IFD.Tags;
 
 namespace MusicDownloader.Library
 {
@@ -29,7 +23,7 @@ namespace MusicDownloader.Library
         public string NeteaseApiUrl = "";
         public string api2 = ""; //自行搭建接口，以 / 结尾
         public string QQApiUrl = "";
-        string UpdateJsonUrl = "";
+        private readonly string UpdateJsonUrl = "";
         public string cookie = "";
         public string _cookie = "";
         /*
@@ -48,9 +42,10 @@ namespace MusicDownloader.Library
         public delegate void NotifyUpdateEventHandler();
         public delegate void NotifyConnectErrorEventHandler();
         public event UpdateDownloadPageEventHandler UpdateDownloadPage;
-        bool wait = false;
+
+        private bool wait = false;
         public bool pause = false;
-        DownloadManager downloadManager = new DownloadManager();
+        private readonly DownloadManager downloadManager = new DownloadManager();
 
         /// <summary>
         /// 获取更新数据 这个方法是获取程序更新信息 二次开发请修改
@@ -151,7 +146,7 @@ namespace MusicDownloader.Library
                 {
                     List<MusicInfo> searchItem = new List<MusicInfo>();
                     string key = Key;
-                    int quantity = Int32.Parse(setting.SearchQuantity);
+                    int quantity = int.Parse(setting.SearchQuantity);
                     int pagequantity = quantity / 100;
                     int remainder = quantity % 100;
 
@@ -207,7 +202,7 @@ namespace MusicDownloader.Library
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        string GetHTML(string url)
+        private string GetHTML(string url)
         {
             try
             {
@@ -217,7 +212,7 @@ namespace MusicDownloader.Library
                 StreamReader sr = new StreamReader(s);
                 return sr.ReadToEnd();
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }
@@ -230,7 +225,7 @@ namespace MusicDownloader.Library
         /// <param name="Page"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        List<MusicInfo> NeteaseSearch(string Key, int Page = 1, int limit = 100)
+        private List<MusicInfo> NeteaseSearch(string Key, int Page = 1, int limit = 100)
         {
             if (Key == null || Key == "")
             {
@@ -290,7 +285,7 @@ namespace MusicDownloader.Library
         /// </summary>
         /// <param name="Key"></param>
         /// <returns></returns>
-        List<MusicInfo> QQSearch(string Key)
+        private List<MusicInfo> QQSearch(string Key)
         {
             List<MusicInfo> res = new List<MusicInfo>();
             //http://c.y.qq.com/soso/fcgi-bin/client_search_cp?format=json&w={key}&cr=1&g_tk=5381
@@ -352,7 +347,7 @@ namespace MusicDownloader.Library
 
         public string AddToDownloadList(List<DownloadList> dl)
         {
-            for(int i=0;i<dl.Count;i++)
+            for (int i = 0; i < dl.Count; i++)
             {
                 dl[i].State = "准备下载";
             }
@@ -703,7 +698,7 @@ namespace MusicDownloader.Library
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        string NameCheck(string name)
+        private string NameCheck(string name)
         {
             string re = name.Replace("*", " ");
             re = re.Replace("\\", " ");
@@ -761,15 +756,25 @@ namespace MusicDownloader.Library
                 {
                     case 0:
                         if (downloadlist[0].Url.IndexOf("flac") != -1)
+                        {
                             filename = NameCheck(downloadlist[0].Title) + " - " + NameCheck(downloadlist[0].Singer) + ".flac";
+                        }
                         else
+                        {
                             filename = NameCheck(downloadlist[0].Title) + " - " + NameCheck(downloadlist[0].Singer) + ".mp3";
+                        }
+
                         break;
                     case 1:
                         if (downloadlist[0].Url.IndexOf("flac") != -1)
+                        {
                             filename = NameCheck(downloadlist[0].Singer) + " - " + NameCheck(downloadlist[0].Title) + ".flac";
+                        }
                         else
+                        {
                             filename = NameCheck(downloadlist[0].Singer) + " - " + NameCheck(downloadlist[0].Title) + ".mp3";
+                        }
+
                         break;
                 }
                 switch (setting.SavePathStyle)
@@ -785,7 +790,9 @@ namespace MusicDownloader.Library
                         break;
                 }
                 if (!Directory.Exists(savepath))
+                {
                     Directory.CreateDirectory(savepath);
+                }
 
                 if (downloadlist[0].IfDownloadMusic)
                 {
@@ -913,7 +920,7 @@ namespace MusicDownloader.Library
                     {
                         if (filename.IndexOf(".mp3") != -1)
                         {
-                            using (var tfile = TagLib.File.Create(savepath + "\\" + filename))
+                            using (TagLib.File tfile = TagLib.File.Create(savepath + "\\" + filename))
                             {
                                 //tfile.Tag.Title = downloadlist[0].Title;
                                 //tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
@@ -925,10 +932,12 @@ namespace MusicDownloader.Library
                                 if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
                                 {
                                     Tool.PngToJpg(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                                    TagLib.Picture pic = new TagLib.Picture();
-                                    pic.Type = TagLib.PictureType.FrontCover;
-                                    pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-                                    pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                                    TagLib.Picture pic = new TagLib.Picture
+                                    {
+                                        Type = TagLib.PictureType.FrontCover,
+                                        MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                                        Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg")
+                                    };
                                     tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
                                 }
                                 tfile.Save();
@@ -936,7 +945,7 @@ namespace MusicDownloader.Library
                         }
                         else
                         {
-                            using (var tfile = TagLib.Flac.File.Create(savepath + "\\" + filename))
+                            using (TagLib.File tfile = TagLib.Flac.File.Create(savepath + "\\" + filename))
                             {
                                 tfile.Tag.Title = downloadlist[0].Title;
                                 tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
@@ -948,10 +957,12 @@ namespace MusicDownloader.Library
                                 if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
                                 {
                                     Tool.PngToJpg(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                                    TagLib.Picture pic = new TagLib.Picture();
-                                    pic.Type = TagLib.PictureType.FrontCover;
-                                    pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-                                    pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                                    TagLib.Picture pic = new TagLib.Picture
+                                    {
+                                        Type = TagLib.PictureType.FrontCover,
+                                        MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                                        Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg")
+                                    };
                                     tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
                                 }
                                 tfile.Save();
@@ -980,15 +991,25 @@ namespace MusicDownloader.Library
             {
                 case 0:
                     if (downloadlist[0].Url.IndexOf("flac") != -1)
+                    {
                         filename = NameCheck(downloadlist[0].Title) + " - " + singername + ".flac";
+                    }
                     else
+                    {
                         filename = NameCheck(downloadlist[0].Title) + " - " + singername + ".mp3";
+                    }
+
                     break;
                 case 1:
                     if (downloadlist[0].Url.IndexOf("flac") != -1)
+                    {
                         filename = singername + " - " + NameCheck(downloadlist[0].Title) + ".flac";
+                    }
                     else
+                    {
                         filename = singername + " - " + NameCheck(downloadlist[0].Title) + ".mp3";
+                    }
+
                     break;
             }
 
@@ -1006,7 +1027,10 @@ namespace MusicDownloader.Library
                     break;
             }
             if (!Directory.Exists(savepath))
+            {
                 Directory.CreateDirectory(savepath);
+            }
+
             FileInfo f = new FileInfo(savepath + "\\" + filename);
             if (f.Length == 0)
             {
@@ -1106,7 +1130,7 @@ namespace MusicDownloader.Library
             {
                 if (filename.IndexOf(".mp3") != -1)
                 {
-                    using (var tfile = TagLib.File.Create(savepath + "\\" + filename))
+                    using (TagLib.File tfile = TagLib.File.Create(savepath + "\\" + filename))
                     {
                         tfile.Tag.Title = downloadlist[0].Title;
                         tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
@@ -1118,10 +1142,12 @@ namespace MusicDownloader.Library
                         if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
                         {
                             Tool.PngToJpg(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                            TagLib.Picture pic = new TagLib.Picture();
-                            pic.Type = TagLib.PictureType.FrontCover;
-                            pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-                            pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                            TagLib.Picture pic = new TagLib.Picture
+                            {
+                                Type = TagLib.PictureType.FrontCover,
+                                MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                                Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg")
+                            };
                             tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
                         }
                         tfile.Save();
@@ -1129,7 +1155,7 @@ namespace MusicDownloader.Library
                 }
                 else
                 {
-                    using (var tfile = TagLib.Flac.File.Create(savepath + "\\" + filename))
+                    using (TagLib.File tfile = TagLib.Flac.File.Create(savepath + "\\" + filename))
                     {
                         tfile.Tag.Title = downloadlist[0].Title;
                         tfile.Tag.Performers = new string[] { downloadlist[0].Singer };
@@ -1141,10 +1167,12 @@ namespace MusicDownloader.Library
                         if (downloadlist[0].IfDownloadPic && System.IO.File.Exists(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg"))
                         {
                             Tool.PngToJpg(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
-                            TagLib.Picture pic = new TagLib.Picture();
-                            pic.Type = TagLib.PictureType.FrontCover;
-                            pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-                            pic.Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg");
+                            TagLib.Picture pic = new TagLib.Picture
+                            {
+                                Type = TagLib.PictureType.FrontCover,
+                                MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                                Data = TagLib.ByteVector.FromPath(savepath + "\\" + filename.Replace(".flac", "").Replace(".mp3", "") + ".jpg")
+                            };
                             tfile.Tag.Pictures = new TagLib.IPicture[] { pic };
                         }
                         tfile.Save();

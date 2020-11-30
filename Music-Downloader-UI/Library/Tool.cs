@@ -1,29 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Configuration;
-using System.Net;
 using System.Drawing;
-using System.Windows;
-using System.IO;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Net;
 
 namespace MusicDownloader.Library
 {
-    static public class Tool
+    public static class Tool
     {
         public class Config
         {
-            string ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Config.json";
-
-
-
-            static public void Write(string key, string value)
+            public static void Write(string key, string value)
             {
                 bool Exist = false;
-                var conf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                Configuration conf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 foreach (string s in conf.AppSettings.Settings.AllKeys)
                 {
                     if (s == key)
@@ -40,22 +32,22 @@ namespace MusicDownloader.Library
                 ConfigurationManager.RefreshSection("appSettings");
             }
 
-            static public string Read(string key)
+            public static string Read(string key)
             {
                 ConfigurationManager.RefreshSection("appSettings");
-                var conf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                Configuration conf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 return conf.AppSettings.Settings[key]?.Value;
             }
 
-            static public void Remove(string key)
+            public static void Remove(string key)
             {
-                var conf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                Configuration conf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 conf.AppSettings.Settings.Remove(key);
                 ConfigurationManager.RefreshSection("appSettings");
             }
         }
 
-        static public List<string> GetMidText(string text, string left, string right, bool ifIncludeLR = true)//ifIncludeLR是是否包括用来定位的前后字符串
+        public static List<string> GetMidText(string text, string left, string right, bool ifIncludeLR = true)//ifIncludeLR是是否包括用来定位的前后字符串
         {
             int leftindex = 0;
             int rightindex = -right.Length;
@@ -76,7 +68,7 @@ namespace MusicDownloader.Library
             return re;
         }
 
-        static public string GetRealUrl(string url)
+        public static string GetRealUrl(string url)
         {
             try
             {
@@ -102,13 +94,13 @@ namespace MusicDownloader.Library
                 return request;
             }
         }
-        static public void PngToJpg(string source)
+        public static void PngToJpg(string source)
         {
             Bitmap im = new Bitmap(source);
-            var eps = new EncoderParameters(1);
-            var ep = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 85L);
+            EncoderParameters eps = new EncoderParameters(1);
+            EncoderParameter ep = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 85L);
             eps.Param[0] = ep;
-            var jpsEncodeer = GetEncoder(ImageFormat.Jpeg);
+            ImageCodecInfo jpsEncodeer = GetEncoder(ImageFormat.Jpeg);
             im.Save(source.Replace(Path.GetFileNameWithoutExtension(source), Path.GetFileNameWithoutExtension(source) + "-T"), jpsEncodeer, eps);
             im.Dispose();
             ep.Dispose();
@@ -123,7 +115,9 @@ namespace MusicDownloader.Library
             foreach (ImageCodecInfo codec in codecs)
             {
                 if (codec.FormatID == format.Guid)
+                {
                     return codec;
+                }
             }
             return null;
         }

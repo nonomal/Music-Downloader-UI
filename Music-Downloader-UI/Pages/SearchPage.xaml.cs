@@ -23,11 +23,21 @@ namespace MusicDownloader.Pages
     public partial class SearchPage : Page
     {
         List<MusicInfo> musicinfo = null;
+        List<CurrentMusicInfo> playlist = new List<CurrentMusicInfo>();
+        int currentmusicindex = 0;
         MediaPlayer player = new MediaPlayer();
         Music music;
         Setting setting;
         bool isPlaying = false;
         System.Timers.Timer timer = new System.Timers.Timer(1000);
+
+        private class CurrentMusicInfo
+        {
+            public string Title { get; set; }
+            public string Singer { get; set; }
+            public int Api { get; set; }
+            public string Id { get; set; }
+        }
 
         #region 列表绑定模板
         public List<SearchListItemModel> SearchListItem = new List<SearchListItemModel>();
@@ -98,6 +108,10 @@ namespace MusicDownloader.Pages
                 AduMessageBox.Show("播放失败", "提示", MessageBoxButton.OK);
                 return;
             }
+            CurrentMusicLabel.Text = musicinfo[List.SelectedIndex].Title + " - " + musicinfo[List.SelectedIndex].Singer;
+            CurrentMusicInfo cmi = new CurrentMusicInfo { Api = musicinfo[List.SelectedIndex].Api, Id = musicinfo[List.SelectedIndex].Id, Title = musicinfo[List.SelectedIndex].Title, Singer = musicinfo[List.SelectedIndex].Singer };
+            playlist.Add(cmi);
+            currentmusicindex = playlist.Count - 1;
             player.Open(new Uri(url));
             player.Play();
             timer.Elapsed += Timer_Elapsed;
@@ -888,6 +902,46 @@ namespace MusicDownloader.Pages
         private void List_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             menu_Play_PreviewMouseDown(this, null);
+        }
+
+        private void LastMusicButton_Click(object sender, RoutedEventArgs e)
+        {
+            string url = "";
+            if (currentmusicindex - 1 >= 0)
+            {
+                url = music.GetMusicUrl(playlist[currentmusicindex - 1].Api, playlist[currentmusicindex - 1].Id);
+                if (string.IsNullOrEmpty(url))
+                {
+                    AduMessageBox.Show("播放失败", "提示", MessageBoxButton.OK);
+                    return;
+                }
+                player.Open(new Uri(url));
+                player.Play();
+                isPlaying = true;
+                CtrlButton.Text = "\xe61d";
+                CurrentMusicLabel.Text = playlist[currentmusicindex - 1].Title + " - " + playlist[currentmusicindex - 1].Singer;
+                currentmusicindex--;
+            }
+        }
+
+        private void NextMusicButton_Click(object sender, RoutedEventArgs e)
+        {
+            string url = "";
+            if (currentmusicindex + 1 <= playlist.Count - 1)
+            {
+                url = music.GetMusicUrl(playlist[currentmusicindex + 1].Api, playlist[currentmusicindex + 1].Id);
+                if (string.IsNullOrEmpty(url))
+                {
+                    AduMessageBox.Show("播放失败", "提示", MessageBoxButton.OK);
+                    return;
+                }
+                player.Open(new Uri(url));
+                player.Play();
+                isPlaying = true;
+                CtrlButton.Text = "\xe61d";
+                CurrentMusicLabel.Text = playlist[currentmusicindex + 1].Title + " - " + playlist[currentmusicindex + 1].Singer;
+                currentmusicindex++;
+            }
         }
     }
 }
