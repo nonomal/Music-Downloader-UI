@@ -367,12 +367,18 @@ namespace MusicDownloader
 
         private void Help_Checked(object sender, RoutedEventArgs e)
         {
-            //if ((bool)Help.IsChecked)
-            //{
-            //    Process.Start("https://www.nitian1207.cn/archives/663");
-            //    Home.IsChecked = true;
-            //}
-            AduMessageBox.Show("因帮助页面为博客链接，为避广告嫌疑，52Pojie版暂无帮助页面，请见谅", "提示");
+            if ((bool)Help.IsChecked)
+            {
+                if (music.canJumpToBlog)
+                {
+                    Process.Start("https://www.nitian1207.cn/archives/663");
+                    Home.IsChecked = true;
+                }
+                else
+                {
+                    AduMessageBox.Show("因帮助页面为博客链接，为避广告嫌疑，52Pojie版暂无帮助页面，请见谅", "提示");
+                }
+            }
         }
 
         private void Skin_Click(object sender, RoutedEventArgs e)
@@ -392,7 +398,8 @@ namespace MusicDownloader
 
         private void NT_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://www.nitian1207.cn");
+            if (music.canJumpToBlog)
+                Process.Start("https://www.nitian1207.cn");
         }
 
         private void BG_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

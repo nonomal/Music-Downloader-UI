@@ -1,6 +1,5 @@
 ﻿using MusicDownloader.Json;
 using Newtonsoft.Json;
-using NT.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +16,7 @@ namespace MusicDownloader.Library
         /// <summary>
         /// api1和NeteaseApiUrl相同,api2和QQApiUrl相同
         /// </summary>
-        public List<int> version = new List<int> { 1, 3, 1 };
+        public List<int> version = new List<int> { 1, 3, 2 };
         public bool Beta = false;
         public string api1 = ""; //自行搭建接口，以 / 结尾
         public string NeteaseApiUrl = "";
@@ -26,6 +25,7 @@ namespace MusicDownloader.Library
         private readonly string UpdateJsonUrl = "";
         public string cookie = "";
         public string _cookie = "";
+        public bool canJumpToBlog = true;
         /*
         我的json格式,如果更改请重写下方Update()方法
         {
@@ -45,7 +45,6 @@ namespace MusicDownloader.Library
 
         private bool wait = false;
         public bool pause = false;
-        private readonly DownloadManager downloadManager = new DownloadManager();
 
         /// <summary>
         /// 获取更新数据 这个方法是获取程序更新信息 二次开发请修改
