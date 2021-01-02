@@ -440,7 +440,11 @@ namespace MusicDownloader.Pages
 
             public Filter(string filter_string, string search_key)
             {
-                string[] filter = filter_string.ToLower().Split(new char[] { ' ', '\t', '\n', '\r' });
+                string[] filter = filter_string
+                    .ToLower()
+                    .Replace('（','(')
+                    .Replace('）',')')
+                    .Split(new char[] { ' ', '\t', '\n', '\r' });
 
                 list = new List<string>();
                 foreach (string str in filter)
@@ -452,7 +456,11 @@ namespace MusicDownloader.Pages
                      
                 }
 
-                string[] key = search_key.ToLower().Split(new char[] { ' ', '\t', '\n', '\r' });
+                string[] key = search_key
+                    .ToLower()
+                    .Replace('（', '(')
+                    .Replace('）', ')')
+                    .Split(new char[] { ' ', '\t', '\n', '\r' });
 
                 foreach (string str in key)
                 {
@@ -470,19 +478,21 @@ namespace MusicDownloader.Pages
 
                 foreach (MusicInfo info in infolist)
                 {
+                    string title = info.Title.ToLower().Replace('（', '(').Replace('）', ')');
+                    string singer = info.Singer.ToLower().Replace('（', '(').Replace('）', ')');
                     int i = list.Count-1;
                     for(;i >= 0; i--)
                     {
                         string filter = list[i];
 
-                        if (info.Title.ToLower().Contains(filter))
+                        if (title.Contains(filter))
                             break;
-                        if (info.Singer.ToLower().Contains(filter))
+                        if (singer.Contains(filter))
                             break;
                     }
                     if (i == -1)
                     {
-                   tmp.Add(info);
+                         tmp.Add(info);
                     }
                 }
 
