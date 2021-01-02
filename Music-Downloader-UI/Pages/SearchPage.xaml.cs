@@ -109,9 +109,16 @@ namespace MusicDownloader.Pages
                 return;
             }
             CurrentMusicLabel.Text = musicinfo[List.SelectedIndex].Title + " - " + musicinfo[List.SelectedIndex].Singer;
-            CurrentMusicInfo cmi = new CurrentMusicInfo { Api = musicinfo[List.SelectedIndex].Api, Id = musicinfo[List.SelectedIndex].Id, Title = musicinfo[List.SelectedIndex].Title, Singer = musicinfo[List.SelectedIndex].Singer };
-            playlist.Add(cmi);
-            currentmusicindex = playlist.Count - 1;
+
+
+            playlist.Clear();
+            for (int i = 0; i < musicinfo.Count; i++)
+            {
+                CurrentMusicInfo cmi = new CurrentMusicInfo { Api = musicinfo[i].Api, Id = musicinfo[i].Id, Title = musicinfo[i].Title, Singer = musicinfo[i].Singer };
+                playlist.Add(cmi);
+            }
+
+            currentmusicindex = List.SelectedIndex;
             player.Open(new Uri(url));
             player.Play();
             timer.Elapsed += Timer_Elapsed;
@@ -119,6 +126,11 @@ namespace MusicDownloader.Pages
             timer.AutoReset = true;
             isPlaying = true;
             CtrlButton.Text = "\xe61d";
+        }
+
+        private void Player_MediaEnded(object sender, EventArgs e)
+        {
+            NextMusicButton_Click(this, null);
         }
 
         /// <summary>
@@ -942,6 +954,11 @@ namespace MusicDownloader.Pages
                 CurrentMusicLabel.Text = playlist[currentmusicindex + 1].Title + " - " + playlist[currentmusicindex + 1].Singer;
                 currentmusicindex++;
             }
+        }
+
+        private void Page_Initialized(object sender, EventArgs e)
+        {
+            player.MediaEnded += Player_MediaEnded;
         }
     }
 }

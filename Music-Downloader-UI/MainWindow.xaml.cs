@@ -68,7 +68,7 @@ namespace MusicDownloader
         #region 事件
         private void NotifyUpdate()
         {
-            AduMessageBox.Show("检测到新版,请到Github,Telegram,52pojie更新", "提示");
+            AduMessageBox.Show("检测到新版,请到Github或Telegram更新", "提示");
         }
 
         private void NotifyError()

@@ -8,7 +8,7 @@
       xmlns:AduSkin="clr-namespace:AduSkin.Controls.Metro;assembly=AduSkin"
       mc:Ignorable="d"
       FontFamily="Microsoft YaHei UI"
-      Title="Search" d:DesignHeight="394" d:DesignWidth="587">
+      Title="Search" d:DesignHeight="394" d:DesignWidth="587" Initialized="Page_Initialized">
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

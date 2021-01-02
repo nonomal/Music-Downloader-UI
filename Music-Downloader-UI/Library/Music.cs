@@ -206,8 +206,8 @@ namespace MusicDownloader.Library
             try
             {
                 WebClientPro wc = new WebClientPro();
-                wc.Headers.Add(HttpRequestHeader.Cookie, cookie);
-                Stream s = wc.OpenRead(url);
+                //wc.Headers.Add(HttpRequestHeader.Cookie, cookie);
+                Stream s = wc.OpenRead(url + "&cookie=" + cookie);
                 StreamReader sr = new StreamReader(s);
                 return sr.ReadToEnd();
             }
