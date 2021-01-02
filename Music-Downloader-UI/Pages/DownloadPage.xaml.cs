@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -144,6 +145,80 @@ namespace MusicDownloader
             List.ItemsSource = listitem;
             List.Items.Refresh();
         }
+
+        private void Label_PreviewMouseDown_3(object sender, MouseButtonEventArgs e)
+        {
+            if (music.th_Download?.ThreadState == System.Threading.ThreadState.Running)
+            {
+                AduMessageBox.Show("请等待下载完成后再试", "提示", MessageBoxButton.OK);
+                return;
+            }
+
+            string path = @music.setting.SavePath+"\\" + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".csv";
+
+            if (save_list_as_csv(path))
+            {
+                Process.Start(path);
+                return;
+            }
+
+            AduMessageBox.Show("导出列表失败", "错误", MessageBoxButton.OK);
+
+        }
+
+
+        private bool save_list_as_csv(string path)
+        {
+            //   string path = @"C:\Users\Unity\Desktop\info.csv";
+
+            try
+            {
+                if (!File.Exists(path))
+                    File.Create(path).Close();
+                StreamWriter sw = new StreamWriter(path, true, Encoding.UTF8);
+
+                //StreamWriter sw = File.CreateText(path);
+
+                sw.Write("Title,Artist,Album,State\r\n");
+      
+
+                for (int i = 0; i < listitem.Count; i++)
+                {
+                    if (listitem[i].State == "下载完成" || listitem[i].State == "音乐已存在")
+                    {
+                        continue;
+                    }
+
+                    string title = listitem[i].Title;
+                    string singer = listitem[i].Singer;
+                    string album = listitem[i].Album;
+
+                    if (title.IndexOf(',') > -1)
+                        sw.Write("\"" + title + "\",");
+                    else
+                        sw.Write(title + ",");
+
+                    if (singer.IndexOf(',') > -1)
+                        sw.Write("\"" + singer + "\",");
+                    else
+                        sw.Write(singer + ",");
+
+                    if (album.IndexOf(',') > -1)
+                        sw.Write("\"" + album + "\",");
+                    else
+                        sw.Write(album + ",");
+
+                    sw.Write(listitem[i].State+"\r\n");
+                } 
+                sw.Flush();
+                sw.Close();
+            }
+            catch {
+                return false;
+            }
+            return true;
+        }
+
         private void menu_Title_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(listitem[List.SelectedIndex].Title);

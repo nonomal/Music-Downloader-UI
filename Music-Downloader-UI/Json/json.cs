@@ -21,6 +21,7 @@ namespace MusicDownloader.Json
         /// </summary>
         public int SavePathStyle { get; set; }
         public string SearchQuantity { get; set; }
+        public string SearchResultFilter { get; set; }
         /// <summary>
         /// 0 外语; 1 翻译
         /// </summary>

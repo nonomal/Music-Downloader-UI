@@ -96,6 +96,7 @@ namespace MusicDownloader
                 SaveNameStyle = int.Parse(Tool.Config.Read("SaveNameStyle") ?? "0"),
                 SavePathStyle = int.Parse(Tool.Config.Read("SavePathStyle") ?? "0"),
                 SearchQuantity = Tool.Config.Read("SearchQuantity") ?? "100",
+                SearchResultFilter=Tool.Config.Read("SearchResultFilter")??"",
                 TranslateLrc = int.Parse(Tool.Config.Read("TranslateLrc") ?? "0"),
                 Api1 = Tool.Config.Read("Source1") ?? "",
                 Api2 = Tool.Config.Read("Source2") ?? "",
