@@ -415,6 +415,10 @@ namespace MusicDownloader.Pages
                     AduMessageBox.Show("搜索错误", "提示", MessageBoxButton.OK);
                     return;
                 }
+
+                Filter filter = new Filter(setting.SearchResultFilter, key);
+                musicinfo = filter.Filt(musicinfo);
+
                 foreach (MusicInfo m in musicinfo)
                 {
                     SearchListItemModel mod = new SearchListItemModel()
@@ -435,6 +439,66 @@ namespace MusicDownloader.Pages
             {
                 pb.Close();
                 AduMessageBox.Show("搜索错误", "提示", MessageBoxButton.OK);
+            }
+        }
+
+
+
+        // 对搜索结果进行过滤
+
+        public class Filter
+        {
+            private List<string> list;
+
+            public Filter(string filter_string, string search_key)
+            {
+                string[] filter = filter_string.ToLower().Split(new char[] { ' ', '\t', '\n', '\r' });
+
+                list = new List<string>();
+                foreach (string str in filter)
+                {
+                    if (str.Length > 0)
+                    {
+                         list.Add(str);
+                    }
+                     
+                }
+
+                string[] key = search_key.ToLower().Split(new char[] { ' ', '\t', '\n', '\r' });
+
+                foreach (string str in key)
+                {
+                    if (str.Length > 0)
+                    {
+                        list.Remove(str);
+                    }
+
+                }
+            }
+
+            public List<MusicInfo> Filt(List<MusicInfo> infolist)
+            {
+                List<MusicInfo> tmp = new List<MusicInfo>();
+
+                foreach (MusicInfo info in infolist)
+                {
+                    int i = list.Count-1;
+                    for(;i >= 0; i--)
+                    {
+                        string filter = list[i];
+
+                        if (info.Title.ToLower().Contains(filter))
+                            break;
+                        if (info.Singer.ToLower().Contains(filter))
+                            break;
+                    }
+                    if (i == -1)
+                    {
+                   tmp.Add(info);
+                    }
+                }
+
+                return tmp;
             }
         }
 
