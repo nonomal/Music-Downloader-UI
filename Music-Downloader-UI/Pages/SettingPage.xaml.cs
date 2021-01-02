@@ -55,6 +55,7 @@ namespace MusicDownloader.Pages
         {
             savePathTextBox.Text = setting.SavePath;
             searchQuantityTextBox.Text = setting.SearchQuantity;
+            searchresultfiltertextbox.Text = setting.SearchResultFilter;
             switch (setting.DownloadQuality)
             {
                 case "999000":
@@ -108,6 +109,7 @@ namespace MusicDownloader.Pages
                 return;
             }
             Tool.Config.Write("SavePath", savePathTextBox.Text);
+            Tool.Config.Write("SearchResultFilter", searchresultfiltertextbox.Text);
             Tool.Config.Write("DownloadQuality", ((System.Windows.Controls.ContentControl)qualityComboBox.SelectedValue).Content.ToString().Substring(("无损(").Length, 6));
             Tool.Config.Write("IfDownloadLrc", lrcCheckBox.IsChecked.ToString());
             Tool.Config.Write("IfDownloadPic", picCheckBox.IsChecked.ToString());
@@ -151,6 +153,7 @@ namespace MusicDownloader.Pages
             }
             setting.SavePath = savePathTextBox.Text;
             setting.DownloadQuality = ((System.Windows.Controls.ContentControl)qualityComboBox.SelectedValue).Content.ToString().Substring(("无损(").Length, "999000".Length);
+            setting.SearchResultFilter= searchresultfiltertextbox.Text;
             setting.IfDownloadLrc = lrcCheckBox.IsChecked ?? false;
             setting.IfDownloadPic = picCheckBox.IsChecked ?? false;
             setting.SaveNameStyle = nameStyleComboBox.SelectedIndex;
