@@ -16,7 +16,7 @@ namespace MusicDownloader.Library
         /// <summary>
         /// api1和NeteaseApiUrl相同,api2和QQApiUrl相同
         /// </summary>
-        public List<int> version = new List<int> { 1, 3, 2 };
+        public List<int> version = new List<int> { 1, 3, 3 };
         public bool Beta = false;
         public string api1 = ""; //自行搭建接口，以 / 结尾
         public string NeteaseApiUrl = "";
