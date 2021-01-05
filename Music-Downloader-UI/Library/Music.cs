@@ -69,7 +69,8 @@ namespace MusicDownloader.Library
             if (update.Cookie != null)
             {
                 _cookie = update.Cookie;
-                cookie = update.Cookie;
+                if (setting.Cookie1 == "")
+                    cookie = update.Cookie;
             }
             bool needupdate = true;
 
@@ -417,14 +418,16 @@ namespace MusicDownloader.Library
                 {
                     downloadlist[0].State = "无版权";
                 }
+                /*
                 if (!string.IsNullOrEmpty(downloadlist[0].strMediaMid))
                 {
                     url = QQApiUrl + "song/url?id=" + downloadlist[0].Id + "&type=" + downloadlist[0].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + downloadlist[0].strMediaMid;
                 }
+                 
                 else
-                {
-                    url = QQApiUrl + "song/url?id=" + downloadlist[0].Id + "&type=" + downloadlist[0].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac");
-                }
+                {*/
+                url = QQApiUrl + "song/url?id=" + downloadlist[0].Id + "&type=" + downloadlist[0].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac");
+                //}
                 using (WebClientPro wc = new WebClientPro())
                 {
                     StreamReader sr = null; ;
@@ -658,6 +661,7 @@ namespace MusicDownloader.Library
         {
             if (api == 1)
             {
+                /*
                 string u = NeteaseApiUrl + "song/url?id=" + id + "&br=320000";
                 Json.GetUrl.Root urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
                 if (urls.data[0].url == null)
@@ -666,6 +670,15 @@ namespace MusicDownloader.Library
                     urls = JsonConvert.DeserializeObject<Json.GetUrl.Root>(GetHTML(u));
                 }
                 return urls.data[0].url;
+                */
+                string url = "https://music.163.com/song/media/outer/url?id=" + id + ".mp3";
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "HEAD";
+                req.AllowAutoRedirect = false;
+                HttpWebResponse myResp = (HttpWebResponse)req.GetResponse();
+                if (myResp.StatusCode == HttpStatusCode.Redirect)
+                { url = myResp.GetResponseHeader("Location"); }
+                return url;
             }
             if (api == 2)
             {
@@ -676,11 +689,11 @@ namespace MusicDownloader.Library
                 }
                 if (!string.IsNullOrEmpty(strMediaMid))
                 {
-                    url = QQApiUrl + "song/url?id=" + id + "&type=320&mediaId=" + strMediaMid;
+                    url = QQApiUrl + "song/url?id=" + id + "&type=flac&mediaId=" + strMediaMid;
                 }
                 else
                 {
-                    url = QQApiUrl + "song/url?id=" + id + "&type=320";
+                    url = QQApiUrl + "song/url?id=" + id + "&type=flac";
                 }
                 QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(GetHTML(url));
                 if (json.data == null)

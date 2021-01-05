@@ -17,6 +17,7 @@ using System.Windows.Media;
 using AduSkin.Controls.Metro;
 using System.Web.UI.WebControls;
 using System.Data;
+using System.Net;
 
 namespace MusicDownloader.Pages
 {
@@ -454,8 +455,8 @@ namespace MusicDownloader.Pages
             {
                 string[] filter = filter_string
                     .ToLower()
-                    .Replace('（','(')
-                    .Replace('）',')')
+                    .Replace('（', '(')
+                    .Replace('）', ')')
                     .Split(new char[] { ' ', '\t', '\n', '\r' });
 
                 list = new List<string>();
@@ -463,9 +464,9 @@ namespace MusicDownloader.Pages
                 {
                     if (str.Length > 0)
                     {
-                         list.Add(str);
+                        list.Add(str);
                     }
-                     
+
                 }
 
                 string[] key = search_key
@@ -492,8 +493,8 @@ namespace MusicDownloader.Pages
                 {
                     string title = info.Title.ToLower().Replace('（', '(').Replace('）', ')');
                     string singer = info.Singer.ToLower().Replace('（', '(').Replace('）', ')');
-                    int i = list.Count-1;
-                    for(;i >= 0; i--)
+                    int i = list.Count - 1;
+                    for (; i >= 0; i--)
                     {
                         string filter = list[i];
 
@@ -504,7 +505,7 @@ namespace MusicDownloader.Pages
                     }
                     if (i == -1)
                     {
-                         tmp.Add(info);
+                        tmp.Add(info);
                     }
                 }
 
