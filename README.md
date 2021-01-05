@@ -17,7 +17,7 @@ WPF+C# 编写的音乐下载器<br>
 * 歌曲、歌词、专辑图片、MV下载
 
 ## 环境
-.NET Framework 4.8
+.NET Framework 4.6.1 及以上
 
 ## 使用的开源项目
 * Newtonsoft.Json
