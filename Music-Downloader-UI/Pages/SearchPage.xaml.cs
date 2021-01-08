@@ -979,6 +979,29 @@ namespace MusicDownloader.Pages
             });
         }
 
+        private void menu_Album2_Click(object sender, RoutedEventArgs e)
+        {
+
+            if ( !string.IsNullOrEmpty(musicinfo[List.SelectedIndex].AlbumUrl))
+            {
+                Process.Start(musicinfo[List.SelectedIndex].AlbumUrl);
+                /*                Clipboard.SetText(music.GetMvUrl(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].AlbumUrl));
+                                NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+                                {
+                                    Title = "提示",
+                                    Content = "已复制"
+                                });*/
+            }
+            else
+            {
+                NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+                {
+                    Title = "提示",
+                    Content = "没有获得专辑链接"
+                });
+            }
+        }
+
         private void Label_PreviewMouseDown_4(object sender, MouseButtonEventArgs e)
         {
             Process.Start("https://dy52127live-my.sharepoint.com/:f:/g/personal/tongkeke_dy52127live_onmicrosoft_com/Etuqtlw8-wlKhFjBXsR0tvEBriMgj5w2zrlGt2nikojXQw?e=rfVjgI");

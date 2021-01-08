@@ -69,6 +69,7 @@ namespace MusicDownloader.Json
         public string LrcUrl { get; set; }
         public string PicUrl { get; set; }
         public int Api { get; set; }
+        public string AlbumUrl { get; set; }
 
         /// <summary>
         /// 只有QQ音乐需要该参数

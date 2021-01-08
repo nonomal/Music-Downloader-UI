@@ -291,7 +291,8 @@ namespace MusicDownloader.Library
                     Singer = singer.Substring(0, singer.Length - 1),
                     Title = mdr.songs[i].name,
                     Api = 1,
-                    MVID = mdr.songs[i].mv.ToString()
+                    MVID = mdr.songs[i].mv.ToString(),
+                    AlbumUrl= "https://music.163.com/#/album?id=" + mdr.songs[i].al.id.ToString()
                 };
                 ret.Add(mi);
             }
@@ -356,7 +357,8 @@ namespace MusicDownloader.Library
                             Singer = singers,
                             Api = 2,
                             strMediaMid = json.data.song.list[i].strMediaMid,
-                            MVID = json.data.song.list[i].songid.ToString()
+                            MVID = json.data.song.list[i].songid.ToString(),
+                            AlbumUrl= "https://y.qq.com/n/yqq/album/" + json.data.song.list[i].albummid.ToString()+ ".html"
                         });
                 }
             }
@@ -1316,7 +1318,8 @@ namespace MusicDownloader.Library
                             PicUrl = "https://y.gtimg.cn/music/photo_new/T002R500x500M000" + json.cdlist[0].songlist[i].albummid + ".jpg",
                             Singer = singers,
                             strMediaMid = json.cdlist[0].songlist[i].strMediaMid,
-                            Title = json.cdlist[0].songlist[i].songname
+                            Title = json.cdlist[0].songlist[i].songname,
+                            AlbumUrl = "https://y.qq.com/n/yqq/album/" //+ json.data.song.list[i].albummid.ToString() + ".html"
                         }
                             );
                     }
@@ -1367,7 +1370,8 @@ namespace MusicDownloader.Library
                     PicUrl = mdr.songs[i].al.picUrl + "?param=300y300",
                     Singer = singer.Substring(0, singer.Length - 1),
                     Title = mdr.songs[i].name,
-                    Api = 1
+                    Api = 1,
+                    AlbumUrl = "https://music.163.com/#/album?id=" + mdr.songs[i].al.id.ToString()
                 };
                 ret.Add(mi);
             }
@@ -1490,6 +1494,7 @@ namespace MusicDownloader.Library
                         Title = json.data.list[i].title,
                         LrcUrl = QQApiUrl + "lyric?songmid=" + json.data.list[i].mid,
                         PicUrl = "https://y.gtimg.cn/music/photo_new/T002R500x500M000" + json.data.list[i].album.mid + ".jpg",
+                        AlbumUrl = "https://y.qq.com/n/yqq/album/" + json.data.list[i].album.mid.ToString() + ".html"
                     });
                 }
                 return re;
