@@ -59,5 +59,18 @@ namespace MusicDownloader.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找类似 module.exports = {
+        ///  qq: &apos;1024028162&apos;, // 如果是微信号的，这里写 wxuin，可以在浏览器端登录后 cookie 中获取
+        ///  port: 3300,
+        ///  useDataStatistics: false, // 是否启用数据统计和ip拦截
+        ///} 的本地化字符串。
+        /// </summary>
+        internal static string config_js {
+            get {
+                return ResourceManager.GetString("config_js", resourceCulture);
+            }
+        }
     }
 }

@@ -117,4 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="config_js" xml:space="preserve">
+    <value>module.exports = {
+  qq: '1024028162', // 如果是微信号的，这里写 wxuin，可以在浏览器端登录后 cookie 中获取
+  port: 3300,
+  useDataStatistics: false, // 是否启用数据统计和ip拦截
+}</value>
+  </data>
 </root>

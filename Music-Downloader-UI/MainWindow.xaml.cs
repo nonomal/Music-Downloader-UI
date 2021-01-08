@@ -3,6 +3,8 @@ using Microsoft.Win32;
 using MusicDownloader.Json;
 using MusicDownloader.Library;
 using MusicDownloader.Pages;
+using Panuon.UI.Silver;
+using Panuon.UI.Silver.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,6 +27,7 @@ namespace MusicDownloader
         private readonly Page SettingPage;
         private readonly Page Donate = new Donate();
         private readonly System.Windows.Forms.NotifyIcon notifyicon = new System.Windows.Forms.NotifyIcon();
+        private string ApiUpdateInfo;
         //BG.ImageSource = new BitmapImage(new Uri(@"C:\Users\10240\Desktop\Background3.jpg"));
 
         #region 界面
@@ -84,8 +87,10 @@ namespace MusicDownloader
 
         public MainWindow()
         {
+            Api.GetPort();
             MusicDownloader.Pages.SettingPage.ChangeBlurEvent += BlurChange;
             MusicDownloader.Pages.SettingPage.SaveBlurEvent += BlurSave;
+            MusicDownloader.Pages.SettingPage.EnableLoacApiEvent += EnableLoaclApi;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             setting = new Setting()
             {
@@ -96,12 +101,13 @@ namespace MusicDownloader
                 SaveNameStyle = int.Parse(Tool.Config.Read("SaveNameStyle") ?? "0"),
                 SavePathStyle = int.Parse(Tool.Config.Read("SavePathStyle") ?? "0"),
                 SearchQuantity = Tool.Config.Read("SearchQuantity") ?? "100",
-                SearchResultFilter=Tool.Config.Read("SearchResultFilter")??"",
+                SearchResultFilter = Tool.Config.Read("SearchResultFilter") ?? "",
                 TranslateLrc = int.Parse(Tool.Config.Read("TranslateLrc") ?? "0"),
-                Api1 = Tool.Config.Read("Source1") ?? "",
-                Api2 = Tool.Config.Read("Source2") ?? "",
+                Api1 = Tool.Config.Read("Source1") ?? ""/*"http://127.0.0.1:" + Api.port1.ToString() + "/"*/,
+                Api2 = Tool.Config.Read("Source2") ?? ""/*"http://127.0.0.1:" + Api.port2.ToString() + "/"*/,
                 Cookie1 = Tool.Config.Read("Cookie1") ?? "",
-                AutoLowerQuality = bool.Parse(Tool.Config.Read("AutoLowerQuality") ?? "true")
+                AutoLowerQuality = bool.Parse(Tool.Config.Read("AutoLowerQuality") ?? "true"),
+                EnableLoacApi = bool.Parse(Tool.Config.Read("EnableLoacApi") ?? "false")
             };
             music = new Music(setting);
             HomePage = new SearchPage(music, setting);
@@ -154,8 +160,9 @@ namespace MusicDownloader
             else
             {
                 sw = new StreamWriter("Error.log");
-                sw.WriteLine($"--- {DateTime.Now.ToString("G")} ---");
+
             }
+            sw.WriteLine($"--- {DateTime.Now.ToString("G")} ---");
             sw.WriteLine(e.ExceptionObject.ToString());
             sw.Flush();
             sw.Close();
@@ -203,6 +210,9 @@ namespace MusicDownloader
             {
                 NotifyUpdate();
             }
+            ApiUpdateInfo = result;
+            if (setting.EnableLoacApi)
+                EnableLoaclApi();
         }
 
         private void Notifyicon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -222,6 +232,7 @@ namespace MusicDownloader
 
         private void Menu1_Click(object sender, EventArgs e)
         {
+            Api.StopApi();
             Environment.Exit(0);
         }
 
@@ -231,6 +242,7 @@ namespace MusicDownloader
             Tool.Config.Write("W", ((int)Width).ToString());
             notifyicon.Dispose();
             NoticeManager.ExitNotifiaction();
+            Api.StopApi();
             Application.Current.Shutdown();
         }
 
@@ -268,6 +280,7 @@ namespace MusicDownloader
 
         private void Close_Click(object sender, RoutedEventArgs e)
         {
+            Api.StopApi();
             Close();
         }
 
@@ -416,6 +429,58 @@ namespace MusicDownloader
         public void BlurSave(double value)
         {
             Tool.Config.Write("Blur", value.ToString());
+        }
+
+        public async void EnableLoaclApi()
+        {
+            if (ApiUpdateInfo == "ApiUpdate" || !Directory.Exists(Api.ApiFilePath1) || !Directory.Exists(Api.ApiFilePath2))
+            {
+                var pb = PendingBox.Show("初始化接口信息中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
+                {
+                    MinHeight = 110,
+                    MaxHeight = 110,
+                    MinWidth = 280,
+                    MaxWidth = 280
+                });
+                await Task.Run(() =>
+                {
+                    Api.ApiStart(music.apiver, music.zipurl);
+                    while (!Api.ok)
+                    { }
+                });
+                if (!Api.SetCookie(music.qqcookie))
+                {
+                    AduMessageBox.Show("初始化错误", "提示");
+                    Api.StopApi();
+                    Environment.Exit(0);
+                }
+                pb.Close();
+            }
+            else
+            {
+                var pb = PendingBox.Show("启动服务中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
+                {
+                    MinHeight = 110,
+                    MaxHeight = 110,
+                    MinWidth = 280,
+                    MaxWidth = 280
+                });
+                await Task.Run(() =>
+                {
+                    Api.ApiStart(music.apiver, music.zipurl);
+                    while (!Api.ok)
+                    { }
+                });
+                if (!Api.SetCookie(music.qqcookie))
+                {
+                    AduMessageBox.Show("服务启动错误", "提示");
+                    Api.StopApi();
+                    Environment.Exit(0);
+                }
+                pb.Close();
+            }
+            music.NeteaseApiUrl = "http://127.0.0.1:" + Api.port1 + "/";
+            music.QQApiUrl = "http://127.0.0.1:" + Api.port2 + "/";
         }
     }
 }

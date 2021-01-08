@@ -13,26 +13,30 @@ namespace MusicDownloader.Library
     public class Music
     {
         #region 二次开发需要修改的信息
-        /// <summary>
-        /// api1和NeteaseApiUrl相同,api2和QQApiUrl相同
-        /// </summary>
-        public List<int> version = new List<int> { 1, 3, 3 };
-        public bool Beta = false;
-        public string api1 = ""; //自行搭建接口，以 / 结尾
-        public string NeteaseApiUrl = "";
-        public string api2 = ""; //自行搭建接口，以 / 结尾
-        public string QQApiUrl = "";
+        public List<int> version = new List<int> { 1, 3, 4 };
+        public bool Beta = true;
         private readonly string UpdateJsonUrl = "";
-        public string cookie = "";
-        public string _cookie = "";
+        public string api1 = "";
+        public string api2 = "";
         public bool canJumpToBlog = true;
         /*
-        我的json格式,如果更改请重写下方Update()方法
-        {
-            "Version": [1,1,6],
-            "Cookie": "cookie"
-        }
+            我的json格式,如果更改请重写下方Update()方法
+            {
+            "Version": [1,3,3],
+            "Cookie": "",
+            "Zip": "",
+            "Cookie1": "",
+            "ApiVer": "",
+            "QQ": ""
+            }
         */
+        #region 
+        public string NeteaseApiUrl = "";
+        public string QQApiUrl = "";
+        public string cookie = "";
+        public string _cookie = "";
+        #endregion
+
         #endregion
 
         public Setting setting;
@@ -42,7 +46,9 @@ namespace MusicDownloader.Library
         public delegate void NotifyUpdateEventHandler();
         public delegate void NotifyConnectErrorEventHandler();
         public event UpdateDownloadPageEventHandler UpdateDownloadPage;
-
+        public string qqcookie = "";
+        public string zipurl = "";
+        public string apiver = "";
         private bool wait = false;
         public bool pause = false;
 
@@ -66,6 +72,10 @@ namespace MusicDownloader.Library
                 return "Error";
             }
             Update update = JsonConvert.DeserializeObject<Update>(sr.ReadToEnd());
+            zipurl = update.Zip;
+            qqcookie = update.Cookie1;
+            apiver = update.ApiVer;
+            Api.qq = update.QQ;
             if (update.Cookie != null)
             {
                 _cookie = update.Cookie;
@@ -106,7 +116,14 @@ namespace MusicDownloader.Library
             }
             else
             {
-                return "";
+                if (update.ApiVer == Api.GetApiVer().Replace("\r", "").Replace("\n", "").Replace(" ", ""))
+                {
+                    return "";
+                }
+                else
+                {
+                    return "ApiUpdate";
+                }
             }
         }
 
@@ -418,16 +435,15 @@ namespace MusicDownloader.Library
                 {
                     downloadlist[0].State = "无版权";
                 }
-                /*
+
                 if (!string.IsNullOrEmpty(downloadlist[0].strMediaMid))
                 {
                     url = QQApiUrl + "song/url?id=" + downloadlist[0].Id + "&type=" + downloadlist[0].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac") + "&mediaId=" + downloadlist[0].strMediaMid;
                 }
-                 
                 else
-                {*/
-                url = QQApiUrl + "song/url?id=" + downloadlist[0].Id + "&type=" + downloadlist[0].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac");
-                //}
+                {
+                    url = QQApiUrl + "song/url?id=" + downloadlist[0].Id + "&type=" + downloadlist[0].Quality.Replace("128000", "128").Replace("320000", "320").Replace("999000", "flac");
+                }
                 using (WebClientPro wc = new WebClientPro())
                 {
                     StreamReader sr = null; ;
@@ -764,7 +780,7 @@ namespace MusicDownloader.Library
                 }
                 UpdateDownloadPage();
                 string savepath = "";
-                string filename = ""; ;
+                string filename = "";
                 switch (setting.SaveNameStyle)
                 {
                     case 0:
@@ -1048,6 +1064,7 @@ namespace MusicDownloader.Library
             if (f.Length == 0)
             {
                 downloadlist[0].State = "无版权";
+                f.Delete();
                 UpdateDownloadPage();
                 downloadlist.RemoveAt(0);
                 wait = false;

@@ -29,7 +29,8 @@ namespace MusicDownloader.Json
         public string Api1 { get; set; }
         public string Api2 { get; set; }
         public string Cookie1 { get; set; }
-        public bool AutoLowerQuality { get; set;}
+        public bool AutoLowerQuality { get; set; }
+        public bool EnableLoacApi { get; set; }
     }
 
     public class Musiclist
@@ -52,7 +53,10 @@ namespace MusicDownloader.Json
     {
         public List<int> Version { get; set; }
         public string Cookie { get; set; }
-
+        public string Zip { get; set; }
+        public string Cookie1 { get; set; }
+        public string ApiVer { get; set; }
+        public string QQ { get; set; }
     }
 
     public class MusicInfo

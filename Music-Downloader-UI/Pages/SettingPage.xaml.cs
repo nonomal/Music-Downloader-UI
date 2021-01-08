@@ -32,6 +32,8 @@ namespace MusicDownloader.Pages
         public static event ChangeBlur ChangeBlurEvent;
         public delegate void SaveBlur(double value);
         public static event SaveBlur SaveBlurEvent;
+        public delegate void EnableLoacApi();
+        public static event EnableLoacApi EnableLoacApiEvent;
         Setting setting;
         Music music = null;
 
@@ -74,6 +76,7 @@ namespace MusicDownloader.Pages
             picCheckBox.IsChecked = setting.IfDownloadPic;
             lowqCheckBox.IsChecked = setting.AutoLowerQuality;
             TranslateLrcComboBox.SelectedIndex = setting.TranslateLrc;
+            localapiCheckBox.IsChecked = setting.EnableLoacApi;
             if (!string.IsNullOrEmpty(Tool.Config.Read("Close")))
             {
                 CloseComboBox.SelectedIndex = int.Parse(Tool.Config.Read("Close"));
@@ -119,6 +122,7 @@ namespace MusicDownloader.Pages
             Tool.Config.Write("SearchQuantity", searchQuantityTextBox.Text);
             Tool.Config.Write("TranslateLrc", TranslateLrcComboBox.SelectedIndex.ToString());
             Tool.Config.Write("Close", CloseComboBox.SelectedIndex.ToString());
+            Tool.Config.Write("EnableLoacApi", localapiCheckBox.IsChecked.ToString());
             if (Source1textBox.Text != "" && Source1textBox.Text != null && Source1textBox.Text != "http://example:port/")
             {
                 Tool.Config.Write("Source1", Source1textBox.Text);
@@ -153,7 +157,7 @@ namespace MusicDownloader.Pages
             }
             setting.SavePath = savePathTextBox.Text;
             setting.DownloadQuality = ((System.Windows.Controls.ContentControl)qualityComboBox.SelectedValue).Content.ToString().Substring(("无损(").Length, "999000".Length);
-            setting.SearchResultFilter= searchresultfiltertextbox.Text;
+            setting.SearchResultFilter = searchresultfiltertextbox.Text;
             setting.IfDownloadLrc = lrcCheckBox.IsChecked ?? false;
             setting.IfDownloadPic = picCheckBox.IsChecked ?? false;
             setting.SaveNameStyle = nameStyleComboBox.SelectedIndex;
@@ -161,6 +165,24 @@ namespace MusicDownloader.Pages
             setting.SearchQuantity = searchQuantityTextBox.Text;
             setting.TranslateLrc = TranslateLrcComboBox.SelectedIndex;
             setting.AutoLowerQuality = lowqCheckBox.IsChecked ?? false;
+            setting.EnableLoacApi = localapiCheckBox.IsChecked ?? false;
+            if (localapiCheckBox.IsChecked ?? false)
+            {
+                EnableLoacApiEvent();
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(setting.Api1))
+                    music.NeteaseApiUrl = music.api1;
+                else
+                    music.NeteaseApiUrl = setting.Api1;
+                if (string.IsNullOrEmpty(setting.Api2))
+                    music.QQApiUrl = music.api2;
+                else
+                    music.QQApiUrl = setting.Api2;
+                Api.StopApi();
+            }
+            while (!Api.ok) { }
             AduMessageBox.Show("设置保存成功", "提示", MessageBoxButton.OK);
         }
 

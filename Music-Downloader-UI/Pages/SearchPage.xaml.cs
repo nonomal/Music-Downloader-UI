@@ -443,8 +443,6 @@ namespace MusicDownloader.Pages
             }
         }
 
-
-
         // 对搜索结果进行过滤
 
         public class Filter
