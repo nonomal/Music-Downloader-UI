@@ -13,8 +13,8 @@ namespace MusicDownloader.Library
     public class Music
     {
         #region 二次开发需要修改的信息
-        public List<int> version = new List<int> { 1, 3, 4 };
-        public bool Beta = true;
+        public List<int> version = new List<int> { 1, 3, 5 };
+        public bool Beta = false;
         private readonly string UpdateJsonUrl = "";
         public string api1 = "";
         public string api2 = "";
@@ -80,7 +80,9 @@ namespace MusicDownloader.Library
             {
                 _cookie = update.Cookie;
                 if (setting.Cookie1 == "")
+                {
                     cookie = update.Cookie;
+                }
             }
             bool needupdate = true;
 
@@ -138,13 +140,25 @@ namespace MusicDownloader.Library
             {
                 NeteaseApiUrl = setting.Api1;
             }
+            else
+            {
+                NeteaseApiUrl = api1;
+            }
             if (setting.Api2 != "")
             {
                 QQApiUrl = setting.Api2;
             }
+            else
+            {
+                QQApiUrl = api2;
+            }
             if (setting.Cookie1 != "")
             {
                 cookie = setting.Cookie1;
+            }
+            else
+            {
+                cookie = _cookie;
             }
         }
 
@@ -292,7 +306,7 @@ namespace MusicDownloader.Library
                     Title = mdr.songs[i].name,
                     Api = 1,
                     MVID = mdr.songs[i].mv.ToString(),
-                    AlbumUrl= "https://music.163.com/#/album?id=" + mdr.songs[i].al.id.ToString()
+                    AlbumUrl = "https://music.163.com/#/album?id=" + mdr.songs[i].al.id.ToString()
                 };
                 ret.Add(mi);
             }
@@ -330,6 +344,7 @@ namespace MusicDownloader.Library
                 string resjson = "";
                 using (WebClientPro wc = new WebClientPro())
                 {
+                    Console.WriteLine(url);
                     StreamReader sr = new StreamReader(wc.OpenRead(url));
                     resjson = sr.ReadToEnd();
                 }
@@ -358,7 +373,7 @@ namespace MusicDownloader.Library
                             Api = 2,
                             strMediaMid = json.data.song.list[i].strMediaMid,
                             MVID = json.data.song.list[i].songid.ToString(),
-                            AlbumUrl= "https://y.qq.com/n/yqq/album/" + json.data.song.list[i].albummid.ToString()+ ".html"
+                            AlbumUrl = "https://y.qq.com/n/yqq/album/" + json.data.song.list[i].albummid.ToString() + ".html"
                         });
                 }
             }
@@ -487,6 +502,7 @@ namespace MusicDownloader.Library
                     downloadlist[0].State = "准备下载";
                 }
             }
+            Console.WriteLine(downloadlist[0].Url);
             return "";
         }
 

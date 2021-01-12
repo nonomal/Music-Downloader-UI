@@ -117,10 +117,10 @@
                 <WrapPanel Margin="0 3 0 0" HorizontalAlignment="Center">
 
                 </WrapPanel>
-                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Switch2" Name="lrcCheckBox" Margin="0 5 0 0" Content="下载歌词" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Switch2" Name="picCheckBox" Margin="0 5 0 0" Content="下载封面" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Switch2" Name="lowqCheckBox" Margin="0 5 0 0" Content="下载错误时自动降低音质" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Switch2" Name="localapiCheckBox" Margin="0 5 0 0" Content="启用本地API（启用前先安装node.js）" IsChecked="False" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Standard" Name="lrcCheckBox" Margin="0 5 0 0" Content="下载歌词" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Standard" Name="picCheckBox" Margin="0 5 0 0" Content="下载封面" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Standard" Name="lowqCheckBox" Margin="0 5 0 0" Content="下载错误时自动降低音质" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Standard" Name="localapiCheckBox" Margin="0 5 0 0" Content="启用本地API（启用前先安装node.js）" IsChecked="False" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <Label Foreground="LightGray" HorizontalContentAlignment="Center"  Margin="0 -2 0 0" Width="380" Height="auto" Content="当无法下载音乐时请打开此模式以解决远程接口异常问题"/>
                 <Label Foreground="LightGray" HorizontalContentAlignment="Center" Margin="0 -12 0 0" Width="380" Height="auto" Content="勾选保存后自动开始部署本地接口"/>
                 <Button Click="Button_Click" Block.TextAlignment="Center" Background="#30FFFFFF" Content="保存" Margin="0 10 0 10" HorizontalAlignment="Center" Width="100" Height="40" />

@@ -168,7 +168,10 @@ namespace MusicDownloader.Pages
             setting.EnableLoacApi = localapiCheckBox.IsChecked ?? false;
             if (localapiCheckBox.IsChecked ?? false)
             {
-                EnableLoacApiEvent();
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    EnableLoacApiEvent();
+                }));
             }
             else
             {
@@ -182,7 +185,7 @@ namespace MusicDownloader.Pages
                     music.QQApiUrl = setting.Api2;
                 Api.StopApi();
             }
-            while (!Api.ok) { }
+
             AduMessageBox.Show("设置保存成功", "提示", MessageBoxButton.OK);
         }
 

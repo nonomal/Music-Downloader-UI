@@ -27,7 +27,7 @@ namespace MusicDownloader
         private readonly Page SettingPage;
         private readonly Page Donate = new Donate();
         private readonly System.Windows.Forms.NotifyIcon notifyicon = new System.Windows.Forms.NotifyIcon();
-        private string ApiUpdateInfo;
+        static public string ApiUpdateInfo;
         //BG.ImageSource = new BitmapImage(new Uri(@"C:\Users\10240\Desktop\Background3.jpg"));
 
         #region 界面
@@ -72,6 +72,7 @@ namespace MusicDownloader
         private void NotifyUpdate()
         {
             AduMessageBox.Show("检测到新版,请到Github或Telegram更新", "提示");
+            Environment.Exit(0);
         }
 
         private void NotifyError()
@@ -91,6 +92,7 @@ namespace MusicDownloader
             MusicDownloader.Pages.SettingPage.ChangeBlurEvent += BlurChange;
             MusicDownloader.Pages.SettingPage.SaveBlurEvent += BlurSave;
             MusicDownloader.Pages.SettingPage.EnableLoacApiEvent += EnableLoaclApi;
+            Api.NotifyNpmEventHandle += NpmNotExist;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             setting = new Setting()
             {
@@ -212,7 +214,9 @@ namespace MusicDownloader
             }
             ApiUpdateInfo = result;
             if (setting.EnableLoacApi)
+            {
                 EnableLoaclApi();
+            }
         }
 
         private void Notifyicon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -365,7 +369,7 @@ namespace MusicDownloader
         {
             if ((bool)Feedback.IsChecked)
             {
-                Process.Start("https://docs.qq.com/form/edit/DT0RraHhRZXRmYlVY");
+                Process.Start("https://tx.me/NiTian1207Home");
                 Home.IsChecked = true;
             }
         }
@@ -385,7 +389,7 @@ namespace MusicDownloader
             {
                 if (music.canJumpToBlog)
                 {
-                    Process.Start("https://www.nitian1207.cn/archives/663");
+                    Process.Start("https://www.nitianblog.com/?p=868");
                     Home.IsChecked = true;
                 }
                 else
@@ -413,7 +417,9 @@ namespace MusicDownloader
         private void NT_Click(object sender, RoutedEventArgs e)
         {
             if (music.canJumpToBlog)
-                Process.Start("https://www.nitian1207.cn");
+            {
+                Process.Start("https://www.nitianblog.com");
+            }
         }
 
         private void BG_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -435,13 +441,15 @@ namespace MusicDownloader
         {
             if (ApiUpdateInfo == "ApiUpdate" || !Directory.Exists(Api.ApiFilePath1) || !Directory.Exists(Api.ApiFilePath2))
             {
-                var pb = PendingBox.Show("初始化接口信息中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
+
+                IPendingHandler pb = PendingBox.Show("初始化信息接口中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
                 {
                     MinHeight = 110,
                     MaxHeight = 110,
                     MinWidth = 280,
                     MaxWidth = 280
                 });
+
                 await Task.Run(() =>
                 {
                     Api.ApiStart(music.apiver, music.zipurl);
@@ -458,7 +466,7 @@ namespace MusicDownloader
             }
             else
             {
-                var pb = PendingBox.Show("启动服务中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
+                IPendingHandler pb = PendingBox.Show("启动服务中...", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
                 {
                     MinHeight = 110,
                     MaxHeight = 110,
@@ -481,6 +489,11 @@ namespace MusicDownloader
             }
             music.NeteaseApiUrl = "http://127.0.0.1:" + Api.port1 + "/";
             music.QQApiUrl = "http://127.0.0.1:" + Api.port2 + "/";
+        }
+
+        public void NpmNotExist()
+        {
+            Dispatcher.Invoke(new Action(() => { AduMessageBox.Show("npm调用失败，程序即将退出\n如果再次启动仍出现提示请删除 (*.exe.config) 文件", "提示"); }));
         }
     }
 }

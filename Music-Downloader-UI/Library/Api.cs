@@ -23,6 +23,8 @@ namespace MusicDownloader.Library
         private static bool _isinstall = false;
         private static string _port;
         public static bool nonodejs = false;
+        public delegate void NotifyNpmNotExist();
+        public static event NotifyNpmNotExist NotifyNpmEventHandle;
 
         public static void ApiStart(string ver, string zipurl)
         {
@@ -124,7 +126,8 @@ namespace MusicDownloader.Library
             p.OutputDataReceived += P_OutputDataReceived;
             p.ErrorDataReceived += P_ErrorDataReceived;
             p.Start();
-
+            p.BeginOutputReadLine();
+            p.BeginErrorReadLine();
             if (_port == port1.ToString() && !File.Exists(path + "INSTALL1.txt"))
             {
                 p.StandardInput.WriteLine("npm install");
@@ -152,8 +155,6 @@ namespace MusicDownloader.Library
 
             comm += " & npm start";
             p.StandardInput.WriteLine(comm);
-            p.BeginOutputReadLine();
-            p.BeginErrorReadLine();
             while (!_isinstall)
             { }
             _isinstall = false;
@@ -162,8 +163,10 @@ namespace MusicDownloader.Library
         private static void P_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
             Console.WriteLine(e.Data);
-            if (e.Data.IndexOf("不是内部或外部命令") != -1)
+            //不是内部或外部命令
+            if (e.Data.IndexOf("不是内部") != -1 || e.Data.IndexOf("外部命令") != -1)
             {
+                NotifyNpmEventHandle();
                 nonodejs = true;
                 if (File.Exists(path + "INSTALL1.txt"))
                     File.Delete(path + "INSTALL1.txt");
