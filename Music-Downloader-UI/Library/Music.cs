@@ -12,7 +12,6 @@ namespace MusicDownloader.Library
 {
     public class Music
     {
-        #region 二次开发需要修改的信息
         public List<int> version = new List<int> { 1, 3, 5 };
         public bool Beta = false;
         private readonly string UpdateJsonUrl = "";
@@ -35,8 +34,6 @@ namespace MusicDownloader.Library
         public string QQApiUrl = "";
         public string cookie = "";
         public string _cookie = "";
-        #endregion
-
         #endregion
 
         public Setting setting;
@@ -479,13 +476,13 @@ namespace MusicDownloader.Library
                         if (downloadlist[0].Quality == "999000")
                         {
                             url = url.Replace("flac", "320");
-                            sr = new StreamReader(wc.OpenRead(url));
+                            try { sr = new StreamReader(wc.OpenRead(url)); } catch { }
                             httpjson = sr.ReadToEnd();
                             json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
                             if (json.result != 100)
                             {
                                 url = url.Replace("320", "128");
-                                sr = new StreamReader(wc.OpenRead(url));
+                                try { sr = new StreamReader(wc.OpenRead(url)); } catch { }
                                 httpjson = sr.ReadToEnd();
                                 json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
                             }
@@ -493,7 +490,7 @@ namespace MusicDownloader.Library
                         if (downloadlist[0].Quality == "320000")
                         {
                             url = url.Replace("320", "128");
-                            sr = new StreamReader(wc.OpenRead(url));
+                            try { sr = new StreamReader(wc.OpenRead(url)); } catch { }
                             httpjson = sr.ReadToEnd();
                             json = JsonConvert.DeserializeObject<QQmusicdetails>(httpjson);
                         }

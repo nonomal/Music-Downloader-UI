@@ -1,26 +1,14 @@
 ﻿using AduSkin.Controls.Metro;
-using MusicDownloader.Json;
 using MusicDownloader.Library;
-using Panuon.UI.Silver;
-using Panuon.UI.Silver.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MusicDownloader
 {
@@ -63,39 +51,43 @@ namespace MusicDownloader
 
         public void UpdateList()
         {
-            bool isadd = false;
-            for (int i = 0; i < music.downloadlist.Count; i++)
+            object locker = new object();
+            lock (locker)
             {
-                bool exist = false;
-                foreach (ListModel l in listitem)
+                bool isadd = false;
+                for (int i = 0; i < music.downloadlist.Count; i++)
                 {
-                    if (l.Title == music.downloadlist[i].Title && l.Singer == music.downloadlist[i].Singer && l.Album == music.downloadlist[i].Album)
+                    bool exist = false;
+                    foreach (ListModel l in listitem)
                     {
-                        l.State = music.downloadlist[i].State;
-                        l.OnPropertyChanged("State");
-                        exist = true;
+                        if (l.Title == music.downloadlist[i].Title && l.Singer == music.downloadlist[i].Singer && l.Album == music.downloadlist[i].Album)
+                        {
+                            l.State = music.downloadlist[i].State;
+                            l.OnPropertyChanged("State");
+                            exist = true;
+                        }
+                    }
+                    if (!exist)
+                    {
+                        isadd = true;
+                        listitem.Add(new ListModel
+                        {
+                            Album = music.downloadlist[i].Album,
+                            Singer = music.downloadlist[i].Singer,
+                            State = music.downloadlist[i].State,
+                            Title = music.downloadlist[i].Title
+                        }
+                        );
                     }
                 }
-                if (!exist)
+                if (isadd)
                 {
-                    isadd = true;
-                    listitem.Add(new ListModel
+                    Dispatcher.Invoke(new Action(() =>
                     {
-                        Album = music.downloadlist[i].Album,
-                        Singer = music.downloadlist[i].Singer,
-                        State = music.downloadlist[i].State,
-                        Title = music.downloadlist[i].Title
-                    }
-                    );
+                        List.ItemsSource = listitem;
+                        List.Items.Refresh();
+                    }));
                 }
-            }
-            if (isadd)
-            {
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    List.ItemsSource = listitem;
-                    List.Items.Refresh();
-                }));
             }
         }
 
@@ -154,7 +146,7 @@ namespace MusicDownloader
                 return;
             }
 
-            string path = @music.setting.SavePath+"\\" + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".csv";
+            string path = @music.setting.SavePath + "\\" + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".csv";
 
             if (save_list_as_csv(path))
             {
@@ -180,7 +172,7 @@ namespace MusicDownloader
                 //StreamWriter sw = File.CreateText(path);
 
                 sw.Write("Title,Artist,Album,State\r\n");
-      
+
 
                 for (int i = 0; i < listitem.Count; i++)
                 {
@@ -208,12 +200,13 @@ namespace MusicDownloader
                     else
                         sw.Write(album + ",");
 
-                    sw.Write(listitem[i].State+"\r\n");
-                } 
+                    sw.Write(listitem[i].State + "\r\n");
+                }
                 sw.Flush();
                 sw.Close();
             }
-            catch {
+            catch
+            {
                 return false;
             }
             return true;
