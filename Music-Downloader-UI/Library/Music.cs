@@ -12,8 +12,8 @@ namespace MusicDownloader.Library
 {
     public class Music
     {
-        public List<int> version = new List<int> { 1, 3, 5 };
-        public bool Beta = false;
+        public List<int> version = new List<int> { 1, 3, 6 };
+        public bool Beta = true;
         private readonly string UpdateJsonUrl = "";
         public string api1 = "";
         public string api2 = "";
@@ -732,7 +732,7 @@ namespace MusicDownloader.Library
                     url = QQApiUrl + "song/url?id=" + id + "&type=128&mediaId=" + strMediaMid;
                     json = JsonConvert.DeserializeObject<QQmusicdetails>(GetHTML(url));
                 }
-                return json.data;
+                return json.data ?? "";
             }
             return "";
         }

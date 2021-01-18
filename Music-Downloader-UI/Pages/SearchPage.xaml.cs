@@ -274,12 +274,8 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         private void musiclistTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            //if (e.Key == Key.Enter)
-            //    musiclistButton_Click(this, new RoutedEventArgs());
-            //if (!((74 <= (int)e.Key && (int)e.Key <= 83) || (34 <= (int)e.Key && (int)e.Key <= 43) || e.Key == Key.Back))
-            //{
-            //    e.Handled = true;
-            //}
+            if (e.Key == Key.Enter)
+                musiclistButton_Click(this, new RoutedEventArgs());
         }
 
         /// <summary>
@@ -289,12 +285,8 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         private void albumTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            //if (e.Key == Key.Enter)
-            //    albumButton_Click(this, new RoutedEventArgs());
-            //if (!((74 <= (int)e.Key && (int)e.Key <= 83) || (34 <= (int)e.Key && (int)e.Key <= 43) || e.Key == Key.Back))
-            //{
-            //    e.Handled = true;
-            //}
+            if (e.Key == Key.Enter)
+                albumButton_Click(this, new RoutedEventArgs());
         }
 
         /// <summary>
