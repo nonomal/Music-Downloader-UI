@@ -726,11 +726,20 @@ namespace MusicDownloader.Library
                 {
                     url = QQApiUrl + "song/url?id=" + id + "&type=flac";
                 }
-                QQmusicdetails json = JsonConvert.DeserializeObject<QQmusicdetails>(GetHTML(url));
+                string html = GetHTML(url);
+                QQmusicdetails json = null;
+                if (!string.IsNullOrEmpty(html))
+                {
+                    json = JsonConvert.DeserializeObject<QQmusicdetails>(html);
+                }
                 if (json.data == null)
                 {
                     url = QQApiUrl + "song/url?id=" + id + "&type=128&mediaId=" + strMediaMid;
-                    json = JsonConvert.DeserializeObject<QQmusicdetails>(GetHTML(url));
+                    html = GetHTML(url);
+                    if (!string.IsNullOrEmpty(html))
+                    {
+                        json = JsonConvert.DeserializeObject<QQmusicdetails>(html);
+                    }
                 }
                 return json.data ?? "";
             }
