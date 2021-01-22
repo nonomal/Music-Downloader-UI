@@ -13,7 +13,7 @@ namespace MusicDownloader.Library
     public class Music
     {
         public List<int> version = new List<int> { 1, 3, 6 };
-        public bool Beta = true;
+        public bool Beta = false;
         private readonly string UpdateJsonUrl = "";
         public string api1 = "";
         public string api2 = "";
@@ -226,11 +226,11 @@ namespace MusicDownloader.Library
         }
 
         /// <summary>
-        /// 网易云音乐带cookie访问
+        /// 带cookie访问
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        private string GetHTML(string url)
+        private string GetHTML(string url, bool withcookie = true)
         {
             try
             {
@@ -703,13 +703,17 @@ namespace MusicDownloader.Library
                 return urls.data[0].url;
                 */
                 string url = "https://music.163.com/song/media/outer/url?id=" + id + ".mp3";
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-                req.Method = "HEAD";
-                req.AllowAutoRedirect = false;
-                HttpWebResponse myResp = (HttpWebResponse)req.GetResponse();
-                if (myResp.StatusCode == HttpStatusCode.Redirect)
-                { url = myResp.GetResponseHeader("Location"); }
-                return url;
+                try
+                {
+                    HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                    req.Method = "HEAD";
+                    req.AllowAutoRedirect = false;
+                    HttpWebResponse myResp = (HttpWebResponse)req.GetResponse();
+                    if (myResp.StatusCode == HttpStatusCode.Redirect)
+                    { url = myResp.GetResponseHeader("Location"); }
+                }
+                catch { }
+                return url ?? "";
             }
             if (api == 2)
             {
@@ -726,7 +730,7 @@ namespace MusicDownloader.Library
                 {
                     url = QQApiUrl + "song/url?id=" + id + "&type=flac";
                 }
-                string html = GetHTML(url);
+                string html = GetHTML(url, false);
                 QQmusicdetails json = null;
                 if (!string.IsNullOrEmpty(html))
                 {
@@ -735,7 +739,7 @@ namespace MusicDownloader.Library
                 if (json.data == null)
                 {
                     url = QQApiUrl + "song/url?id=" + id + "&type=128&mediaId=" + strMediaMid;
-                    html = GetHTML(url);
+                    html = GetHTML(url, false);
                     if (!string.IsNullOrEmpty(html))
                     {
                         json = JsonConvert.DeserializeObject<QQmusicdetails>(html);

@@ -25,9 +25,13 @@ namespace MusicDownloader.Library
         public static bool nonodejs = false;
         public delegate void NotifyNpmNotExist();
         public static event NotifyNpmNotExist NotifyNpmEventHandle;
+        private static string re_ver = null;
+        private static string re_zipurl = null;
 
         public static void ApiStart(string ver, string zipurl)
         {
+            re_ver = ver;
+            re_zipurl = zipurl;
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -130,12 +134,12 @@ namespace MusicDownloader.Library
             p.BeginErrorReadLine();
             if (_port == port1.ToString() && !File.Exists(path + "INSTALL1.txt"))
             {
-                p.StandardInput.WriteLine("npm install");
+                p.StandardInput.WriteLine("npm install --registry=https://registry.npm.taobao.org");
             }
 
             if (_port == port2.ToString() && !File.Exists(path + "INSTALL2.txt"))
             {
-                p.StandardInput.WriteLine("npm install");
+                p.StandardInput.WriteLine("npm install --registry=https://registry.npm.taobao.org");
             }
 
             if (qq != "" && type == 2)
@@ -173,6 +177,15 @@ namespace MusicDownloader.Library
                 if (File.Exists(path + "INSTALL2.txt"))
                     File.Delete(path + "INSTALL2.txt");
                 Environment.Exit(0);
+            }
+            if (e.Data.IndexOf("Cannot find module") != -1)
+            {
+                StopApi();
+                if (File.Exists(path + "INSTALL1.txt"))
+                    File.Delete(path + "INSTALL1.txt");
+                if (File.Exists(path + "INSTALL2.txt"))
+                    File.Delete(path + "INSTALL2.txt");
+                ApiStart(re_ver, re_zipurl);
             }
             if (File.Exists(path + "error.log"))
             {
