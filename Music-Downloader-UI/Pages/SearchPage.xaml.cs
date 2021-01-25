@@ -301,7 +301,7 @@ namespace MusicDownloader.Pages
                 string id = albumTextBox.Text;
                 if (apiComboBox.SelectedIndex == 0)
                 {
-                    if (albumTextBox.Text.IndexOf("http") != -1)
+                    if (id.IndexOf("http") != -1)
                     {
                         Match match = Regex.Match(id, @"(?<=album\?id=)\d*");
                         id = match.Value;
@@ -990,6 +990,46 @@ namespace MusicDownloader.Pages
                 {
                     Title = "提示",
                     Content = "没有获得专辑链接"
+                });
+            }
+        }
+
+        private void menu_Album3_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(musicinfo[List.SelectedIndex].AlbumUrl))
+            {
+ 
+                    string id = musicinfo[List.SelectedIndex].AlbumUrl.Trim();
+                    if (apiComboBox.SelectedIndex == 0)
+                    {
+                        if (id.IndexOf("http") != -1)
+                        {
+                            Match match = Regex.Match(id, @"(?<=album\?id=)\d*");
+                            id = match.Value;
+                        }
+                    }
+                    if (apiComboBox.SelectedIndex == 1)
+                    {
+                        Tool.GetRealUrl(id);
+                        if (id.IndexOf("https://c.y.qq.com/") != -1)
+                        {
+                            AduMessageBox.Show("请将链接复制到浏览器打开后再复制回程序", "提示");
+                            return;
+                        }
+                        if (id.IndexOf("https://y.qq.com/") != -1)
+                        {
+                            Match match = Regex.Match(id, @"(?<=album/).*(?=\.)");
+                            id = match.Value;
+                        }
+                    }
+                    GetAblum(id);
+            }
+            else
+            {
+                NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+                {
+                    Title = "提示",
+                    Content = "没有获得专辑信息"
                 });
             }
         }
