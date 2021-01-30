@@ -103,6 +103,8 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         private void menu_Play_PreviewMouseDown(object sender, RoutedEventArgs e)
         {
+            load_music(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].Id, musicinfo[List.SelectedIndex].Title + " - " + musicinfo[List.SelectedIndex].Singer, List.SelectedIndex);
+            return;
             string url = music.GetMusicUrl(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].Id);
             if (string.IsNullOrEmpty(url))
             {
@@ -128,6 +130,116 @@ namespace MusicDownloader.Pages
             isPlaying = true;
             CtrlButton.Text = "\xe61d";
         }
+
+
+        Thread thread_load_music = null;
+        string id_load_music = "";
+
+        private void load_music(int api, string id, string text,int move_music_index)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return;
+            }
+
+            if (thread_load_music != null)
+            {
+                if (thread_load_music.IsAlive)
+                {
+                    if (id_load_music != id)
+                    {
+                        thread_load_music.Abort();
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
+            }
+
+            thread_load_music = new Thread(new ThreadStart(
+                () =>
+                {
+                    UpdateUI_LoadingState("解析 " + text);
+                    string url = music.GetMusicUrl(api, id);
+                    if (string.IsNullOrEmpty(url))
+                    {
+                        UpdateUI_LoadingState("解析失败 " + text);
+                        return;
+                    }
+                    UpdateUI_LoadingState("缓冲 " + text);
+
+                    try
+                    {
+                        HttpWebRequest req = (HttpWebRequest)WebRequest.CreateDefault(new Uri(url));
+                        req.Method = "HEAD";
+                        req.Timeout = 1000;
+                        HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+                        if (res.StatusCode != HttpStatusCode.OK)
+                        {
+                            Console.WriteLine("播放失败 " + url);
+                            UpdateUI_LoadingState("播放失败 " + text);
+                        }
+                    }
+                    catch (WebException wex)
+                    {
+                        Console.WriteLine("播放失败 " + url+"\n"+wex.Message);
+                        UpdateUI_LoadingState("播放失败 " + text) ;
+                        return;
+                    }
+                    id_load_music = id;
+
+                    finish_load_music(url, text, move_music_index);
+
+                }));
+            thread_load_music.Start();
+        }
+
+        private void UpdateUI_LoadingState(String text)
+        {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                LoadingState.Text = text;
+            }));
+        }
+        private void finish_load_music(string url, string text, int move_music_index)
+        {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                player.Open(new Uri(url));
+                player.Play();
+                timer.Elapsed += Timer_Elapsed;
+                timer.Enabled = true;
+                timer.AutoReset = true;
+                isPlaying = true;
+                CtrlButton.Text = "\xe61d";
+                CurrentMusicLabel.Text = text;
+                if (move_music_index == -1)
+                {
+                    currentmusicindex--;
+                }
+                else if (move_music_index == -2)
+                {
+                    currentmusicindex++;
+                }
+                else if(move_music_index >= 0)
+                {
+                    playlist.Clear();
+                    for (int i = 0; i < musicinfo.Count; i++)
+                    {
+                        CurrentMusicInfo cmi = new CurrentMusicInfo { Api = musicinfo[i].Api, Id = musicinfo[i].Id, Title = musicinfo[i].Title, Singer = musicinfo[i].Singer };
+                        playlist.Add(cmi);
+                    }
+
+                    currentmusicindex =  move_music_index;
+                }
+                LoadingState.Text = "";
+
+            }));
+
+        }
+
 
         private void Player_MediaEnded(object sender, EventArgs e)
         {
@@ -974,7 +1086,7 @@ namespace MusicDownloader.Pages
         private void menu_Album2_Click(object sender, RoutedEventArgs e)
         {
 
-            if ( !string.IsNullOrEmpty(musicinfo[List.SelectedIndex].AlbumUrl))
+            if (!string.IsNullOrEmpty(musicinfo[List.SelectedIndex].AlbumUrl))
             {
                 Process.Start(musicinfo[List.SelectedIndex].AlbumUrl);
                 /*                Clipboard.SetText(music.GetMvUrl(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].AlbumUrl));
@@ -998,31 +1110,31 @@ namespace MusicDownloader.Pages
         {
             if (!string.IsNullOrEmpty(musicinfo[List.SelectedIndex].AlbumUrl))
             {
- 
-                    string id = musicinfo[List.SelectedIndex].AlbumUrl.Trim();
-                    if (apiComboBox.SelectedIndex == 0)
+
+                string id = musicinfo[List.SelectedIndex].AlbumUrl.Trim();
+                if (apiComboBox.SelectedIndex == 0)
+                {
+                    if (id.IndexOf("http") != -1)
                     {
-                        if (id.IndexOf("http") != -1)
-                        {
-                            Match match = Regex.Match(id, @"(?<=album\?id=)\d*");
-                            id = match.Value;
-                        }
+                        Match match = Regex.Match(id, @"(?<=album\?id=)\d*");
+                        id = match.Value;
                     }
-                    if (apiComboBox.SelectedIndex == 1)
+                }
+                if (apiComboBox.SelectedIndex == 1)
+                {
+                    Tool.GetRealUrl(id);
+                    if (id.IndexOf("https://c.y.qq.com/") != -1)
                     {
-                        Tool.GetRealUrl(id);
-                        if (id.IndexOf("https://c.y.qq.com/") != -1)
-                        {
-                            AduMessageBox.Show("请将链接复制到浏览器打开后再复制回程序", "提示");
-                            return;
-                        }
-                        if (id.IndexOf("https://y.qq.com/") != -1)
-                        {
-                            Match match = Regex.Match(id, @"(?<=album/).*(?=\.)");
-                            id = match.Value;
-                        }
+                        AduMessageBox.Show("请将链接复制到浏览器打开后再复制回程序", "提示");
+                        return;
                     }
-                    GetAblum(id);
+                    if (id.IndexOf("https://y.qq.com/") != -1)
+                    {
+                        Match match = Regex.Match(id, @"(?<=album/).*(?=\.)");
+                        id = match.Value;
+                    }
+                }
+                GetAblum(id);
             }
             else
             {
@@ -1049,18 +1161,20 @@ namespace MusicDownloader.Pages
             string url = "";
             if (currentmusicindex - 1 >= 0)
             {
-                url = music.GetMusicUrl(playlist[currentmusicindex - 1].Api, playlist[currentmusicindex - 1].Id);
-                if (string.IsNullOrEmpty(url))
-                {
-                    AduMessageBox.Show("播放失败", "提示", MessageBoxButton.OK);
-                    return;
-                }
-                player.Open(new Uri(url));
-                player.Play();
-                isPlaying = true;
-                CtrlButton.Text = "\xe61d";
-                CurrentMusicLabel.Text = playlist[currentmusicindex - 1].Title + " - " + playlist[currentmusicindex - 1].Singer;
-                currentmusicindex--;
+                load_music(playlist[currentmusicindex - 1].Api, playlist[currentmusicindex - 1].Id ,playlist[currentmusicindex - 1].Title + " - " + playlist[currentmusicindex - 1].Singer,-1);
+
+                //url = music.GetMusicUrl(playlist[currentmusicindex - 1].Api, playlist[currentmusicindex - 1].Id);
+                //if (string.IsNullOrEmpty(url))
+                //{
+                //    AduMessageBox.Show("播放失败", "提示", MessageBoxButton.OK);
+                //    return;
+                //}
+                //player.Open(new Uri(url));
+                //player.Play();
+                //isPlaying = true;
+                //CtrlButton.Text = "\xe61d";
+                //CurrentMusicLabel.Text = playlist[currentmusicindex - 1].Title + " - " + playlist[currentmusicindex - 1].Singer;
+                //currentmusicindex--;
             }
         }
 
@@ -1069,18 +1183,20 @@ namespace MusicDownloader.Pages
             string url = "";
             if (currentmusicindex + 1 <= playlist.Count - 1)
             {
-                url = music.GetMusicUrl(playlist[currentmusicindex + 1].Api, playlist[currentmusicindex + 1].Id);
-                if (string.IsNullOrEmpty(url))
-                {
-                    AduMessageBox.Show("播放失败", "提示", MessageBoxButton.OK);
-                    return;
-                }
-                player.Open(new Uri(url));
-                player.Play();
-                isPlaying = true;
-                CtrlButton.Text = "\xe61d";
-                CurrentMusicLabel.Text = playlist[currentmusicindex + 1].Title + " - " + playlist[currentmusicindex + 1].Singer;
-                currentmusicindex++;
+                load_music(playlist[currentmusicindex + 1].Api, playlist[currentmusicindex + 1].Id, playlist[currentmusicindex + 1].Title + " - " + playlist[currentmusicindex + 1].Singer,-2);
+
+                //url = music.GetMusicUrl(playlist[currentmusicindex + 1].Api, playlist[currentmusicindex + 1].Id);
+                //if (string.IsNullOrEmpty(url))
+                //{
+                //    AduMessageBox.Show("播放失败", "提示", MessageBoxButton.OK);
+                //    return;
+                //}
+                //player.Open(new Uri(url));
+                //player.Play();
+                //isPlaying = true;
+                //CtrlButton.Text = "\xe61d";
+                //CurrentMusicLabel.Text = playlist[currentmusicindex + 1].Title + " - " + playlist[currentmusicindex + 1].Singer;
+                //currentmusicindex++;
             }
         }
 
