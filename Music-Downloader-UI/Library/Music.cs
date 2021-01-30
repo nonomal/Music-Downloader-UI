@@ -712,7 +712,10 @@ namespace MusicDownloader.Library
                     if (myResp.StatusCode == HttpStatusCode.Redirect)
                     { url = myResp.GetResponseHeader("Location"); }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception GetMusicUrl(): {0}", e);
+                }
                 return url ?? "";
             }
             if (api == 2)
