@@ -166,7 +166,7 @@ namespace MusicDownloader.Pages
             setting.TranslateLrc = TranslateLrcComboBox.SelectedIndex;
             setting.AutoLowerQuality = lowqCheckBox.IsChecked ?? false;
             setting.EnableLoacApi = localapiCheckBox.IsChecked ?? false;
-            if (localapiCheckBox.IsChecked ?? false)
+            if ((localapiCheckBox.IsChecked ?? false) && !Api.ok)
             {
                 Dispatcher.Invoke(new Action(() =>
                 {
