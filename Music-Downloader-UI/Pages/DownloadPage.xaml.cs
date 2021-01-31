@@ -115,6 +115,11 @@ namespace MusicDownloader
             }
             List.ItemsSource = listitem;
             List.Items.Refresh();
+            NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+            {
+                Title = "提示",
+                Content = "已经清除列表"
+            });
         }
 
         private void Label_PreviewMouseDown_2(object sender, MouseButtonEventArgs e)
@@ -136,6 +141,12 @@ namespace MusicDownloader
             }
             List.ItemsSource = listitem;
             List.Items.Refresh();
+
+            NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+            {
+                Title = "提示",
+                Content = "已经清除下载成功的项目"
+            });
         }
 
         private void Label_PreviewMouseDown_3(object sender, MouseButtonEventArgs e)
@@ -150,7 +161,16 @@ namespace MusicDownloader
 
             if (save_list_as_csv(path))
             {
-                Process.Start(path);
+                if (File.Exists(path))
+                    Process.Start(path);
+                else
+                {
+                    NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+                    {
+                        Title = "提示",
+                        Content = "没有文件下载失败"
+                    });
+                }
                 return;
             }
 
@@ -165,15 +185,8 @@ namespace MusicDownloader
 
             try
             {
-                if (!File.Exists(path))
-                    File.Create(path).Close();
-                StreamWriter sw = new StreamWriter(path, true, Encoding.UTF8);
-
-                //StreamWriter sw = File.CreateText(path);
-
-                sw.Write("Title,Artist,Album,State\r\n");
-
-
+                StringBuilder log= new StringBuilder();
+                int log_counter =0;
                 for (int i = 0; i < listitem.Count; i++)
                 {
                     if (listitem[i].State == "下载完成" || listitem[i].State == "音乐已存在")
@@ -186,24 +199,36 @@ namespace MusicDownloader
                     string album = listitem[i].Album;
 
                     if (title.IndexOf(',') > -1)
-                        sw.Write("\"" + title + "\",");
+                       log.Append("\"" + title + "\",");
                     else
-                        sw.Write(title + ",");
+                       log.Append(title + ",");
 
                     if (singer.IndexOf(',') > -1)
-                        sw.Write("\"" + singer + "\",");
+                        log.Append("\"" + singer + "\",");
                     else
-                        sw.Write(singer + ",");
+                        log.Append(singer + ",");
 
                     if (album.IndexOf(',') > -1)
-                        sw.Write("\"" + album + "\",");
+                        log.Append("\"" + album + "\",");
                     else
-                        sw.Write(album + ",");
+                        log.Append(album + ",");
 
-                    sw.Write(listitem[i].State + "\r\n");
+                    log.Append(listitem[i].State + "\r\n");
+                    log_counter++;
                 }
-                sw.Flush();
-                sw.Close();
+
+                if (log_counter > 0)
+                {
+                    if (!File.Exists(path))
+                        File.Create(path).Close();
+                    StreamWriter sw = new StreamWriter(path, true, Encoding.UTF8);
+                    //StreamWriter sw = File.CreateText(path);
+                    sw.Write("Title,Artist,Album,State\r\n");
+                    sw.Write(log);
+                    sw.Flush();
+                    sw.Close();
+                }
+
             }
             catch
             {

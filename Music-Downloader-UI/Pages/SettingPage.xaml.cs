@@ -58,6 +58,7 @@ namespace MusicDownloader.Pages
             savePathTextBox.Text = setting.SavePath;
             searchQuantityTextBox.Text = setting.SearchQuantity;
             searchresultfiltertextbox.Text = setting.SearchResultFilter;
+            searchResultFilterCheckBox.IsChecked = setting.IfSearchResultFilter;
             switch (setting.DownloadQuality)
             {
                 case "999000":
@@ -112,6 +113,7 @@ namespace MusicDownloader.Pages
                 return;
             }
             Tool.Config.Write("SavePath", savePathTextBox.Text);
+            Tool.Config.Write("IfSearchResultFilter", searchResultFilterCheckBox.IsChecked.ToString());
             Tool.Config.Write("SearchResultFilter", searchresultfiltertextbox.Text);
             Tool.Config.Write("DownloadQuality", ((System.Windows.Controls.ContentControl)qualityComboBox.SelectedValue).Content.ToString().Substring(("无损(").Length, 6));
             Tool.Config.Write("IfDownloadLrc", lrcCheckBox.IsChecked.ToString());
@@ -157,6 +159,7 @@ namespace MusicDownloader.Pages
             }
             setting.SavePath = savePathTextBox.Text;
             setting.DownloadQuality = ((System.Windows.Controls.ContentControl)qualityComboBox.SelectedValue).Content.ToString().Substring(("无损(").Length, "999000".Length);
+            setting.IfSearchResultFilter = searchResultFilterCheckBox.IsChecked ?? true;
             setting.SearchResultFilter = searchresultfiltertextbox.Text;
             setting.IfDownloadLrc = lrcCheckBox.IsChecked ?? false;
             setting.IfDownloadPic = picCheckBox.IsChecked ?? false;
@@ -186,7 +189,11 @@ namespace MusicDownloader.Pages
                 Api.StopApi();
             }
 
-            AduMessageBox.Show("设置保存成功", "提示", MessageBoxButton.OK);
+            NoticeManager.NotifiactionShow.AddNotifiaction(new NotifiactionModel()
+            {
+                Title = "提示",
+                Content = "设置保存成功"
+            });
         }
 
         private void searchQuantityTextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
