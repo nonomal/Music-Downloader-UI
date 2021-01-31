@@ -29,7 +29,7 @@
 
 
         <DockPanel Grid.Row="3">
-            <TextBlock Name="CurrentMusicLabel"  Text="当前播放音乐" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="13" Height="16" Margin="160 5 20 -10" Block.TextAlignment="Center"/>
+            <TextBlock Name="CurrentMusicLabel"  Text="当前无播放音乐" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="13" Height="16" Margin="160 5 20 -10" Block.TextAlignment="Center"/>
             <TextBlock Text="..." Name="LoadingState"  Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center"  FontSize="13" Height="16"  Margin="20 5 20 -10"/>
         </DockPanel>
         <DockPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0 0 0 0">
@@ -143,7 +143,9 @@
             <DataGrid.Columns>
                 <DataGridCheckBoxColumn Header=" " Width="40" Binding="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
                     <DataGridCheckBoxColumn.ElementStyle>
-                        <Style TargetType="{x:Type CheckBox}"/>
+                        <Style TargetType="{x:Type CheckBox}">
+                            <EventSetter Event="Click" Handler="OnItemSelected"/>
+                        </Style> 
                     </DataGridCheckBoxColumn.ElementStyle>
                 </DataGridCheckBoxColumn>
                 <DataGridTextColumn Header="标题" Width="*" IsReadOnly="True" Binding="{Binding Title}"/>
