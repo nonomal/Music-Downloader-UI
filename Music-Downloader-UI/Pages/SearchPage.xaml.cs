@@ -71,6 +71,7 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         public void OnItemSelected(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("OnItemSelected");
             if (skipselect)
             {
                 e.Handled = true;
@@ -89,7 +90,6 @@ namespace MusicDownloader.Pages
             }
             Console.WriteLine("checked=" + (bool)item.IsChecked + " counter=" + counter_checked_item);
             UpdateUI_LoadingState("选中(" + counter_checked_item + "/" + SearchListItem.Count + ")");
-
         }
 
         public SearchPage(Music m, Setting s)
@@ -1209,19 +1209,9 @@ namespace MusicDownloader.Pages
             player.MediaEnded += Player_MediaEnded;
         }
 
-        private void List_CurrentCellChanged(object sender, EventArgs e)
-        {/*
-            System.Windows.Controls.DataGrid datagrid = sender as System.Windows.Controls.DataGrid;
-            int index = SearchListItem.IndexOf(datagrid.CurrentCell.Item as SearchListItemModel);
-            if (index >= 0)
-            {
-                SearchListItem[index].IsSelected = !SearchListItem[index].IsSelected;
-                SearchListItem[index].OnPropertyChanged("IsSelected");
-            }*/
-        }
-
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Console.WriteLine("List_SelectionChanged");
             int i = 0;
             bool first = false;
             if (List.SelectedItems.Count == 1)
@@ -1235,7 +1225,8 @@ namespace MusicDownloader.Pages
                     s.IsSelected = !s.IsSelected;
                     s.OnPropertyChanged("IsSelected");
                 }
-                skipselect = true;
+                if((string)List.CurrentCell.Column.Header == " ")
+                    skipselect = true;
             }
             else
             {
@@ -1247,15 +1238,17 @@ namespace MusicDownloader.Pages
                         first = s.IsSelected;
                         continue;
                     }
-                    if (s.IsSelected)
-                        counter_checked_item--;
-                    if (!s.IsSelected)
-                        counter_checked_item++;
                     s.IsSelected = first;
                     s.OnPropertyChanged("IsSelected");
                     i++;
-
                 }
+                int count = 0;
+                foreach (SearchListItemModel s in SearchListItem)
+                {
+                    if (s.IsSelected)
+                        count++;
+                }
+                counter_checked_item = count;
             }
             UpdateUI_LoadingState("选中(" + counter_checked_item + "/" + SearchListItem.Count + ")");
         }
