@@ -115,7 +115,7 @@
                   GridLinesVisibility="None" BorderThickness="0" BorderBrush="LightGray"
                   VerticalScrollBarVisibility="Visible"
                   Margin="0,28.891,0.294,0.504"
-                  ItemsSource="{Binding SearchListItem}" PreviewKeyDown="List_PreviewKeyDown" TabIndex="4" CanUserSortColumns="False" PreviewMouseDoubleClick="List_PreviewMouseDoubleClick" Grid.RowSpan="2">
+                  ItemsSource="{Binding SearchListItem}" PreviewKeyDown="List_PreviewKeyDown" TabIndex="4" CanUserSortColumns="False" PreviewMouseDoubleClick="List_PreviewMouseDoubleClick" Grid.RowSpan="2" CurrentCellChanged="List_CurrentCellChanged" SelectionChanged="List_SelectionChanged">
             <DataGrid.ContextMenu>
                 <ContextMenu pu:ContextMenuHelper.CornerRadius="5" Width="200">
                     <MenuItem x:Name="menu_Play" Header="播放(单选)" Click="menu_Play_PreviewMouseDown"/>

@@ -29,11 +29,11 @@
                     <TextBox Foreground="White" Background="#20FFFFFF" BorderThickness="0" InputMethod.IsInputMethodEnabled="False" Name="searchQuantityTextBox" Width="130" Height="25" PreviewKeyDown="searchQuantityTextBox_PreviewKeyDown"/>
                 </WrapPanel>
                 <WrapPanel  HorizontalAlignment="Center">
-                    <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Standard" Name="searchResultFilterCheckBox" Margin="0 5 0 0" Content="搜索结果过滤器" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <CheckBox Foreground="White" BorderThickness="0" pu:CheckBoxHelper.CheckBoxStyle="Standard" Name="searchResultFilterCheckBox" Margin="0 5 0 5" Content="搜索结果过滤器" IsChecked="True" HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
                 </WrapPanel>
                 <WrapPanel  HorizontalAlignment="Center">
-                    <TextBox TextWrapping="Wrap" Foreground="White" Background="#20FFFFFF" BorderThickness="0" Margin="0 0 0 0" Name="searchresultfiltertextbox"  HorizontalAlignment="Center" Width="380" Height="auto" />
+                    <TextBox TextWrapping="Wrap" Foreground="White" Background="#20FFFFFF" BorderThickness="0" Margin="0 0 0 5" Name="searchresultfiltertextbox"  HorizontalAlignment="Center" Width="380" Height="25" />
                 </WrapPanel>
                 <WrapPanel  HorizontalAlignment="Center">
                     <TextBlock TextWrapping="Wrap"  Foreground="LightGray"  Margin="0 0 0 0" Width="380" Height="auto" Text="搜索结果中，标题和艺术家含这些关键词的音乐会被自动屏蔽。填入 “原唱 翻唱 翻自 dj版 mix版 live版 （dj  (live (cover remix cover”, 可以有效过滤混音、翻唱、live等版本。"/>

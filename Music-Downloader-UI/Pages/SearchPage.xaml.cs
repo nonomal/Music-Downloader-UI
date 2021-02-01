@@ -71,7 +71,6 @@ namespace MusicDownloader.Pages
             if ((bool)item.IsChecked)
             {
                 counter_checked_item++;
-
             }
             else
             {
@@ -127,10 +126,10 @@ namespace MusicDownloader.Pages
             return;
         }
 
-    Thread thread_load_music = null;
+        Thread thread_load_music = null;
         string id_load_music = "";
 
-        private void load_music(int api, string id, string text,int move_music_index)
+        private void load_music(int api, string id, string text, int move_music_index)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -179,8 +178,8 @@ namespace MusicDownloader.Pages
                     }
                     catch (WebException wex)
                     {
-                        Console.WriteLine("播放失败 " + url+"\n"+wex.Message);
-                        UpdateUI_LoadingState("播放失败 " + text) ;
+                        Console.WriteLine("播放失败 " + url + "\n" + wex.Message);
+                        UpdateUI_LoadingState("播放失败 " + text);
                         return;
                     }
                     id_load_music = id;
@@ -218,7 +217,7 @@ namespace MusicDownloader.Pages
                 {
                     currentmusicindex++;
                 }
-                else if(move_music_index >= 0)
+                else if (move_music_index >= 0)
                 {
                     playlist.Clear();
                     for (int i = 0; i < musicinfo.Count; i++)
@@ -227,7 +226,7 @@ namespace MusicDownloader.Pages
                         playlist.Add(cmi);
                     }
 
-                    currentmusicindex =  move_music_index;
+                    currentmusicindex = move_music_index;
                 }
                 LoadingState.Text = "";
 
@@ -321,7 +320,7 @@ namespace MusicDownloader.Pages
                     counter_checked_item++;
             }
 
-            UpdateUI_LoadingState("选中(" + counter_checked_item + "/" + SearchListItem.Count+")");
+            UpdateUI_LoadingState("选中(" + counter_checked_item + "/" + SearchListItem.Count + ")");
         }
 
         /// <summary>
@@ -531,7 +530,7 @@ namespace MusicDownloader.Pages
                     musicinfo = filter.Filt(musicinfo);
                 }
 
-                if (musicinfo .Count<1)
+                if (musicinfo.Count < 1)
                 {
                     pb.Close();
                     AduMessageBox.Show("搜索结果为0", "提示", MessageBoxButton.OK);
@@ -1178,7 +1177,7 @@ namespace MusicDownloader.Pages
         {
             if (currentmusicindex - 1 >= 0)
             {
-                load_music(playlist[currentmusicindex - 1].Api, playlist[currentmusicindex - 1].Id ,playlist[currentmusicindex - 1].Title + " - " + playlist[currentmusicindex - 1].Singer,-1);
+                load_music(playlist[currentmusicindex - 1].Api, playlist[currentmusicindex - 1].Id, playlist[currentmusicindex - 1].Title + " - " + playlist[currentmusicindex - 1].Singer, -1);
             }
         }
 
@@ -1186,13 +1185,36 @@ namespace MusicDownloader.Pages
         {
             if (currentmusicindex + 1 <= playlist.Count - 1)
             {
-                load_music(playlist[currentmusicindex + 1].Api, playlist[currentmusicindex + 1].Id, playlist[currentmusicindex + 1].Title + " - " + playlist[currentmusicindex + 1].Singer,-2);
+                load_music(playlist[currentmusicindex + 1].Api, playlist[currentmusicindex + 1].Id, playlist[currentmusicindex + 1].Title + " - " + playlist[currentmusicindex + 1].Singer, -2);
             }
         }
 
         private void Page_Initialized(object sender, EventArgs e)
         {
             player.MediaEnded += Player_MediaEnded;
+        }
+
+        private void List_CurrentCellChanged(object sender, EventArgs e)
+        {/*
+            System.Windows.Controls.DataGrid datagrid = sender as System.Windows.Controls.DataGrid;
+            int index = SearchListItem.IndexOf(datagrid.CurrentCell.Item as SearchListItemModel);
+            if (index >= 0)
+            {
+                SearchListItem[index].IsSelected = !SearchListItem[index].IsSelected;
+                SearchListItem[index].OnPropertyChanged("IsSelected");
+            }*/
+        }
+
+        private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int i = 0;
+            foreach (SearchListItemModel s in List.SelectedItems)
+            {
+                if (i == 0 && List.SelectedItems.Count > 1) { i++; continue; }
+                s.IsSelected = !s.IsSelected;
+                s.OnPropertyChanged("IsSelected");
+                i++;
+            }
         }
     }
 }
