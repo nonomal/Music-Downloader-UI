@@ -18,6 +18,7 @@ using AduSkin.Controls.Metro;
 using System.Web.UI.WebControls;
 using System.Data;
 using System.Net;
+using System.Reflection;
 
 namespace MusicDownloader.Pages
 {
@@ -62,11 +63,21 @@ namespace MusicDownloader.Pages
             }
         }
         #endregion
-
-        //在音乐列表中进行勾选时，右下角显示选中数量
+        private bool skipselect = false;
+        /// <summary>
+        /// 在音乐列表中进行勾选时，右下角显示选中数量
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void OnItemSelected(object sender, RoutedEventArgs e)
         {
-
+            if (skipselect)
+            {
+                e.Handled = true;
+                ((System.Windows.Controls.CheckBox)sender).IsChecked = !((System.Windows.Controls.CheckBox)sender).IsChecked;
+                skipselect = false;
+                return;
+            }
             System.Windows.Controls.CheckBox item = sender as System.Windows.Controls.CheckBox;
             if ((bool)item.IsChecked)
             {
@@ -76,7 +87,6 @@ namespace MusicDownloader.Pages
             {
                 counter_checked_item--;
             }
-
             Console.WriteLine("checked=" + (bool)item.IsChecked + " counter=" + counter_checked_item);
             UpdateUI_LoadingState("选中(" + counter_checked_item + "/" + SearchListItem.Count + ")");
 
@@ -122,8 +132,13 @@ namespace MusicDownloader.Pages
         /// <param name="e"></param>
         private void menu_Play_PreviewMouseDown(object sender, RoutedEventArgs e)
         {
-            load_music(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].Id, musicinfo[List.SelectedIndex].Title + " - " + musicinfo[List.SelectedIndex].Singer, List.SelectedIndex);
-            return;
+            try
+            {
+                load_music(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].Id, musicinfo[List.SelectedIndex].Title + " - " + musicinfo[List.SelectedIndex].Singer, List.SelectedIndex);
+                return;
+            }
+            catch { }
+
         }
 
         Thread thread_load_music = null;
@@ -1208,16 +1223,39 @@ namespace MusicDownloader.Pages
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int i = 0;
-            foreach (SearchListItemModel s in List.SelectedItems)
+            bool first = false;
+            if (List.SelectedItems.Count == 1)
             {
-                if (i == 0 && List.SelectedItems.Count > 1) { i++; continue; }
-                if (s.IsSelected)
-                    counter_checked_item--;
-                if (!s.IsSelected)
-                    counter_checked_item++;
-                s.IsSelected = !s.IsSelected;
-                s.OnPropertyChanged("IsSelected");
-                i++;
+                foreach (SearchListItemModel s in List.SelectedItems)
+                {
+                    if (s.IsSelected)
+                        counter_checked_item--;
+                    else
+                        counter_checked_item++;
+                    s.IsSelected = !s.IsSelected;
+                    s.OnPropertyChanged("IsSelected");
+                }
+                skipselect = true;
+            }
+            else
+            {
+                foreach (SearchListItemModel s in List.SelectedItems)
+                {
+                    if (i == 0 && List.SelectedItems.Count > 1)
+                    {
+                        i++;
+                        first = s.IsSelected;
+                        continue;
+                    }
+                    if (s.IsSelected)
+                        counter_checked_item--;
+                    if (!s.IsSelected)
+                        counter_checked_item++;
+                    s.IsSelected = first;
+                    s.OnPropertyChanged("IsSelected");
+                    i++;
+
+                }
             }
             UpdateUI_LoadingState("选中(" + counter_checked_item + "/" + SearchListItem.Count + ")");
         }
