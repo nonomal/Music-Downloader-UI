@@ -255,5 +255,22 @@ namespace MusicDownloader.Pages
             Tool.Config.Write("Background", "");
             AduMessageBox.Show("恢复完成，重启后生效", "提示");
         }
+
+        private async void DownloadNodejsButton_Click(object sender, RoutedEventArgs e)
+        {
+            IPendingHandler pb = PendingBox.Show("下载中......", null, false, Application.Current.MainWindow, new PendingBoxConfigurations()
+            {
+                MinHeight = 110,
+                MaxHeight = 110,
+                MinWidth = 280,
+                MaxWidth = 280
+            });
+            await Task.Run(new Action(() =>
+            {
+                Api.DownloadNodejs();
+                while (!Api.NodejsDownloadSuc) { }
+            }));
+            pb.Close();
+        }
     }
 }

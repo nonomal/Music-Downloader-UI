@@ -192,6 +192,15 @@ namespace MusicDownloader
 
         private async void WindowX_ContentRendered(object sender, EventArgs e)
         {
+            Console.WriteLine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/MusicDownloader/FirstRun.m");
+            if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/MusicDownloader/FirstRun.m"))
+            {
+                if (AduMessageBox.ShowYesNo("建议阅读帮助", "欢迎", "是", "否") == MessageBoxResult.Yes)
+                {
+                    Process.Start("https://www.nitianblog.com/?p=868");
+                }
+                File.Create(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/MusicDownloader/FirstRun.m").Close();
+            }
             notifyicon.Visible = true;
             notifyicon.BalloonTipText = "Music Downloader UI";
             notifyicon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);

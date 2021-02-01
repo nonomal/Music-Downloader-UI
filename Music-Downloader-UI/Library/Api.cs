@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -27,6 +28,7 @@ namespace MusicDownloader.Library
         public static event NotifyNpmNotExist NotifyNpmEventHandle;
         private static string re_ver = null;
         private static string re_zipurl = null;
+        public static bool NodejsDownloadSuc = false;
 
         public static void ApiStart(string ver, string zipurl)
         {
@@ -344,6 +346,47 @@ namespace MusicDownloader.Library
             {
                 try { _p.Kill(); } catch { }
             }
+        }
+
+        private static string NodejsUrl = "";
+
+        public static void DownloadNodejs()
+        {
+            string osVerison = Environment.OSVersion.Version.Major.ToString() + "." + Environment.OSVersion.Version.Minor.ToString();
+            switch (osVerison)
+            {
+                case "6.2":
+                case "6.3":
+                case "10.0":
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        NodejsUrl = "https://npm.taobao.org/mirrors/node/v14.15.4/node-v14.15.4-x64.msi";
+                    }
+                    else
+                    {
+                        NodejsUrl = "https://npm.taobao.org/mirrors/node/v14.15.4/node-v14.15.4-x86.msi";
+                    }
+                    break;
+                case "6.1":
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        NodejsUrl = "https://npm.taobao.org/mirrors/node/latest-v12.x/node-v12.9.1-x64.msi";
+                    }
+                    else
+                    {
+                        NodejsUrl = "https://npm.taobao.org/mirrors/node/latest-v12.x/node-v12.9.1-x86.msi";
+                    }
+                    break;
+            }
+            WebClient wc = new WebClient();
+            wc.DownloadFileCompleted += Wc_DownloadFileCompleted_Nodejs;
+            wc.DownloadFileAsync(new Uri(NodejsUrl), path + Path.GetFileName(NodejsUrl));
+        }
+
+        private static void Wc_DownloadFileCompleted_Nodejs(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            NodejsDownloadSuc = true;
+            Process.Start(path + Path.GetFileName(NodejsUrl));
         }
     }
 }
