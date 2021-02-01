@@ -1211,10 +1211,15 @@ namespace MusicDownloader.Pages
             foreach (SearchListItemModel s in List.SelectedItems)
             {
                 if (i == 0 && List.SelectedItems.Count > 1) { i++; continue; }
+                if (s.IsSelected)
+                    counter_checked_item--;
+                if (!s.IsSelected)
+                    counter_checked_item++;
                 s.IsSelected = !s.IsSelected;
                 s.OnPropertyChanged("IsSelected");
                 i++;
             }
+            UpdateUI_LoadingState("选中(" + counter_checked_item + "/" + SearchListItem.Count + ")");
         }
     }
 }
