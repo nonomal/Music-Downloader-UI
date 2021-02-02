@@ -134,6 +134,8 @@ namespace MusicDownloader.Pages
         {
             try
             {
+                SearchListItem[List.SelectedIndex].IsSelected = !SearchListItem[List.SelectedIndex].IsSelected;
+                SearchListItem[List.SelectedIndex].OnPropertyChanged("IsSelected");
                 load_music(musicinfo[List.SelectedIndex].Api, musicinfo[List.SelectedIndex].Id, musicinfo[List.SelectedIndex].Title + " - " + musicinfo[List.SelectedIndex].Singer, List.SelectedIndex);
                 return;
             }
