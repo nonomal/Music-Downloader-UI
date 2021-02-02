@@ -199,6 +199,8 @@ namespace MusicDownloader
                 {
                     Process.Start("https://www.nitianblog.com/?p=868");
                 }
+                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/MusicDownloader/"))
+                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/MusicDownloader/");
                 File.Create(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/MusicDownloader/FirstRun.m").Close();
             }
             notifyicon.Visible = true;
